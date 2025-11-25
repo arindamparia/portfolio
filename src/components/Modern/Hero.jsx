@@ -1,26 +1,43 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { FaLinkedin, FaGithub } from 'react-icons/fa';
 
 const Hero = () => {
     return (
         <section id="home" className="hero">
-            <div className="container hero-content">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
-                >
-                    <h1>Hi, I'm <span style={{ color: 'var(--accent-primary)' }}>Arindam</span></h1>
-                    <h2>Software Engineer</h2>
-                    <p style={{ maxWidth: '600px', margin: '0 auto 2rem', color: 'var(--text-secondary)' }}>
-                        Passionate about building scalable applications and solving complex problems.
-                        Experienced in Java, Spring Boot, and Modern Web Technologies.
-                    </p>
-                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                        <a href="#projects" className="btn">View Work</a>
-                        <a href="#contact" className="btn" style={{ background: 'transparent', border: '2px solid var(--accent-primary)' }}>Contact Me</a>
-                    </div>
-                </motion.div>
+            <div className="container">
+                <div className="hero-content">
+                    <motion.img
+                        src="https://via.placeholder.com/400"
+                        alt="Profile"
+                        className="profile-image"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.8 }}
+                    />
+                    <motion.div
+                        className="hero-text"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                    >
+                        <p className="greeting">Hello, I'm</p>
+                        <h1>Aashay Wase</h1>
+                        <h2>Salesforce Developer</h2>
+                        <div className="hero-buttons">
+                            <a href="/cv.pdf" className="btn" download>Download CV</a>
+                            <a href="#contact" className="btn btn-secondary">Contact</a>
+                        </div>
+                        <div className="social-icons">
+                            <a href="https://www.linkedin.com/in/arindam-paria-557170191/" target="_blank" rel="noopener noreferrer">
+                                <FaLinkedin />
+                            </a>
+                            <a href="https://github.com/arindamparia" target="_blank" rel="noopener noreferrer">
+                                <FaGithub />
+                            </a>
+                        </div>
+                    </motion.div>
+                </div>
             </div>
         </section>
     );
