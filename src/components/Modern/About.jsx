@@ -12,10 +12,14 @@ const About = () => {
     const recentExperience = experienceData[0];
     const primaryEducation = educationData[0];
 
-    // Calculate years of experience
-    const startYear = 2023;
-    const currentYear = new Date().getFullYear();
-    const yearsOfExperience = currentYear - startYear + 1;
+    // Calculate years of experience from joining date: 27th November 2023
+    const joiningDate = new Date('2023-11-27');
+    const currentDate = new Date();
+
+    // Calculate total days and convert to years with decimal precision
+    const diffTime = currentDate - joiningDate;
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    const yearsOfExperience = (diffDays / 365.25).toFixed(1); // .25 accounts for leap years
 
     return (
         <section id="about">
