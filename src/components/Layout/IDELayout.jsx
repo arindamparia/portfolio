@@ -14,7 +14,7 @@ const IDELayout = () => {
 
     const renderContent = () => {
         switch (activeTab) {
-            case 'home': return <Home />;
+            case 'home': return <Home setActiveTab={setActiveTab} />;
             case 'projects': return <Projects />;
             case 'experience': return <Experience />;
             case 'skills': return <Skills />;

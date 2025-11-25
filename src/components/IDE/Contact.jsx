@@ -24,9 +24,9 @@ const Contact = () => {
                 <div style={{ marginBottom: '1.5rem' }}>
                     <span style={{ color: '#d7ba7d' }}>.social-media</span> <span style={{ color: '#da70d6' }}>{'{'}</span>
                     <div style={{ paddingLeft: '1.5rem' }}>
-                        <div><span style={{ color: '#9cdcfe' }}>github</span>: <span style={{ color: '#ce9178' }}>url("https://github.com/arindamparia")</span>;</div>
-                        <div><span style={{ color: '#9cdcfe' }}>linkedin</span>: <span style={{ color: '#ce9178' }}>url("https://www.linkedin.com/in/arindam-paria-557170191/")</span>;</div>
-                        <div><span style={{ color: '#9cdcfe' }}>leetcode</span>: <span style={{ color: '#ce9178' }}>url("https://leetcode.com/u/ARINDAM9064/")</span>;</div>
+                        <div><span style={{ color: '#9cdcfe' }}>github</span>: <span style={{ color: '#ce9178' }}>url("<a href="https://github.com/arindamparia" target="_blank" rel="noopener noreferrer" style={{ color: '#ce9178', textDecoration: 'underline', cursor: 'pointer' }}>https://github.com/arindamparia</a>")</span>;</div>
+                        <div><span style={{ color: '#9cdcfe' }}>linkedin</span>: <span style={{ color: '#ce9178' }}>url("<a href="https://www.linkedin.com/in/arindam-paria-557170191/" target="_blank" rel="noopener noreferrer" style={{ color: '#ce9178', textDecoration: 'underline', cursor: 'pointer' }}>https://www.linkedin.com/in/arindam-paria-557170191/</a>")</span>;</div>
+                        <div><span style={{ color: '#9cdcfe' }}>leetcode</span>: <span style={{ color: '#ce9178' }}>url("<a href="https://leetcode.com/u/ARINDAM9064/" target="_blank" rel="noopener noreferrer" style={{ color: '#ce9178', textDecoration: 'underline', cursor: 'pointer' }}>https://leetcode.com/u/ARINDAM9064/</a>")</span>;</div>
                     </div>
                     <span style={{ color: '#da70d6' }}>{'}'}</span>
                 </div>
