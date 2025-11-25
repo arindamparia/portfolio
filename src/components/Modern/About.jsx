@@ -12,14 +12,26 @@ const About = () => {
     const recentExperience = experienceData[0];
     const primaryEducation = educationData[0];
 
-    // Calculate years of experience from joining date: 27th November 2023
+    // Calculate years and months of experience from joining date: 27th November 2023
     const joiningDate = new Date('2023-11-27');
     const currentDate = new Date();
 
-    // Calculate total days and convert to years
-    const diffTime = currentDate - joiningDate;
-    const diffDays = diffTime / (1000 * 60 * 60 * 24);
-    const yearsOfExperience = Math.floor(diffDays / 365.25); // .25 accounts for leap years
+    // Calculate years and months
+    let years = currentDate.getFullYear() - joiningDate.getFullYear();
+    let months = currentDate.getMonth() - joiningDate.getMonth();
+
+    // Adjust if current month/day is before joining month/day
+    if (months < 0 || (months === 0 && currentDate.getDate() < joiningDate.getDate())) {
+        years--;
+        months += 12;
+    }
+
+    // Adjust months if current day is before joining day
+    if (currentDate.getDate() < joiningDate.getDate()) {
+        months--;
+    }
+
+    const yearsOfExperience = years > 0 ? `${years} year(s) ${months} months` : `${months} months`;
 
     return (
         <section id="about">
@@ -66,7 +78,7 @@ const About = () => {
                                     <FaBriefcase />
                                 </div>
                                 <h3>Experience</h3>
-                                <p>{yearsOfExperience}+ years<br />{recentExperience.role}</p>
+                                <p>{yearsOfExperience}<br />{recentExperience.role}</p>
                             </div>
                             <div className="info-card">
                                 <div className="info-card-icon">
