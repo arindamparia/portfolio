@@ -99,7 +99,7 @@ const Contact = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Validate all fields
@@ -126,10 +126,56 @@ const Contact = () => {
             return;
         }
 
-        // Form is valid
-        vibrateSuccess();
-        console.log('Form submitted:', formData);
-        // Add form submission logic here
+        // Form is valid - Collect device and user metadata
+        const deviceInfo = {
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            screenResolution: `${window.screen.width}x${window.screen.height}`,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            referrer: document.referrer || 'direct'
+        };
+
+        // Submit to API with user metadata
+        try {
+            const response = await fetch('http://localhost:3001/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    salutation: formData.salutation,
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    ...deviceInfo
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                vibrateSuccess();
+                alert('Thank you! Your information has been saved successfully.');
+                // Reset form
+                setFormData({
+                    salutation: '',
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    company: '',
+                    mobile: '',
+                    message: ''
+                });
+                setTouched({});
+                setErrors({});
+            } else {
+                vibrateError();
+                alert(`Error: ${data.error || 'Failed to submit form'}`);
+            }
+        } catch (error) {
+            vibrateError();
+            console.error('Error submitting form:', error);
+            alert('Network error. Please make sure the server is running and try again.');
+        }
     };
 
     return (
@@ -209,7 +255,6 @@ const Contact = () => {
                                 <option value="Mr">Mr</option>
                                 <option value="Ms">Ms</option>
                                 <option value="Mrs">Mrs</option>
-                                <option value="Dr">Dr</option>
                             </select>
                         </div>
                         <div className="form-group">
