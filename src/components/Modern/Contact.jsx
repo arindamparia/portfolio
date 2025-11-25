@@ -93,7 +93,7 @@ const Contact = () => {
                 if (value.trim().length < 3) {
                     return getRandomMessage('nameTooShort');
                 }
-                if (!/^[A-Za-z\s]+$/.test(value)) {
+                if (!/^[A-Za-z]+$/.test(value)) {
                     return getRandomMessage('nameInvalid');
                 }
                 return '';
@@ -141,13 +141,20 @@ const Contact = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        // Prevent spaces in all fields except company and message
+        let processedValue = value;
+        if (name !== 'company' && name !== 'message') {
+            processedValue = value.replace(/\s/g, '');
+        }
+
         setFormData({
             ...formData,
-            [name]: value
+            [name]: processedValue
         });
 
         if (touched[name]) {
-            const error = validateField(name, value);
+            const error = validateField(name, processedValue);
             setErrors({
                 ...errors,
                 [name]: error
@@ -222,7 +229,7 @@ const Contact = () => {
                     firstName: formData.firstName,
                     lastName: formData.lastName,
                     email: formData.email,
-                    mobile: formData.mobile,
+                    mobile: `+91${formData.mobile}`,
                     company: formData.company,
                     message: formData.message,
                     ...deviceInfo
@@ -540,30 +547,47 @@ const Contact = () => {
                         </div>
                         <div className="form-group">
                             <label htmlFor="mobile">
-                                {inputIcons.mobile} Mobile *
+                                {inputIcons.mobile} Mobile * (Indian numbers only)
                             </label>
-                            <motion.input
-                                type="tel"
-                                id="mobile"
-                                name="mobile"
-                                value={formData.mobile}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                onFocus={() => handleFocus('mobile')}
-                                className={errors.mobile && touched.mobile ? 'error' : ''}
-                                placeholder="10-digit Indian mobile number"
-                                style={{
-                                    borderColor:
-                                        errors.mobile && touched.mobile ? '#f5576c' :
-                                        !errors.mobile && touched.mobile && formData.mobile ? '#4ade80' :
-                                        focusedField === 'mobile' ? 'var(--accent-primary)' : undefined,
-                                    transition: 'all 0.3s ease'
-                                }}
-                                animate={{
-                                    x: errors.mobile && touched.mobile ? [0, -10, 10, -10, 10, 0] : 0
-                                }}
-                                transition={{ duration: 0.4 }}
-                            />
+                            <div style={{ position: 'relative' }}>
+                                <span style={{
+                                    position: 'absolute',
+                                    left: '1rem',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    color: '#888',
+                                    fontSize: '1rem',
+                                    fontWeight: '500',
+                                    pointerEvents: 'none',
+                                    zIndex: 1
+                                }}>
+                                    +91
+                                </span>
+                                <motion.input
+                                    type="tel"
+                                    id="mobile"
+                                    name="mobile"
+                                    value={formData.mobile}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    onFocus={() => handleFocus('mobile')}
+                                    className={errors.mobile && touched.mobile ? 'error' : ''}
+                                    placeholder="10-digit mobile number"
+                                    maxLength={10}
+                                    style={{
+                                        paddingLeft: '3.5rem',
+                                        borderColor:
+                                            errors.mobile && touched.mobile ? '#f5576c' :
+                                            !errors.mobile && touched.mobile && formData.mobile ? '#4ade80' :
+                                            focusedField === 'mobile' ? 'var(--accent-primary)' : undefined,
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                    animate={{
+                                        x: errors.mobile && touched.mobile ? [0, -10, 10, -10, 10, 0] : 0
+                                    }}
+                                    transition={{ duration: 0.4 }}
+                                />
+                            </div>
                             <AnimatePresence>
                                 {errors.mobile && touched.mobile && (
                                     <motion.span
