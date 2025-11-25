@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import Hero from '../Modern/Hero';
 import About from '../Modern/About';
-import Skills from '../Modern/Skills';
-import Projects from '../Modern/Projects';
-import Experience from '../Modern/Experience';
-import Education from '../Modern/Education';
-import Contact from '../Modern/Contact';
 import { vibrateLight } from '../../utils/vibration';
+
+// Lazy load components that are below the fold
+const Skills = lazy(() => import('../Modern/Skills'));
+const Projects = lazy(() => import('../Modern/Projects'));
+const Experience = lazy(() => import('../Modern/Experience'));
+const Education = lazy(() => import('../Modern/Education'));
+const Contact = lazy(() => import('../Modern/Contact'));
 
 const ModernLayout = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -60,11 +62,13 @@ const ModernLayout = () => {
             <main>
                 <Hero />
                 <About />
-                <Skills />
-                <Experience />
-                <Education />
-                <Projects />
-                <Contact />
+                <Suspense fallback={<div style={{ minHeight: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>}>
+                    <Skills />
+                    <Experience />
+                    <Education />
+                    <Projects />
+                    <Contact />
+                </Suspense>
             </main>
         </div>
     );
