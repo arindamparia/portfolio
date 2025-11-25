@@ -24,7 +24,7 @@ body {
   --text-secondary: #858585;
   --accent-primary: #007acc;
   --border-color: #3e3e42;
-  --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-main: 'Space Grotesk', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-code: 'Consolas', 'Courier New', monospace;
 
   font-family: var(--font-main);
@@ -223,7 +223,7 @@ body {
   --accent-secondary: #333333;
   --border-light: #e0e0e0;
   --border-medium: #d0d0d0;
-  --font-main: 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-main: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 
   font-family: var(--font-main);
   background-color: var(--bg-primary);
