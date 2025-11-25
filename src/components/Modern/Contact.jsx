@@ -4,6 +4,7 @@ import { FaEnvelope, FaLinkedin, FaGithub } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
 import { personalInfo, socialLinks } from '../../constants/personalInfo';
 import { vibrateLight, vibrateError, vibrateSuccess } from '../../utils/vibration';
+import { API_BASE_URL } from '../../utils/api';
 
 const Contact = () => {
     const [formData, setFormData] = useState({
@@ -137,7 +138,7 @@ const Contact = () => {
 
         // Submit to API with user metadata
         try {
-            const response = await fetch('http://localhost:3001/api/contact', {
+            const response = await fetch(`${API_BASE_URL}/api/contact`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
