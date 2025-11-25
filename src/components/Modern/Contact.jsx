@@ -135,6 +135,8 @@ const Contact = () => {
 
     const handleBlur = (e) => {
         const { name, value } = e.target;
+        const wasAlreadyTouched = touched[name];
+
         setTouched({
             ...touched,
             [name]: true
@@ -142,13 +144,15 @@ const Contact = () => {
         setFocusedField('');
 
         const error = validateField(name, value);
-        const messageFieldName = getMessageFieldName(name);
 
-        // Set the message on blur (first time field is touched)
-        setDisplayedMessages(prev => ({
-            ...prev,
-            [name]: error || getRandomSuccess(messageFieldName)
-        }));
+        // Only set the message on FIRST blur (when field wasn't already touched)
+        if (!wasAlreadyTouched) {
+            const messageFieldName = getMessageFieldName(name);
+            setDisplayedMessages(prev => ({
+                ...prev,
+                [name]: error || getRandomSuccess(messageFieldName)
+            }));
+        }
 
         setErrors({
             ...errors,
