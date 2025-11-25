@@ -1,10 +1,11 @@
 import React from 'react';
 import { VscFiles, VscSearch, VscSourceControl, VscDebugAlt, VscExtensions, VscAccount, VscSettingsGear, VscChevronRight, VscChevronDown } from 'react-icons/vsc';
-import { FaReact, FaJs, FaHtml5, FaCss3, FaMarkdown, FaEnvelope, FaCode } from 'react-icons/fa';
-import { SiJson } from 'react-icons/si';
+import { FaReact, FaJs, FaHtml5, FaCss3, FaMarkdown, FaEnvelope, FaCode, FaGithub, FaLinkedin } from 'react-icons/fa';
+import { SiJson, SiLeetcode } from 'react-icons/si';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
     const [isOpen, setIsOpen] = React.useState(true);
+    const [showProfileMenu, setShowProfileMenu] = React.useState(false);
 
     const files = [
         { name: 'home.jsx', icon: <FaReact color="#61DAFB" />, id: 'home' },
@@ -16,28 +17,79 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     ];
 
     return (
-        <div style={{ display: 'flex', height: '100%' }}>
+        <div className="ide-sidebar-container" style={{ display: 'flex', height: '100%' }}>
             <div className="activity-bar">
-                <div style={{ marginBottom: '20px', cursor: 'pointer', borderLeft: '2px solid white', width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <div className="activity-icon active" style={{ marginBottom: '20px', cursor: 'pointer', borderLeft: '2px solid white', width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <VscFiles size={24} color="white" />
                 </div>
-                <div style={{ marginBottom: '20px', cursor: 'pointer' }}><VscSearch size={24} color="#858585" /></div>
-                <div style={{ marginBottom: '20px', cursor: 'pointer' }}><VscSourceControl size={24} color="#858585" /></div>
-                <div style={{ marginBottom: '20px', cursor: 'pointer' }}><VscDebugAlt size={24} color="#858585" /></div>
-                <div style={{ marginBottom: '20px', cursor: 'pointer' }}><VscExtensions size={24} color="#858585" /></div>
-                <div style={{ marginTop: 'auto', marginBottom: '20px', cursor: 'pointer' }}><VscAccount size={24} color="#858585" /></div>
-                <div style={{ marginBottom: '20px', cursor: 'pointer' }}><VscSettingsGear size={24} color="#858585" /></div>
+                <div className="activity-icon" style={{ marginBottom: '20px', cursor: 'pointer' }}><VscSearch size={24} color="#858585" /></div>
+                <div className="activity-icon" style={{ marginBottom: '20px', cursor: 'pointer' }}><VscSourceControl size={24} color="#858585" /></div>
+                <div className="activity-icon" style={{ marginBottom: '20px', cursor: 'pointer' }}><VscDebugAlt size={24} color="#858585" /></div>
+                <div className="activity-icon" style={{ marginBottom: '20px', cursor: 'pointer' }}><VscExtensions size={24} color="#858585" /></div>
+
+                <div style={{ marginTop: 'auto' }}>
+                    <a href="https://github.com/arindamparia" target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ marginBottom: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'center', color: '#858585' }}>
+                        <FaGithub size={24} />
+                    </a>
+                    <a href="https://www.linkedin.com/in/arindam-paria-557170191/" target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ marginBottom: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'center', color: '#858585' }}>
+                        <FaLinkedin size={24} />
+                    </a>
+                    <a href="https://leetcode.com/u/ARINDAM9064/" target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ marginBottom: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'center', color: '#858585' }}>
+                        <SiLeetcode size={24} />
+                    </a>
+                </div>
+
+                <div className="activity-icon bottom" style={{ marginBottom: '20px', cursor: 'pointer', position: 'relative' }} onClick={() => setShowProfileMenu(!showProfileMenu)}>
+                    <VscAccount size={24} color="#858585" />
+                    {showProfileMenu && (
+                        <div style={{
+                            position: 'absolute',
+                            bottom: '0',
+                            left: '50px',
+                            background: '#252526',
+                            border: '1px solid #454545',
+                            borderRadius: '5px',
+                            padding: '10px',
+                            width: '200px',
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
+                            zIndex: 1000,
+                            color: '#cccccc'
+                        }}>
+                            <div style={{ fontWeight: 'bold', marginBottom: '5px', color: 'white' }}>Arindam Paria</div>
+                            <div style={{ fontSize: '0.8rem', marginBottom: '10px', color: '#858585' }}>Software Engineer</div>
+                            <div
+                                style={{
+                                    cursor: 'pointer',
+                                    padding: '5px',
+                                    background: '#007acc',
+                                    color: 'white',
+                                    textAlign: 'center',
+                                    borderRadius: '3px',
+                                    fontSize: '0.9rem'
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveTab('contact');
+                                    setShowProfileMenu(false);
+                                }}
+                            >
+                                Contact Me
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <div className="activity-icon bottom" style={{ marginBottom: '20px', cursor: 'pointer' }}><VscSettingsGear size={24} color="#858585" /></div>
             </div>
             <div className="sidebar">
                 <div className="explorer-title">Explorer</div>
-                <div style={{ paddingLeft: '10px', cursor: 'pointer' }} onClick={() => setIsOpen(!isOpen)}>
-                    <div style={{ display: 'flex', alignItems: 'center', color: 'white', fontWeight: 'bold', fontSize: '0.8rem', padding: '5px 0' }}>
+                <div className="explorer-section" style={{ paddingLeft: '10px', cursor: 'pointer' }} onClick={() => setIsOpen(!isOpen)}>
+                    <div className="explorer-header" style={{ display: 'flex', alignItems: 'center', color: 'white', fontWeight: 'bold', fontSize: '0.8rem', padding: '5px 0' }}>
                         {isOpen ? <VscChevronDown /> : <VscChevronRight />}
                         <span style={{ marginLeft: '5px' }}>PORTFOLIO</span>
                     </div>
                 </div>
                 {isOpen && (
-                    <div style={{ paddingLeft: '10px' }}>
+                    <div className="file-list" style={{ paddingLeft: '10px' }}>
                         {files.map((file) => (
                             <div
                                 key={file.id}
