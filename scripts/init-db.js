@@ -5,13 +5,17 @@ async function initDatabase() {
     try {
         console.log('Creating contacts table...');
 
-        // Create contacts table with first 3 fields + comprehensive user tracking
+        // Create contacts table with all form fields + comprehensive user tracking
         await sql`
             CREATE TABLE IF NOT EXISTS contacts (
                 id SERIAL PRIMARY KEY,
                 salutation VARCHAR(10),
                 first_name VARCHAR(100) NOT NULL,
                 last_name VARCHAR(100) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                mobile VARCHAR(20) NOT NULL,
+                company VARCHAR(255),
+                message TEXT NOT NULL,
                 ip_address VARCHAR(45),
                 user_agent TEXT,
                 browser VARCHAR(100),

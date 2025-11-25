@@ -32,6 +32,10 @@ export default async (req, context) => {
             salutation,
             firstName,
             lastName,
+            email,
+            mobile,
+            company,
+            message,
             userAgent,
             language,
             screenResolution,
@@ -58,9 +62,9 @@ export default async (req, context) => {
         const deviceType = uaResult.device.type || 'desktop';
 
         // Validate required fields
-        if (!firstName || !lastName) {
+        if (!firstName || !lastName || !email || !mobile || !message) {
             return new Response(
-                JSON.stringify({ error: 'First name and last name are required' }),
+                JSON.stringify({ error: 'First name, last name, email, mobile, and message are required' }),
                 { status: 400, headers }
             );
         }
@@ -80,6 +84,13 @@ export default async (req, context) => {
             );
         }
 
+        if (message.trim().length < 10) {
+            return new Response(
+                JSON.stringify({ error: 'Message must be at least 10 characters' }),
+                { status: 400, headers }
+            );
+        }
+
         // Validate only letters in names
         if (!/^[A-Za-z\s]+$/.test(firstName) || !/^[A-Za-z\s]+$/.test(lastName)) {
             return new Response(
@@ -88,17 +99,37 @@ export default async (req, context) => {
             );
         }
 
+        // Validate email format
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return new Response(
+                JSON.stringify({ error: 'Please enter a valid email address' }),
+                { status: 400, headers }
+            );
+        }
+
+        // Validate mobile number (10 digits)
+        if (!/^\d{10}$/.test(mobile)) {
+            return new Response(
+                JSON.stringify({ error: 'Please enter a valid 10-digit mobile number' }),
+                { status: 400, headers }
+            );
+        }
+
         // Insert into database with comprehensive user tracking
         const result = await sql`
             INSERT INTO contacts (
-                salutation, first_name, last_name, ip_address,
-                user_agent, browser, operating_system, device_type,
+                salutation, first_name, last_name, email, mobile, company, message,
+                ip_address, user_agent, browser, operating_system, device_type,
                 screen_resolution, language, timezone, referrer
             )
             VALUES (
                 ${salutation || null},
                 ${firstName.trim()},
                 ${lastName.trim()},
+                ${email.trim()},
+                ${mobile.trim()},
+                ${company?.trim() || null},
+                ${message.trim()},
                 ${ipAddress},
                 ${userAgent || null},
                 ${browser},
@@ -109,8 +140,8 @@ export default async (req, context) => {
                 ${timezone || null},
                 ${referrer || null}
             )
-            RETURNING id, salutation, first_name, last_name, ip_address,
-                     browser, operating_system, device_type, created_at
+            RETURNING id, salutation, first_name, last_name, email, mobile, company,
+                     ip_address, browser, operating_system, device_type, created_at
         `;
 
         return new Response(

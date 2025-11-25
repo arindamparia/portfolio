@@ -16,20 +16,28 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { salutation, firstName, lastName } = req.body;
+        const { salutation, firstName, lastName, email, mobile, company, message } = req.body;
 
         // Validate required fields
-        if (!firstName || !lastName) {
+        if (!firstName || !lastName || !email || !mobile || !message) {
             return res.status(400).json({
-                error: 'First name and last name are required'
+                error: 'First name, last name, email, mobile, and message are required'
             });
         }
 
         // Insert into database
         const result = await sql`
-            INSERT INTO contacts (salutation, first_name, last_name)
-            VALUES (${salutation || null}, ${firstName}, ${lastName})
-            RETURNING id, salutation, first_name, last_name, created_at
+            INSERT INTO contacts (salutation, first_name, last_name, email, mobile, company, message)
+            VALUES (
+                ${salutation || null},
+                ${firstName.trim()},
+                ${lastName.trim()},
+                ${email.trim()},
+                ${mobile.trim()},
+                ${company?.trim() || null},
+                ${message.trim()}
+            )
+            RETURNING id, salutation, first_name, last_name, email, mobile, company, created_at
         `;
 
         return res.status(201).json({
