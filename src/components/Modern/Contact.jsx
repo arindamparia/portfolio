@@ -142,9 +142,17 @@ const Contact = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        // Prevent spaces in all fields except company and message
         let processedValue = value;
-        if (name !== 'company' && name !== 'message') {
+
+        // Apply field-specific character restrictions
+        if (name === 'firstName' || name === 'lastName') {
+            // Only allow a-z and A-Z in name fields
+            processedValue = value.replace(/[^a-zA-Z]/g, '');
+        } else if (name === 'mobile') {
+            // Only allow digits in mobile field
+            processedValue = value.replace(/[^0-9]/g, '');
+        } else if (name !== 'company' && name !== 'message') {
+            // Prevent spaces in all other fields except company and message
             processedValue = value.replace(/\s/g, '');
         }
 
