@@ -755,6 +755,70 @@ body {
   padding: 1rem 3rem;
 }
 
+/* Skills Section - Modern Compact Design */
+.theme-modern .skills-container-modern {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.theme-modern .skills-category-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-medium);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.theme-modern .skills-category-card:hover {
+  border-color: var(--text-secondary);
+  transform: translateY(-5px);
+}
+
+.theme-modern .skills-category-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  text-align: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.theme-modern .skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.theme-modern .skill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+}
+
+.theme-modern .skill-tag:hover {
+  border-color: var(--text-primary);
+  background: var(--bg-primary);
+  transform: scale(1.05);
+}
+
+.theme-modern .skill-tag-icon {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
 /* Toggle Button */
 .theme-toggle {
   position: fixed;
@@ -782,4 +846,89 @@ body {
   text-align: center;
   max-width: 600px;
   margin: 0 auto;
+}
+
+/* Responsive Design for Mobile to Laptop */
+@media (max-width: 768px) {
+  .theme-modern .container {
+    padding: 0 1rem;
+  }
+
+  .theme-modern section {
+    padding: 3rem 0;
+    min-height: auto;
+  }
+
+  .theme-modern .section-title {
+    font-size: 2rem;
+  }
+
+  .theme-modern .hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .theme-modern .hero h2 {
+    font-size: 1.2rem;
+  }
+
+  .theme-modern .profile-image {
+    width: 300px;
+    height: 300px;
+  }
+
+  .theme-modern .hero-content {
+    gap: 3rem;
+  }
+
+  .theme-modern .nav-links {
+    gap: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .theme-modern .nav-links a {
+    font-size: 0.9rem;
+  }
+
+  .theme-modern .info-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .theme-modern .skills-container-modern {
+    grid-template-columns: 1fr;
+  }
+
+  .theme-modern .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .theme-modern .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .theme-modern .hero-buttons .btn {
+    width: 100%;
+  }
+
+  .theme-modern .theme-toggle {
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .theme-modern .skills-container-modern {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .theme-modern .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .theme-modern .profile-image {
+    width: 350px;
+    height: 350px;
+  }
 }
