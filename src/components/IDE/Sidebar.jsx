@@ -6,6 +6,18 @@ import { SiJson, SiLeetcode } from 'react-icons/si';
 const Sidebar = ({ activeTab, setActiveTab }) => {
     const [isOpen, setIsOpen] = React.useState(true);
     const [showProfileMenu, setShowProfileMenu] = React.useState(false);
+    const [showDisabledPrompt, setShowDisabledPrompt] = React.useState(false);
+    const [disabledFeature, setDisabledFeature] = React.useState('');
+
+    const handleDisabledClick = (featureName) => {
+        setDisabledFeature(featureName);
+        setShowDisabledPrompt(true);
+        // Add vibration feedback if supported
+        if (navigator.vibrate) {
+            navigator.vibrate(50); // Vibrate for 50ms
+        }
+        setTimeout(() => setShowDisabledPrompt(false), 3000);
+    };
 
     const files = [
         { name: 'home.jsx', icon: <FaReact color="#61DAFB" />, id: 'home' },
@@ -22,10 +34,10 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                 <div className="activity-icon active" style={{ marginBottom: '20px', cursor: 'pointer', borderLeft: '2px solid white', width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <VscFiles size={24} color="white" />
                 </div>
-                <div className="activity-icon" style={{ marginBottom: '20px', cursor: 'pointer' }}><VscSearch size={24} color="#858585" /></div>
-                <div className="activity-icon" style={{ marginBottom: '20px', cursor: 'pointer' }}><VscSourceControl size={24} color="#858585" /></div>
-                <div className="activity-icon" style={{ marginBottom: '20px', cursor: 'pointer' }}><VscDebugAlt size={24} color="#858585" /></div>
-                <div className="activity-icon" style={{ marginBottom: '20px', cursor: 'pointer' }}><VscExtensions size={24} color="#858585" /></div>
+                <div className="activity-icon" style={{ marginBottom: '20px', cursor: 'pointer' }} onClick={() => handleDisabledClick('Search')}><VscSearch size={24} color="#858585" /></div>
+                <div className="activity-icon" style={{ marginBottom: '20px', cursor: 'pointer' }} onClick={() => handleDisabledClick('Source Control')}><VscSourceControl size={24} color="#858585" /></div>
+                <div className="activity-icon" style={{ marginBottom: '20px', cursor: 'pointer' }} onClick={() => handleDisabledClick('Debug')}><VscDebugAlt size={24} color="#858585" /></div>
+                <div className="activity-icon" style={{ marginBottom: '20px', cursor: 'pointer' }} onClick={() => handleDisabledClick('Extensions')}><VscExtensions size={24} color="#858585" /></div>
 
                 <div style={{ marginTop: 'auto' }}>
                     <a href="https://github.com/arindamparia" target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ marginBottom: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'center', color: '#858585' }}>
@@ -78,7 +90,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                         </div>
                     )}
                 </div>
-                <div className="activity-icon bottom" style={{ marginBottom: '20px', cursor: 'pointer' }}><VscSettingsGear size={24} color="#858585" /></div>
+                <div className="activity-icon bottom" style={{ marginBottom: '20px', cursor: 'pointer' }} onClick={() => handleDisabledClick('Settings')}><VscSettingsGear size={24} color="#858585" /></div>
             </div>
             <div className="sidebar">
                 <div className="explorer-title">Explorer</div>
@@ -103,6 +115,34 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                     </div>
                 )}
             </div>
+            {showDisabledPrompt && (
+                <div style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    background: '#1e1e1e',
+                    border: '2px solid #007acc',
+                    borderRadius: '8px',
+                    padding: '20px 30px',
+                    boxShadow: '0 8px 16px rgba(0,0,0,0.4)',
+                    zIndex: 9999,
+                    color: 'white',
+                    textAlign: 'center',
+                    animation: 'slideIn 0.3s ease-out',
+                    minWidth: '300px'
+                }}>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '10px', color: '#007acc' }}>
+                        {disabledFeature}
+                    </div>
+                    <div style={{ fontSize: '0.95rem', color: '#cccccc' }}>
+                        This feature is currently disabled
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: '#858585', marginTop: '8px' }}>
+                        Portfolio showcase only
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
