@@ -4,7 +4,7 @@ import { educationData } from '../../data/education';
 
 const Education = () => {
     return (
-        <section id="about">
+        <section id="education">
             <div className="container">
                 <motion.h2
                     className="section-title"
