@@ -10,6 +10,7 @@ const Tabs = ({ activeTab, setActiveTab }) => {
         { name: 'experience.json', icon: <SiJson color="#F7DF1E" />, id: 'experience' },
         { name: 'skills.json', icon: <SiJson color="#F7DF1E" />, id: 'skills' },
         { name: 'education.md', icon: <FaMarkdown color="#42A5F5" />, id: 'education' },
+        { name: 'certifications.json', icon: <SiJson color="#F7DF1E" />, id: 'certifications' },
         { name: 'contact.css', icon: <FaCss3 color="#42A5F5" />, id: 'contact' },
     ];
 

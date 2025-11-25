@@ -1,6 +1,6 @@
 import React from 'react';
 import { VscFiles, VscSearch, VscSourceControl, VscDebugAlt, VscExtensions, VscAccount, VscSettingsGear, VscChevronRight, VscChevronDown } from 'react-icons/vsc';
-import { FaReact, FaJs, FaHtml5, FaCss3, FaMarkdown, FaEnvelope, FaCode, FaGithub, FaLinkedin } from 'react-icons/fa';
+import { FaReact, FaJs, FaHtml5, FaCss3, FaMarkdown, FaEnvelope, FaCode, FaGithub, FaLinkedin, FaCertificate } from 'react-icons/fa';
 import { SiJson, SiLeetcode } from 'react-icons/si';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
@@ -25,6 +25,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         { name: 'experience.json', icon: <SiJson color="#F7DF1E" />, id: 'experience' },
         { name: 'skills.json', icon: <SiJson color="#F7DF1E" />, id: 'skills' },
         { name: 'education.md', icon: <FaMarkdown color="#42A5F5" />, id: 'education' },
+        { name: 'certifications.json', icon: <SiJson color="#F7DF1E" />, id: 'certifications' },
         { name: 'contact.css', icon: <FaCss3 color="#42A5F5" />, id: 'contact' },
     ];
 
