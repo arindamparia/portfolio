@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { VscChevronDown } from 'react-icons/vsc';
 import { experienceData } from '../../data/experience';
+import { vibrateMedium } from '../../utils/vibration';
 
 const Experience = () => {
     return (
@@ -59,7 +60,7 @@ const Experience = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.5 }}
                 >
-                    <a href="#education">
+                    <a href="#education" onClick={vibrateMedium}>
                         <VscChevronDown />
                     </a>
                 </motion.div>

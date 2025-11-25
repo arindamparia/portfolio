@@ -5,6 +5,7 @@ import { VscChevronDown } from 'react-icons/vsc';
 import { experienceData } from '../../data/experience';
 import { educationData } from '../../data/education';
 import { personalInfo, assets } from '../../constants/personalInfo';
+import { vibrateMedium } from '../../utils/vibration';
 
 const About = () => {
     // Get the most recent experience
@@ -83,7 +84,7 @@ const About = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.5 }}
                 >
-                    <a href="#skills">
+                    <a href="#skills" onClick={vibrateMedium}>
                         <VscChevronDown />
                     </a>
                 </motion.div>
