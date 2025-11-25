@@ -372,6 +372,7 @@ body {
   justify-content: space-between;
   align-items: center;
   height: 60px;
+  gap: 2rem;
 }
 
 .theme-modern .logo {
@@ -379,11 +380,13 @@ body {
   font-weight: 700;
   color: var(--text-primary);
   font-family: 'Georgia', serif;
+  flex-shrink: 0;
 }
 
 .theme-modern .nav-links {
   display: flex;
   gap: 2.5rem;
+  flex-shrink: 0;
 }
 
 .theme-modern .nav-links a {
@@ -421,7 +424,7 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-  padding-top: 80px;
+  padding-top: 100px;
 }
 
 .theme-modern .hero-content {
@@ -955,6 +958,10 @@ body {
     font-size: 2rem;
   }
 
+  .theme-modern .hero {
+    padding-top: 120px;
+  }
+
   .theme-modern .hero h1 {
     font-size: 2.5rem;
   }
@@ -972,13 +979,33 @@ body {
     gap: 3rem;
   }
 
+  .theme-modern .nav-content {
+    gap: 1rem;
+  }
+
+  .theme-modern .logo {
+    font-size: 1.5rem;
+  }
+
   .theme-modern .nav-links {
     gap: 1rem;
     font-size: 0.9rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex-wrap: nowrap;
+    padding-bottom: 0.5rem;
+  }
+
+  .theme-modern .nav-links::-webkit-scrollbar {
+    display: none;
   }
 
   .theme-modern .nav-links a {
     font-size: 0.9rem;
+    white-space: nowrap;
   }
 
   .theme-modern .info-cards {
