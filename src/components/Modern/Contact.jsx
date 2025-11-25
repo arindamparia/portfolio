@@ -147,6 +147,10 @@ const Contact = () => {
                     salutation: formData.salutation,
                     firstName: formData.firstName,
                     lastName: formData.lastName,
+                    email: formData.email,
+                    mobile: formData.mobile,
+                    company: formData.company,
+                    message: formData.message,
                     ...deviceInfo
                 }),
             });

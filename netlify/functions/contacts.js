@@ -27,8 +27,8 @@ export default async (req, context) => {
 
     try {
         const contacts = await sql`
-            SELECT id, salutation, first_name, last_name, ip_address,
-                   user_agent, browser, operating_system, device_type,
+            SELECT id, salutation, first_name, last_name, email, mobile, company, message,
+                   ip_address, user_agent, browser, operating_system, device_type,
                    screen_resolution, language, timezone, referrer, created_at
             FROM contacts
             ORDER BY created_at DESC

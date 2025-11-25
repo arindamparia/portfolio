@@ -8,6 +8,48 @@
 body {
   overflow: hidden;
   /* App handles scrolling */
+  cursor: none; /* Hide default cursor for custom cursor */
+}
+
+/* =========================================
+   CUSTOM INTERACTIVE CURSOR
+   ========================================= */
+.custom-cursor,
+.custom-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 50%;
+}
+
+.custom-cursor {
+  width: 32px;
+  height: 32px;
+  background-color: rgba(99, 102, 241, 0.5);
+  border: 2px solid rgba(99, 102, 241, 0.8);
+  mix-blend-mode: difference;
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.custom-cursor-dot {
+  width: 8px;
+  height: 8px;
+  background-color: rgba(139, 92, 246, 0.9);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+/* Fallback for devices without custom cursor support */
+@media (pointer: coarse) {
+  body {
+    cursor: auto;
+  }
+
+  .custom-cursor,
+  .custom-cursor-dot {
+    display: none;
+  }
 }
 
 /* =========================================
@@ -24,7 +66,7 @@ body {
   --text-secondary: #858585;
   --accent-primary: #007acc;
   --border-color: #3e3e42;
-  --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-main: 'Space Grotesk', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-code: 'Consolas', 'Courier New', monospace;
 
   font-family: var(--font-main);
@@ -223,7 +265,7 @@ body {
   --accent-secondary: #333333;
   --border-light: #e0e0e0;
   --border-medium: #d0d0d0;
-  --font-main: 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-main: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 
   font-family: var(--font-main);
   background-color: var(--bg-primary);

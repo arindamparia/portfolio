@@ -23,6 +23,10 @@ app.post('/api/contact', async (req, res) => {
             salutation,
             firstName,
             lastName,
+            email,
+            mobile,
+            company,
+            message,
             userAgent,
             language,
             screenResolution,
@@ -49,9 +53,9 @@ app.post('/api/contact', async (req, res) => {
         const deviceType = uaResult.device.type || 'desktop';
 
         // Validate required fields
-        if (!firstName || !lastName) {
+        if (!firstName || !lastName || !email || !mobile || !message) {
             return res.status(400).json({
-                error: 'First name and last name are required'
+                error: 'First name, last name, email, mobile, and message are required'
             });
         }
 
@@ -68,6 +72,12 @@ app.post('/api/contact', async (req, res) => {
             });
         }
 
+        if (message.trim().length < 10) {
+            return res.status(400).json({
+                error: 'Message must be at least 10 characters'
+            });
+        }
+
         // Validate only letters in names
         if (!/^[A-Za-z\s]+$/.test(firstName) || !/^[A-Za-z\s]+$/.test(lastName)) {
             return res.status(400).json({
@@ -75,17 +85,35 @@ app.post('/api/contact', async (req, res) => {
             });
         }
 
+        // Validate email format
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.status(400).json({
+                error: 'Please enter a valid email address'
+            });
+        }
+
+        // Validate mobile number (10 digits)
+        if (!/^\d{10}$/.test(mobile)) {
+            return res.status(400).json({
+                error: 'Please enter a valid 10-digit mobile number'
+            });
+        }
+
         // Insert into database with comprehensive user tracking
         const result = await sql`
             INSERT INTO contacts (
-                salutation, first_name, last_name, ip_address,
-                user_agent, browser, operating_system, device_type,
+                salutation, first_name, last_name, email, mobile, company, message,
+                ip_address, user_agent, browser, operating_system, device_type,
                 screen_resolution, language, timezone, referrer
             )
             VALUES (
                 ${salutation || null},
                 ${firstName.trim()},
                 ${lastName.trim()},
+                ${email.trim()},
+                ${mobile.trim()},
+                ${company?.trim() || null},
+                ${message.trim()},
                 ${ipAddress},
                 ${userAgent || null},
                 ${browser},
@@ -96,8 +124,8 @@ app.post('/api/contact', async (req, res) => {
                 ${timezone || null},
                 ${referrer || null}
             )
-            RETURNING id, salutation, first_name, last_name, ip_address,
-                     browser, operating_system, device_type, created_at
+            RETURNING id, salutation, first_name, last_name, email, mobile, company,
+                     ip_address, browser, operating_system, device_type, created_at
         `;
 
         return res.status(201).json({
@@ -119,8 +147,8 @@ app.post('/api/contact', async (req, res) => {
 app.get('/api/contacts', async (req, res) => {
     try {
         const contacts = await sql`
-            SELECT id, salutation, first_name, last_name, ip_address,
-                   user_agent, browser, operating_system, device_type,
+            SELECT id, salutation, first_name, last_name, email, mobile, company, message,
+                   ip_address, user_agent, browser, operating_system, device_type,
                    screen_resolution, language, timezone, referrer, created_at
             FROM contacts
             ORDER BY created_at DESC
