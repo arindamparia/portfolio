@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import IDELayout from './components/Layout/IDELayout';
-import ModernLayout from './components/Layout/ModernLayout';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import DesktopRequired from './components/Shared/DesktopRequired';
+
+// Lazy load layouts for better initial load performance
+const IDELayout = lazy(() => import('./components/Layout/IDELayout'));
+const ModernLayout = lazy(() => import('./components/Layout/ModernLayout'));
 
 function App() {
   const [viewMode, setViewMode] = useState('modern');
@@ -25,6 +27,7 @@ function App() {
   const toggleView = () => {
     // Only allow switching to IDE view on desktop
     if (!isDesktop && viewMode === 'modern') {
+      alert('💻 IDE View is available on laptop or tablet!\n\nThe IDE view provides a VS Code-style interface and is optimized for larger screens (1024px+). Please open this portfolio on a laptop or tablet to experience this feature.');
       return; // Do nothing on mobile when trying to switch to IDE
     }
     setViewMode(prev => prev === 'ide' ? 'modern' : 'ide');
@@ -32,22 +35,33 @@ function App() {
 
   return (
     <div className={viewMode === 'ide' ? 'theme-ide' : 'theme-modern'}>
-      {viewMode === 'ide' ? (
-        isDesktop ? <IDELayout /> : <DesktopRequired onSwitchToModern={() => setViewMode('modern')} />
-      ) : (
-        <ModernLayout />
-      )}
+      <Suspense fallback={
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          fontSize: '1.2rem'
+        }}>
+          Loading...
+        </div>
+      }>
+        {viewMode === 'ide' ? (
+          isDesktop ? <IDELayout /> : <DesktopRequired onSwitchToModern={() => setViewMode('modern')} />
+        ) : (
+          <ModernLayout />
+        )}
+      </Suspense>
 
       <button
         className="theme-toggle"
         onClick={toggleView}
-        title={!isDesktop && viewMode === 'modern' ? 'IDE View requires desktop screen' : ''}
+        title={!isDesktop && viewMode === 'modern' ? 'Click to learn about IDE View' : `Switch to ${viewMode === 'ide' ? 'Modern' : 'IDE'} View`}
         style={{
-          opacity: !isDesktop && viewMode === 'modern' ? 0.5 : 1,
-          cursor: !isDesktop && viewMode === 'modern' ? 'not-allowed' : 'pointer'
+          cursor: 'pointer'
         }}
       >
-        Switch to {viewMode === 'ide' ? 'Modern' : 'IDE'} View
+        {viewMode === 'ide' ? '🎨 Modern' : '💻 IDE'}
       </button>
     </div>
   );
