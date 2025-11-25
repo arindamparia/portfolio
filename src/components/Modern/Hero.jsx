@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
+import { personalInfo, socialLinks, assets } from '../../constants/personalInfo';
 
 const Hero = () => {
     return (
@@ -8,7 +9,7 @@ const Hero = () => {
             <div className="container">
                 <div className="hero-content">
                     <motion.img
-                        src="https://via.placeholder.com/400"
+                        src={assets.profileImage}
                         alt="Profile"
                         className="profile-image"
                         initial={{ opacity: 0, scale: 0.8 }}
@@ -21,18 +22,18 @@ const Hero = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
                     >
-                        <p className="greeting">Hello, I'm</p>
-                        <h1>Arindam</h1>
-                        <h2>Software Engineer</h2>
+                        <p className="greeting">{personalInfo.greeting}</p>
+                        <h1>{personalInfo.name.first}</h1>
+                        <h2>{personalInfo.title}</h2>
                         <div className="hero-buttons">
-                            <a href="/cv.pdf" className="btn" download>Download CV</a>
+                            <a href={assets.cvPath} className="btn" download>Download CV</a>
                             <a href="#contact" className="btn btn-secondary">Contact</a>
                         </div>
                         <div className="social-icons">
-                            <a href="https://www.linkedin.com/in/arindam-paria-557170191/" target="_blank" rel="noopener noreferrer">
+                            <a href={socialLinks.linkedin.url} target="_blank" rel="noopener noreferrer">
                                 <FaLinkedin />
                             </a>
-                            <a href="https://github.com/arindamparia" target="_blank" rel="noopener noreferrer">
+                            <a href={socialLinks.github.url} target="_blank" rel="noopener noreferrer">
                                 <FaGithub />
                             </a>
                         </div>

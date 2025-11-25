@@ -4,6 +4,7 @@ import { FaBriefcase, FaGraduationCap } from 'react-icons/fa';
 import { VscChevronDown } from 'react-icons/vsc';
 import { experienceData } from '../../data/experience';
 import { educationData } from '../../data/education';
+import { personalInfo, assets } from '../../constants/personalInfo';
 
 const About = () => {
     // Get the most recent experience
@@ -38,7 +39,7 @@ const About = () => {
                 </motion.h2>
                 <div className="about-content">
                     <motion.img
-                        src="https://via.placeholder.com/300x400"
+                        src={assets.aboutImage}
                         alt="About"
                         className="about-image"
                         initial={{ opacity: 0, x: -50 }}
@@ -70,9 +71,7 @@ const About = () => {
                             </div>
                         </div>
                         <p style={{ color: 'var(--text-secondary)', lineHeight: '1.8' }}>
-                            Passionate software engineer with expertise in building scalable applications and solving complex problems.
-                            Experienced in Java, Spring Boot, Salesforce Commerce Cloud, and Modern Web Technologies.
-                            Currently working at {recentExperience.company}, with a strong foundation in backend development,
+                            {personalInfo.about} Currently working at {recentExperience.company}, with a strong foundation in backend development,
                             microservices architecture, and enterprise solutions.
                         </p>
                     </motion.div>

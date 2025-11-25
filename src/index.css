@@ -819,6 +819,98 @@ body {
   color: var(--text-secondary);
 }
 
+/* Education Section - Grid Layout for Desktop */
+.theme-modern .education-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.theme-modern .education-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-medium);
+  border-radius: 2rem;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.theme-modern .education-card:hover {
+  border-color: var(--text-secondary);
+  transform: translateY(-5px);
+}
+
+.theme-modern .education-icon {
+  font-size: 3rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.theme-modern .education-year {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-light);
+}
+
+.theme-modern .education-degree {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.theme-modern .education-institution {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.theme-modern .education-details {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+/* Social Link Buttons */
+.theme-modern .social-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--bg-card);
+  border: 2px solid var(--border-medium);
+  border-radius: 2rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.theme-modern .social-link-button:hover {
+  border-color: var(--text-primary);
+  background: var(--bg-primary);
+  transform: translateY(-2px);
+}
+
+.theme-modern .social-link-button svg {
+  font-size: 1.3rem;
+}
+
 /* Toggle Button */
 .theme-toggle {
   position: fixed;
@@ -897,6 +989,10 @@ body {
     grid-template-columns: 1fr;
   }
 
+  .theme-modern .education-grid {
+    grid-template-columns: 1fr;
+  }
+
   .theme-modern .projects-grid {
     grid-template-columns: 1fr;
   }
@@ -920,6 +1016,10 @@ body {
 
 @media (min-width: 769px) and (max-width: 1024px) {
   .theme-modern .skills-container-modern {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .theme-modern .education-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 

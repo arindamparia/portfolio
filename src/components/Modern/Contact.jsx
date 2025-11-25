@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaEnvelope, FaLinkedin } from 'react-icons/fa';
+import { FaEnvelope, FaLinkedin, FaGithub } from 'react-icons/fa';
+import { SiLeetcode } from 'react-icons/si';
+import { personalInfo, socialLinks } from '../../constants/personalInfo';
 
 const Contact = () => {
     const [formData, setFormData] = useState({
@@ -55,40 +57,29 @@ const Contact = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                    <a href="mailto:arindamparia321@gmail.com" className="contact-link">
-                        <FaEnvelope /> arindamparia321@gmail.com
+                    <a href={`mailto:${personalInfo.email}`} className="contact-link">
+                        <FaEnvelope /> {personalInfo.email}
                     </a>
-                    <a href="https://www.linkedin.com/in/arindam-paria-557170191/" target="_blank" rel="noopener noreferrer" className="contact-link">
-                        <FaLinkedin /> LinkedIn
-                    </a>
-                </motion.div>
-                <motion.div
-                    style={{ marginTop: '1rem', color: 'var(--text-secondary)', textAlign: 'center' }}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.25 }}
-                >
-                    <a href="tel:+919064175719" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                        📱 +91 9064175719
+                    <a href={`tel:${personalInfo.phone}`} className="contact-link">
+                        📱 {personalInfo.phone}
                     </a>
                 </motion.div>
                 <motion.div
                     className="social-links"
-                    style={{ marginTop: '1rem', display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}
+                    style={{ marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.3 }}
                 >
-                    <a href="https://github.com/arindamparia" target="_blank" rel="noopener noreferrer" className="social-link">
-                        GitHub
+                    <a href={socialLinks.github.url} target="_blank" rel="noopener noreferrer" className="social-link-button">
+                        <FaGithub /> {socialLinks.github.label}
                     </a>
-                    <a href="https://www.linkedin.com/in/arindam-paria-557170191/" target="_blank" rel="noopener noreferrer" className="social-link">
-                        LinkedIn
+                    <a href={socialLinks.linkedin.url} target="_blank" rel="noopener noreferrer" className="social-link-button">
+                        <FaLinkedin /> {socialLinks.linkedin.label}
                     </a>
-                    <a href="https://leetcode.com/u/ARINDAM9064/" target="_blank" rel="noopener noreferrer" className="social-link">
-                        LeetCode
+                    <a href={socialLinks.leetcode.url} target="_blank" rel="noopener noreferrer" className="social-link-button">
+                        <SiLeetcode /> {socialLinks.leetcode.label}
                     </a>
                 </motion.div>
 
