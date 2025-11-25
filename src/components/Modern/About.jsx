@@ -16,10 +16,10 @@ const About = () => {
     const joiningDate = new Date('2023-11-27');
     const currentDate = new Date();
 
-    // Calculate total days and convert to years with decimal precision
+    // Calculate total days and convert to years
     const diffTime = currentDate - joiningDate;
     const diffDays = diffTime / (1000 * 60 * 60 * 24);
-    const yearsOfExperience = (diffDays / 365.25).toFixed(1); // .25 accounts for leap years
+    const yearsOfExperience = Math.floor(diffDays / 365.25); // .25 accounts for leap years
 
     return (
         <section id="about">
