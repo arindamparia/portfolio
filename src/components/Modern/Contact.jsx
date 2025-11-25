@@ -5,6 +5,7 @@ import { SiLeetcode } from 'react-icons/si';
 import { personalInfo, socialLinks } from '../../constants/personalInfo';
 import { vibrateLight, vibrateError, vibrateSuccess } from '../../utils/vibration';
 import { API_BASE_URL } from '../../utils/api';
+import { validateIndianPhoneNumber } from '../../utils/phoneValidation';
 import ToastContainer from './Toast';
 
 const Contact = () => {
@@ -101,12 +102,9 @@ const Contact = () => {
                 if (!value.trim()) {
                     return getRandomMessage('mobile');
                 }
-                const cleanNumber = value.replace(/[\s-]/g, '');
-                if (!/^\d{10}$/.test(cleanNumber)) {
-                    return "10 digits please! Not 9, not 11... exactly 10! 🔟";
-                }
-                if (!/^[6-9]\d{9}$/.test(cleanNumber)) {
-                    return getRandomMessage('mobileInvalid');
+                const validation = validateIndianPhoneNumber(value);
+                if (!validation.isValid) {
+                    return validation.error || getRandomMessage('mobileInvalid');
                 }
                 return '';
             case 'email':
