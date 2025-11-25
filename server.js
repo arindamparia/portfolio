@@ -53,9 +53,9 @@ app.post('/api/contact', async (req, res) => {
         const deviceType = uaResult.device.type || 'desktop';
 
         // Validate required fields
-        if (!firstName || !lastName || !email || !mobile || !message) {
+        if (!salutation || !firstName || !lastName || !email || !mobile || !message) {
             return res.status(400).json({
-                error: 'First name, last name, email, mobile, and message are required'
+                error: 'Salutation, first name, last name, email, mobile, and message are required'
             });
         }
 
