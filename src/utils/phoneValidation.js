@@ -1,3 +1,5 @@
+import { getRandomPhoneError } from '../constants/phoneErrorMessages.js';
+
 /**
  * Validates if a phone number is a valid Indian mobile number
  * @param {string} phoneNumber - The phone number to validate (without country code)
@@ -12,7 +14,7 @@ export const validateIndianPhoneNumber = (phoneNumber) => {
         return {
             isValid: false,
             formatted: null,
-            error: 'Phone number is required'
+            error: getRandomPhoneError('required')
         };
     }
 
@@ -21,7 +23,7 @@ export const validateIndianPhoneNumber = (phoneNumber) => {
         return {
             isValid: false,
             formatted: null,
-            error: 'Phone number should contain only digits'
+            error: getRandomPhoneError('invalidCharacters')
         };
     }
 
@@ -30,7 +32,7 @@ export const validateIndianPhoneNumber = (phoneNumber) => {
         return {
             isValid: false,
             formatted: null,
-            error: '10 digits please! Not 9, not 11... exactly 10! 🔟'
+            error: getRandomPhoneError('lengthError')
         };
     }
 
@@ -39,7 +41,7 @@ export const validateIndianPhoneNumber = (phoneNumber) => {
         return {
             isValid: false,
             formatted: null,
-            error: 'Indian mobile numbers start with 6, 7, 8, or 9 📱'
+            error: getRandomPhoneError('invalidPrefix')
         };
     }
 
