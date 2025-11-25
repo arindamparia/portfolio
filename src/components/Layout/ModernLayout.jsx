@@ -8,6 +8,7 @@ const Skills = lazy(() => import('../Modern/Skills'));
 const Projects = lazy(() => import('../Modern/Projects'));
 const Experience = lazy(() => import('../Modern/Experience'));
 const Education = lazy(() => import('../Modern/Education'));
+const Certifications = lazy(() => import('../Modern/Certifications'));
 const Contact = lazy(() => import('../Modern/Contact'));
 
 const ModernLayout = () => {
@@ -50,6 +51,7 @@ const ModernLayout = () => {
                         <a href="#skills" onClick={handleNavClick}>Skills</a>
                         <a href="#experience" onClick={handleNavClick}>Experience</a>
                         <a href="#education" onClick={handleNavClick}>Education</a>
+                        <a href="#certifications" onClick={handleNavClick}>Certifications</a>
                         <a href="#projects" onClick={handleNavClick}>Projects</a>
                         <a href="#contact" onClick={handleNavClick}>Contact</a>
                     </div>
@@ -66,6 +68,7 @@ const ModernLayout = () => {
                     <Skills />
                     <Experience />
                     <Education />
+                    <Certifications />
                     <Projects />
                     <Contact />
                 </Suspense>

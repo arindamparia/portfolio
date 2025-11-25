@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FaEnvelope, FaLinkedin, FaGithub } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaEnvelope, FaLinkedin, FaGithub, FaExclamationTriangle, FaCheckCircle, FaUser, FaPhone, FaBuilding, FaCommentDots } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
 import { personalInfo, socialLinks } from '../../constants/personalInfo';
 import { vibrateLight, vibrateError, vibrateSuccess } from '../../utils/vibration';
 import { API_BASE_URL } from '../../utils/api';
+import { validateIndianPhoneNumber } from '../../utils/phoneValidation';
+import { getRandomMessage, getRandomSuccess } from '../../constants/formErrorMessages';
+import ToastContainer from './Toast';
 
 const Contact = () => {
     const [formData, setFormData] = useState({
@@ -19,49 +22,48 @@ const Contact = () => {
 
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
+    const [focusedField, setFocusedField] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [toasts, setToasts] = useState([]);
 
     const validateField = (name, value) => {
         switch (name) {
             case 'firstName':
             case 'lastName':
+                const fieldName = name === 'firstName' ? 'firstName' : 'lastName';
                 if (!value.trim()) {
-                    return `${name === 'firstName' ? 'First' : 'Last'} name is required`;
+                    return getRandomMessage(fieldName, 'required');
                 }
                 if (value.trim().length < 3) {
-                    return `${name === 'firstName' ? 'First' : 'Last'} name must be at least 3 characters`;
+                    return getRandomMessage(fieldName, 'tooShort');
                 }
-                if (!/^[A-Za-z\s]+$/.test(value)) {
-                    return `${name === 'firstName' ? 'First' : 'Last'} name should only contain letters`;
+                if (!/^[A-Za-z]+$/.test(value)) {
+                    return getRandomMessage(fieldName, 'invalid');
                 }
                 return '';
             case 'mobile':
                 if (!value.trim()) {
-                    return 'Mobile number is required';
+                    return getRandomMessage('phone', 'required');
                 }
-                // Remove any spaces or hyphens for validation
-                const cleanNumber = value.replace(/[\s-]/g, '');
-                if (!/^\d{10}$/.test(cleanNumber)) {
-                    return 'Mobile number must be exactly 10 digits';
-                }
-                // Indian mobile numbers start with 6, 7, 8, or 9
-                if (!/^[6-9]\d{9}$/.test(cleanNumber)) {
-                    return 'Please enter a valid Indian mobile number';
+                const validation = validateIndianPhoneNumber(value);
+                if (!validation.isValid) {
+                    return validation.error;
                 }
                 return '';
             case 'email':
                 if (!value.trim()) {
-                    return 'Email is required';
+                    return getRandomMessage('email', 'required');
                 }
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                    return 'Please enter a valid email address';
+                    return getRandomMessage('email', 'invalid');
                 }
                 return '';
             case 'message':
                 if (!value.trim()) {
-                    return 'Message is required';
+                    return getRandomMessage('message', 'required');
                 }
                 if (value.trim().length < 10) {
-                    return 'Message must be at least 10 characters';
+                    return getRandomMessage('message', 'tooShort');
                 }
                 return '';
             default:
@@ -69,16 +71,39 @@ const Contact = () => {
         }
     };
 
+    const showToast = (message, type = 'success', duration = 5000) => {
+        const id = Date.now();
+        setToasts(prev => [...prev, { id, message, type, duration }]);
+    };
+
+    const removeToast = (id) => {
+        setToasts(prev => prev.filter(toast => toast.id !== id));
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        let processedValue = value;
+
+        // Apply field-specific character restrictions
+        if (name === 'firstName' || name === 'lastName') {
+            // Only allow a-z and A-Z in name fields
+            processedValue = value.replace(/[^a-zA-Z]/g, '');
+        } else if (name === 'mobile') {
+            // Only allow digits in mobile field
+            processedValue = value.replace(/[^0-9]/g, '');
+        } else if (name !== 'company' && name !== 'message') {
+            // Prevent spaces in all other fields except company and message
+            processedValue = value.replace(/\s/g, '');
+        }
+
         setFormData({
             ...formData,
-            [name]: value
+            [name]: processedValue
         });
 
-        // Validate on change if field has been touched
         if (touched[name]) {
-            const error = validateField(name, value);
+            const error = validateField(name, processedValue);
             setErrors({
                 ...errors,
                 [name]: error
@@ -92,12 +117,17 @@ const Contact = () => {
             ...touched,
             [name]: true
         });
+        setFocusedField('');
 
         const error = validateField(name, value);
         setErrors({
             ...errors,
             [name]: error
         });
+    };
+
+    const handleFocus = (name) => {
+        setFocusedField(name);
     };
 
     const handleSubmit = async (e) => {
@@ -112,7 +142,6 @@ const Contact = () => {
             }
         });
 
-        // Mark all required fields as touched
         setTouched({
             firstName: true,
             lastName: true,
@@ -124,10 +153,12 @@ const Contact = () => {
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             vibrateError();
+            showToast(getRandomMessage('form', 'submitError'), 'error');
             return;
         }
 
-        // Form is valid - Collect device and user metadata
+        setIsSubmitting(true);
+
         const deviceInfo = {
             userAgent: navigator.userAgent,
             language: navigator.language,
@@ -136,7 +167,6 @@ const Contact = () => {
             referrer: document.referrer || 'direct'
         };
 
-        // Submit to API with user metadata
         try {
             const response = await fetch(`${API_BASE_URL}/api/contact`, {
                 method: 'POST',
@@ -159,8 +189,7 @@ const Contact = () => {
 
             if (response.ok) {
                 vibrateSuccess();
-                alert('Thank you! Your information has been saved successfully.');
-                // Reset form
+                showToast(getRandomMessage('form', 'submitSuccess'), 'success', 6000);
                 setFormData({
                     salutation: '',
                     firstName: '',
@@ -174,17 +203,43 @@ const Contact = () => {
                 setErrors({});
             } else {
                 vibrateError();
-                alert(`Error: ${data.error || 'Failed to submit form'}`);
+                showToast(`Uh oh! ${data.error || 'Something went wrong. Even I make mistakes sometimes! 😅'}`, 'error');
             }
         } catch (error) {
             vibrateError();
             console.error('Error submitting form:', error);
-            alert('Network error. Please make sure the server is running and try again.');
+            showToast(getRandomMessage('form', 'networkError'), 'error', 7000);
+        } finally {
+            setIsSubmitting(false);
         }
+    };
+
+    const getCharacterCount = () => {
+        const count = formData.message.length;
+        const min = 10;
+        const max = 1000;
+
+        if (count === 0) return { text: "Start typing your epic message! ✍️", color: '#888' };
+        if (count < min) return { text: `${min - count} more characters needed. You're almost there! 💪`, color: '#f5576c' };
+        if (count >= max) return { text: `Whoa! Maximum reached. Keep it concise! 🎯`, color: '#f5576c' };
+        return { text: `${count} characters. Looking good! 👍`, color: '#667eea' };
+    };
+
+    const characterInfo = getCharacterCount();
+
+    const inputIcons = {
+        firstName: <FaUser />,
+        lastName: <FaUser />,
+        email: <FaEnvelope />,
+        mobile: <FaPhone />,
+        company: <FaBuilding />,
+        message: <FaCommentDots />
     };
 
     return (
         <section id="contact" style={{ paddingBottom: '4rem' }}>
+            <ToastContainer toasts={toasts} removeToast={removeToast} />
+
             <div className="container">
                 <motion.p
                     className="section-subtitle"
@@ -241,6 +296,7 @@ const Contact = () => {
                 <motion.form
                     className="contact-form"
                     onSubmit={handleSubmit}
+                    noValidate
                     style={{ marginTop: '3rem' }}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -255,6 +311,12 @@ const Contact = () => {
                                 name="salutation"
                                 value={formData.salutation}
                                 onChange={handleChange}
+                                style={{
+                                    borderColor: focusedField === 'salutation' ? 'var(--accent-primary)' : undefined,
+                                    transition: 'all 0.3s ease'
+                                }}
+                                onFocus={() => handleFocus('salutation')}
+                                onBlur={() => setFocusedField('')}
                             >
                                 <option value="">--None--</option>
                                 <option value="Mr">Mr</option>
@@ -263,102 +325,339 @@ const Contact = () => {
                             </select>
                         </div>
                         <div className="form-group">
-                            <label htmlFor="firstName">First Name *</label>
-                            <input
+                            <label htmlFor="firstName">
+                                {inputIcons.firstName} First Name *
+                            </label>
+                            <motion.input
                                 type="text"
                                 id="firstName"
                                 name="firstName"
                                 value={formData.firstName}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
+                                onFocus={() => handleFocus('firstName')}
                                 className={errors.firstName && touched.firstName ? 'error' : ''}
+                                style={{
+                                    borderColor:
+                                        errors.firstName && touched.firstName ? '#f5576c' :
+                                        !errors.firstName && touched.firstName && formData.firstName ? '#4ade80' :
+                                        focusedField === 'firstName' ? 'var(--accent-primary)' : undefined,
+                                    transition: 'all 0.3s ease'
+                                }}
+                                animate={{
+                                    x: errors.firstName && touched.firstName ? [0, -10, 10, -10, 10, 0] : 0
+                                }}
+                                transition={{ duration: 0.4 }}
                             />
-                            {errors.firstName && touched.firstName && (
-                                <span className="error-message">{errors.firstName}</span>
+                            <AnimatePresence>
+                                {errors.firstName && touched.firstName && (
+                                    <motion.span
+                                        className="error-message"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                    >
+                                        <FaExclamationTriangle /> {errors.firstName}
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
+                            {!errors.firstName && touched.firstName && formData.firstName && (
+                                <motion.span
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
+                                >
+                                    <FaCheckCircle /> {getRandomSuccess('firstName')}
+                                </motion.span>
                             )}
                         </div>
                     </div>
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="lastName">Last Name *</label>
-                            <input
+                            <label htmlFor="lastName">
+                                {inputIcons.lastName} Last Name *
+                            </label>
+                            <motion.input
                                 type="text"
                                 id="lastName"
                                 name="lastName"
                                 value={formData.lastName}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
+                                onFocus={() => handleFocus('lastName')}
                                 className={errors.lastName && touched.lastName ? 'error' : ''}
+                                style={{
+                                    borderColor:
+                                        errors.lastName && touched.lastName ? '#f5576c' :
+                                        !errors.lastName && touched.lastName && formData.lastName ? '#4ade80' :
+                                        focusedField === 'lastName' ? 'var(--accent-primary)' : undefined,
+                                    transition: 'all 0.3s ease'
+                                }}
+                                animate={{
+                                    x: errors.lastName && touched.lastName ? [0, -10, 10, -10, 10, 0] : 0
+                                }}
+                                transition={{ duration: 0.4 }}
                             />
-                            {errors.lastName && touched.lastName && (
-                                <span className="error-message">{errors.lastName}</span>
+                            <AnimatePresence>
+                                {errors.lastName && touched.lastName && (
+                                    <motion.span
+                                        className="error-message"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                    >
+                                        <FaExclamationTriangle /> {errors.lastName}
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
+                            {!errors.lastName && touched.lastName && formData.lastName && (
+                                <motion.span
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
+                                >
+                                    <FaCheckCircle /> {getRandomSuccess('lastName')}
+                                </motion.span>
                             )}
                         </div>
                         <div className="form-group">
-                            <label htmlFor="email">Email *</label>
-                            <input
+                            <label htmlFor="email">
+                                {inputIcons.email} Email *
+                            </label>
+                            <motion.input
                                 type="email"
                                 id="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
+                                onFocus={() => handleFocus('email')}
                                 className={errors.email && touched.email ? 'error' : ''}
+                                style={{
+                                    borderColor:
+                                        errors.email && touched.email ? '#f5576c' :
+                                        !errors.email && touched.email && formData.email ? '#4ade80' :
+                                        focusedField === 'email' ? 'var(--accent-primary)' : undefined,
+                                    transition: 'all 0.3s ease'
+                                }}
+                                animate={{
+                                    x: errors.email && touched.email ? [0, -10, 10, -10, 10, 0] : 0
+                                }}
+                                transition={{ duration: 0.4 }}
                             />
-                            {errors.email && touched.email && (
-                                <span className="error-message">{errors.email}</span>
+                            <AnimatePresence>
+                                {errors.email && touched.email && (
+                                    <motion.span
+                                        className="error-message"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                    >
+                                        <FaExclamationTriangle /> {errors.email}
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
+                            {!errors.email && touched.email && formData.email && (
+                                <motion.span
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
+                                >
+                                    <FaCheckCircle /> {getRandomSuccess('email')}
+                                </motion.span>
                             )}
                         </div>
                     </div>
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="company">Company</label>
+                            <label htmlFor="company">
+                                {inputIcons.company} Company
+                            </label>
                             <input
                                 type="text"
                                 id="company"
                                 name="company"
                                 value={formData.company}
                                 onChange={handleChange}
+                                onFocus={() => handleFocus('company')}
+                                onBlur={() => setFocusedField('')}
+                                style={{
+                                    borderColor: focusedField === 'company' ? 'var(--accent-primary)' : undefined,
+                                    transition: 'all 0.3s ease'
+                                }}
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="mobile">Mobile *</label>
-                            <input
-                                type="tel"
-                                id="mobile"
-                                name="mobile"
-                                value={formData.mobile}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                className={errors.mobile && touched.mobile ? 'error' : ''}
-                                placeholder="10-digit Indian mobile number"
-                            />
-                            {errors.mobile && touched.mobile && (
-                                <span className="error-message">{errors.mobile}</span>
+                            <label htmlFor="mobile">
+                                {inputIcons.mobile} Mobile * (Indian numbers only)
+                            </label>
+                            <div style={{ position: 'relative' }}>
+                                <span style={{
+                                    position: 'absolute',
+                                    left: '1rem',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    color: '#888',
+                                    fontSize: '1rem',
+                                    fontWeight: '500',
+                                    pointerEvents: 'none',
+                                    zIndex: 1
+                                }}>
+                                    +91
+                                </span>
+                                <motion.input
+                                    type="tel"
+                                    id="mobile"
+                                    name="mobile"
+                                    value={formData.mobile}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    onFocus={() => handleFocus('mobile')}
+                                    className={errors.mobile && touched.mobile ? 'error' : ''}
+                                    placeholder="10-digit mobile number"
+                                    maxLength={10}
+                                    style={{
+                                        paddingLeft: '3.5rem',
+                                        borderColor:
+                                            errors.mobile && touched.mobile ? '#f5576c' :
+                                            !errors.mobile && touched.mobile && formData.mobile ? '#4ade80' :
+                                            focusedField === 'mobile' ? 'var(--accent-primary)' : undefined,
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                    animate={{
+                                        x: errors.mobile && touched.mobile ? [0, -10, 10, -10, 10, 0] : 0
+                                    }}
+                                    transition={{ duration: 0.4 }}
+                                />
+                            </div>
+                            <AnimatePresence>
+                                {errors.mobile && touched.mobile && (
+                                    <motion.span
+                                        className="error-message"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                    >
+                                        <FaExclamationTriangle /> {errors.mobile}
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
+                            {!errors.mobile && touched.mobile && formData.mobile && (
+                                <motion.span
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
+                                >
+                                    <FaCheckCircle /> {getRandomSuccess('phone')}
+                                </motion.span>
                             )}
                         </div>
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="message">Message *</label>
-                        <textarea
+                        <label htmlFor="message">
+                            {inputIcons.message} Message *
+                        </label>
+                        <motion.textarea
                             id="message"
                             name="message"
                             value={formData.message}
                             onChange={handleChange}
                             onBlur={handleBlur}
+                            onFocus={() => handleFocus('message')}
                             className={errors.message && touched.message ? 'error' : ''}
                             placeholder="Tell me about your project, timeline, or how I can help."
+                            maxLength={1000}
+                            style={{
+                                borderColor:
+                                    errors.message && touched.message ? '#f5576c' :
+                                    !errors.message && touched.message && formData.message ? '#4ade80' :
+                                    focusedField === 'message' ? 'var(--accent-primary)' : undefined,
+                                transition: 'all 0.3s ease'
+                            }}
+                            animate={{
+                                x: errors.message && touched.message ? [0, -10, 10, -10, 10, 0] : 0
+                            }}
+                            transition={{ duration: 0.4 }}
                         />
-                        {errors.message && touched.message && (
-                            <span className="error-message">{errors.message}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
+                            <AnimatePresence>
+                                {errors.message && touched.message && (
+                                    <motion.span
+                                        className="error-message"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                    >
+                                        <FaExclamationTriangle /> {errors.message}
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
+                            <motion.span
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                style={{
+                                    fontSize: '0.85rem',
+                                    color: characterInfo.color,
+                                    marginLeft: 'auto',
+                                    fontWeight: '500'
+                                }}
+                            >
+                                {characterInfo.text}
+                            </motion.span>
+                        </div>
+                        {!errors.message && touched.message && formData.message && formData.message.length >= 10 && (
+                            <motion.span
+                                initial={{ opacity: 0, scale: 0 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
+                            >
+                                <FaCheckCircle /> {getRandomSuccess('message')}
+                            </motion.span>
                         )}
                     </div>
 
                     <div className="form-submit">
-                        <button type="submit" className="btn">Send Message</button>
+                        <motion.button
+                            type="submit"
+                            className="btn"
+                            disabled={isSubmitting}
+                            whileHover={{ scale: isSubmitting ? 1 : 1.05 }}
+                            whileTap={{ scale: isSubmitting ? 1 : 0.95 }}
+                            style={{
+                                position: 'relative',
+                                overflow: 'hidden',
+                                opacity: isSubmitting ? 0.7 : 1,
+                                cursor: isSubmitting ? 'not-allowed' : 'pointer'
+                            }}
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <motion.span
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                                        style={{ display: 'inline-block', marginRight: '0.5rem' }}
+                                    >
+                                        ⏳
+                                    </motion.span>
+                                    Sending...
+                                </>
+                            ) : (
+                                'Send Message'
+                            )}
+                        </motion.button>
                     </div>
                 </motion.form>
             </div>
