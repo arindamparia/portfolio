@@ -1,5 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import DesktopRequired from './components/Shared/DesktopRequired';
+import InteractiveCursor from './components/Shared/InteractiveCursor';
 
 // Lazy load layouts for better initial load performance
 const IDELayout = lazy(() => import('./components/Layout/IDELayout'));
@@ -52,6 +53,9 @@ function App() {
           <ModernLayout />
         )}
       </Suspense>
+
+      {/* Interactive Custom Cursor */}
+      <InteractiveCursor />
 
       <button
         className="theme-toggle"
