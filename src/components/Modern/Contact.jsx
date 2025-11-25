@@ -178,7 +178,7 @@ const Contact = () => {
                     firstName: formData.firstName,
                     lastName: formData.lastName,
                     email: formData.email,
-                    mobile: `+91${formData.mobile}`,
+                    mobile: formData.mobile,
                     company: formData.company,
                     message: formData.message,
                     ...deviceInfo
