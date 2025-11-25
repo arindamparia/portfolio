@@ -1,6 +1,6 @@
 import React from 'react';
 import { VscClose } from 'react-icons/vsc';
-import { ideFiles } from '../../constants/ideFiles.js';
+import { ideFiles } from '../../constants/ideFiles.jsx';
 
 const Tabs = ({ activeTab, setActiveTab }) => {
     return (

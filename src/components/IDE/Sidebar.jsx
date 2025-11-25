@@ -2,7 +2,7 @@ import React from 'react';
 import { VscFiles, VscSearch, VscSourceControl, VscDebugAlt, VscExtensions, VscAccount, VscSettingsGear, VscChevronRight, VscChevronDown } from 'react-icons/vsc';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
-import { ideFiles } from '../../constants/ideFiles.js';
+import { ideFiles } from '../../constants/ideFiles.jsx';
 import { socialLinks } from '../../constants/personalInfo.js';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
