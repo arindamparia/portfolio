@@ -1,5 +1,3 @@
-import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
-
 /**
  * Validates if a phone number is a valid Indian mobile number
  * @param {string} phoneNumber - The phone number to validate (without country code)
@@ -45,50 +43,15 @@ export const validateIndianPhoneNumber = (phoneNumber) => {
         };
     }
 
-    try {
-        // Add +91 country code for Indian numbers
-        const phoneWithCountryCode = `+91${cleanNumber}`;
+    // Format the number as: XXXXX XXXXX
+    const formatted = cleanNumber.replace(/(\d{5})(\d{5})/, '$1 $2');
 
-        // Check if the number is valid for India (IN)
-        const isValid = isValidPhoneNumber(phoneWithCountryCode, 'IN');
-
-        if (!isValid) {
-            return {
-                isValid: false,
-                formatted: null,
-                error: 'That doesn\'t look like a valid Indian number 🇮🇳'
-            };
-        }
-
-        // Parse the phone number to get more details
-        const phoneNumberObj = parsePhoneNumber(phoneWithCountryCode, 'IN');
-
-        // Check if it's a mobile number (not landline)
-        // Note: getType() may return 'MOBILE', 'FIXED_LINE_OR_MOBILE', or undefined for Indian numbers
-        // We accept MOBILE and FIXED_LINE_OR_MOBILE, but reject FIXED_LINE
-        const phoneType = phoneNumberObj.getType();
-        if (phoneType === 'FIXED_LINE') {
-            return {
-                isValid: false,
-                formatted: null,
-                error: 'Please enter a mobile number, not a landline 📱'
-            };
-        }
-
-        // Return success with formatted number
-        return {
-            isValid: true,
-            formatted: phoneNumberObj.formatNational(),
-            error: null
-        };
-    } catch (error) {
-        // If parsing fails, return error
-        return {
-            isValid: false,
-            formatted: null,
-            error: 'Invalid phone number format'
-        };
-    }
+    // Return success with formatted number
+    return {
+        isValid: true,
+        formatted: formatted,
+        error: null
+    };
 };
 
 /**
