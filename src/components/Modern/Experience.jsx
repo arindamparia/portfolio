@@ -1,17 +1,27 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { VscChevronDown } from 'react-icons/vsc';
 import { experienceData } from '../../data/experience';
 
 const Experience = () => {
     return (
         <section id="experience">
             <div className="container">
+                <motion.p
+                    className="section-subtitle"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                >
+                    Explore My
+                </motion.p>
                 <motion.h2
                     className="section-title"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
                 >
                     Experience
                 </motion.h2>
@@ -41,6 +51,17 @@ const Experience = () => {
                             ))}
                         </div>
                     ))}
+                </motion.div>
+                <motion.div
+                    className="section-arrow"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                    <a href="#projects">
+                        <VscChevronDown />
+                    </a>
                 </motion.div>
             </div>
         </section>

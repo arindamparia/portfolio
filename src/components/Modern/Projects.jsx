@@ -1,43 +1,64 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { VscChevronDown } from 'react-icons/vsc';
 import { projectsData } from '../../data/projects';
 
 const Projects = () => {
     return (
         <section id="projects">
             <div className="container">
-                <motion.h2
-                    className="section-title"
+                <motion.p
+                    className="section-subtitle"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
                 >
+                    Browse My Recent
+                </motion.p>
+                <motion.h2
+                    className="section-title"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                >
                     Projects
                 </motion.h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                <div className="projects-grid">
                     {projectsData.map((project, index) => (
                         <motion.div
                             key={index}
-                            className="card"
+                            className="project-card"
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
                         >
-                            <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>{project.name}</h3>
-                            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>{project.description}</p>
-                            <div style={{ marginTop: 'auto' }}>
-                                <h4 style={{ fontSize: '0.9rem', color: 'var(--accent-primary)', marginBottom: '0.5rem' }}>Technologies:</h4>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                            <img src="https://via.placeholder.com/350x250" alt={project.name} className="project-image" />
+                            <div className="project-info">
+                                <h3>{project.name}</h3>
+                                <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>{project.description}</p>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
                                     {project.tech.map((t, i) => (
-                                        <span key={i} style={{ fontSize: '0.8rem', background: 'rgba(56, 189, 248, 0.1)', padding: '0.2rem 0.5rem', borderRadius: '4px', color: 'var(--accent-primary)' }}>{t}</span>
+                                        <span key={i} style={{ fontSize: '0.8rem', background: 'rgba(0, 0, 0, 0.05)', padding: '0.2rem 0.5rem', borderRadius: '4px', color: 'var(--text-secondary)' }}>{t}</span>
                                     ))}
                                 </div>
                             </div>
                         </motion.div>
                     ))}
                 </div>
+                <motion.div
+                    className="section-arrow"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                    <a href="#contact">
+                        <VscChevronDown />
+                    </a>
+                </motion.div>
             </div>
         </section>
     );

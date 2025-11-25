@@ -1,40 +1,67 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { VscCode } from 'react-icons/vsc';
 import { skillsData } from '../../data/skills';
 
 const Skills = () => {
-    // Flatten skills for grid display
-    const flatSkills = [];
-    Object.entries(skillsData).forEach(([category, skills]) => {
-        skills.forEach(skill => {
-            flatSkills.push({ name: skill, category: category.charAt(0).toUpperCase() + category.slice(1) });
-        });
-    });
+    const categoryNames = {
+        languages: 'Languages',
+        frontend: 'Frontend',
+        backend: 'Backend',
+        database: 'Database',
+        enterprise: 'Enterprise',
+        cloud_devops: 'Cloud & DevOps',
+        fundamentals: 'Fundamentals',
+        tools: 'Tools'
+    };
 
     return (
-        <section id="skills" style={{ background: 'var(--bg-secondary)' }}>
+        <section id="skills" style={{ background: 'var(--bg-secondary)', padding: '4rem 0' }}>
             <div className="container">
-                <motion.h2
-                    className="section-title"
+                <motion.p
+                    className="section-subtitle"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
                 >
+                    Explore My
+                </motion.p>
+                <motion.h2
+                    className="section-title"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                >
                     Technical Skills
                 </motion.h2>
-                <div className="skills-grid">
-                    {flatSkills.map((skill, index) => (
+                <div className="skills-container-modern">
+                    {Object.entries(skillsData).map(([category, skills], categoryIndex) => (
                         <motion.div
-                            key={index}
-                            className="skill-card"
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
+                            key={category}
+                            className="skills-category-card"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.3, delay: index * 0.05 }}
+                            transition={{ duration: 0.5, delay: categoryIndex * 0.1 }}
                         >
-                            <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>{skill.name}</h3>
-                            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{skill.category}</span>
+                            <h3 className="skills-category-title">{categoryNames[category]}</h3>
+                            <div className="skills-list">
+                                {skills.map((skill, skillIndex) => (
+                                    <motion.div
+                                        key={skillIndex}
+                                        className="skill-tag"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        whileInView={{ opacity: 1, scale: 1 }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 0.3, delay: categoryIndex * 0.1 + skillIndex * 0.05 }}
+                                    >
+                                        <VscCode className="skill-tag-icon" />
+                                        <span>{skill}</span>
+                                    </motion.div>
+                                ))}
+                            </div>
                         </motion.div>
                     ))}
                 </div>
