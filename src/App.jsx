@@ -41,13 +41,13 @@ function App() {
       <button
         className="theme-toggle"
         onClick={toggleView}
-        title={!isDesktop && viewMode === 'modern' ? 'IDE View requires desktop screen' : ''}
+        title={!isDesktop && viewMode === 'modern' ? 'IDE View requires desktop (1024px+)' : `Switch to ${viewMode === 'ide' ? 'Modern' : 'IDE'} View`}
+        disabled={!isDesktop && viewMode === 'modern'}
         style={{
-          opacity: !isDesktop && viewMode === 'modern' ? 0.5 : 1,
           cursor: !isDesktop && viewMode === 'modern' ? 'not-allowed' : 'pointer'
         }}
       >
-        Switch to {viewMode === 'ide' ? 'Modern' : 'IDE'} View
+        {viewMode === 'ide' ? '🎨 Modern' : '💻 IDE'}
       </button>
     </div>
   );
