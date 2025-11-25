@@ -25,9 +25,20 @@ const Contact = () => {
     const [focusedField, setFocusedField] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [toasts, setToasts] = useState([]);
+    const [displayedMessages, setDisplayedMessages] = useState({});
+
+    // Helper to get the correct message field name
+    const getMessageFieldName = (fieldName) => {
+        return fieldName === 'mobile' ? 'phone' : fieldName;
+    };
 
     const validateField = (name, value) => {
         switch (name) {
+            case 'salutation':
+                if (!value || value.trim() === '') {
+                    return getRandomMessage('salutation', 'required');
+                }
+                return '';
             case 'firstName':
             case 'lastName':
                 const fieldName = name === 'firstName' ? 'firstName' : 'lastName';
@@ -104,6 +115,17 @@ const Contact = () => {
 
         if (touched[name]) {
             const error = validateField(name, processedValue);
+            const prevError = errors[name];
+
+            // Only update message if validation state changed
+            if ((prevError && !error) || (!prevError && error)) {
+                const messageFieldName = getMessageFieldName(name);
+                setDisplayedMessages(prev => ({
+                    ...prev,
+                    [name]: error || getRandomSuccess(messageFieldName)
+                }));
+            }
+
             setErrors({
                 ...errors,
                 [name]: error
@@ -120,6 +142,14 @@ const Contact = () => {
         setFocusedField('');
 
         const error = validateField(name, value);
+        const messageFieldName = getMessageFieldName(name);
+
+        // Set the message on blur (first time field is touched)
+        setDisplayedMessages(prev => ({
+            ...prev,
+            [name]: error || getRandomSuccess(messageFieldName)
+        }));
+
         setErrors({
             ...errors,
             [name]: error
@@ -135,7 +165,7 @@ const Contact = () => {
 
         // Validate all fields
         const newErrors = {};
-        ['firstName', 'lastName', 'email', 'mobile', 'message'].forEach(field => {
+        ['salutation', 'firstName', 'lastName', 'email', 'mobile', 'message'].forEach(field => {
             const error = validateField(field, formData[field]);
             if (error) {
                 newErrors[field] = error;
@@ -143,6 +173,7 @@ const Contact = () => {
         });
 
         setTouched({
+            salutation: true,
             firstName: true,
             lastName: true,
             email: true,
@@ -152,6 +183,14 @@ const Contact = () => {
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
+
+            // Generate displayed messages for all fields with errors
+            const newDisplayedMessages = {};
+            Object.keys(newErrors).forEach(field => {
+                newDisplayedMessages[field] = newErrors[field];
+            });
+            setDisplayedMessages(newDisplayedMessages);
+
             vibrateError();
             showToast(getRandomMessage('form', 'submitError'), 'error');
             return;
@@ -201,6 +240,7 @@ const Contact = () => {
                 });
                 setTouched({});
                 setErrors({});
+                setDisplayedMessages({});
             } else {
                 vibrateError();
                 showToast(`Uh oh! ${data.error || 'Something went wrong. Even I make mistakes sometimes! 😅'}`, 'error');
@@ -305,24 +345,55 @@ const Contact = () => {
                 >
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="salutation">Salutation</label>
-                            <select
+                            <label htmlFor="salutation">Salutation *</label>
+                            <motion.select
                                 id="salutation"
                                 name="salutation"
                                 value={formData.salutation}
                                 onChange={handleChange}
+                                onBlur={handleBlur}
+                                onFocus={() => handleFocus('salutation')}
+                                className={errors.salutation && touched.salutation ? 'error' : ''}
                                 style={{
-                                    borderColor: focusedField === 'salutation' ? 'var(--accent-primary)' : undefined,
+                                    borderColor:
+                                        errors.salutation && touched.salutation ? '#f5576c' :
+                                        !errors.salutation && touched.salutation && formData.salutation ? '#4ade80' :
+                                        focusedField === 'salutation' ? 'var(--accent-primary)' : undefined,
                                     transition: 'all 0.3s ease'
                                 }}
-                                onFocus={() => handleFocus('salutation')}
-                                onBlur={() => setFocusedField('')}
+                                animate={{
+                                    x: errors.salutation && touched.salutation ? [0, -10, 10, -10, 10, 0] : 0
+                                }}
+                                transition={{ duration: 0.4 }}
                             >
                                 <option value="">--None--</option>
                                 <option value="Mr">Mr</option>
                                 <option value="Ms">Ms</option>
                                 <option value="Mrs">Mrs</option>
-                            </select>
+                            </motion.select>
+                            <AnimatePresence>
+                                {errors.salutation && touched.salutation && (
+                                    <motion.span
+                                        className="error-message"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                    >
+                                        <FaExclamationTriangle /> {displayedMessages.salutation || errors.salutation}
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
+                            {!errors.salutation && touched.salutation && formData.salutation && (
+                                <motion.span
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
+                                >
+                                    <FaCheckCircle /> {displayedMessages.salutation || getRandomSuccess('salutation')}
+                                </motion.span>
+                            )}
                         </div>
                         <div className="form-group">
                             <label htmlFor="firstName">
@@ -359,7 +430,7 @@ const Contact = () => {
                                         transition={{ duration: 0.2 }}
                                         style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                                     >
-                                        <FaExclamationTriangle /> {errors.firstName}
+                                        <FaExclamationTriangle /> {displayedMessages.firstName || errors.firstName}
                                     </motion.span>
                                 )}
                             </AnimatePresence>
@@ -369,7 +440,7 @@ const Contact = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                                 >
-                                    <FaCheckCircle /> {getRandomSuccess('firstName')}
+                                    <FaCheckCircle /> {displayedMessages.firstName || getRandomSuccess('firstName')}
                                 </motion.span>
                             )}
                         </div>
@@ -411,7 +482,7 @@ const Contact = () => {
                                         transition={{ duration: 0.2 }}
                                         style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                                     >
-                                        <FaExclamationTriangle /> {errors.lastName}
+                                        <FaExclamationTriangle /> {displayedMessages.lastName || errors.lastName}
                                     </motion.span>
                                 )}
                             </AnimatePresence>
@@ -421,7 +492,7 @@ const Contact = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                                 >
-                                    <FaCheckCircle /> {getRandomSuccess('lastName')}
+                                    <FaCheckCircle /> {displayedMessages.lastName || getRandomSuccess('lastName')}
                                 </motion.span>
                             )}
                         </div>
@@ -460,7 +531,7 @@ const Contact = () => {
                                         transition={{ duration: 0.2 }}
                                         style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                                     >
-                                        <FaExclamationTriangle /> {errors.email}
+                                        <FaExclamationTriangle /> {displayedMessages.email || errors.email}
                                     </motion.span>
                                 )}
                             </AnimatePresence>
@@ -470,7 +541,7 @@ const Contact = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                                 >
-                                    <FaCheckCircle /> {getRandomSuccess('email')}
+                                    <FaCheckCircle /> {displayedMessages.email || getRandomSuccess('email')}
                                 </motion.span>
                             )}
                         </div>
@@ -548,7 +619,7 @@ const Contact = () => {
                                         transition={{ duration: 0.2 }}
                                         style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                                     >
-                                        <FaExclamationTriangle /> {errors.mobile}
+                                        <FaExclamationTriangle /> {displayedMessages.mobile || errors.mobile}
                                     </motion.span>
                                 )}
                             </AnimatePresence>
@@ -558,7 +629,7 @@ const Contact = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                                 >
-                                    <FaCheckCircle /> {getRandomSuccess('phone')}
+                                    <FaCheckCircle /> {displayedMessages.mobile || getRandomSuccess('phone')}
                                 </motion.span>
                             )}
                         </div>
@@ -601,7 +672,7 @@ const Contact = () => {
                                         transition={{ duration: 0.2 }}
                                         style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                                     >
-                                        <FaExclamationTriangle /> {errors.message}
+                                        <FaExclamationTriangle /> {displayedMessages.message || errors.message}
                                     </motion.span>
                                 )}
                             </AnimatePresence>
@@ -624,7 +695,7 @@ const Contact = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                             >
-                                <FaCheckCircle /> {getRandomSuccess('message')}
+                                <FaCheckCircle /> {displayedMessages.message || getRandomSuccess('message')}
                             </motion.span>
                         )}
                     </div>
