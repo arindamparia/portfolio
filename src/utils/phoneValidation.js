@@ -1,4 +1,4 @@
-import { getRandomPhoneError } from '../constants/phoneErrorMessages.js';
+import { getRandomPhoneError } from '../constants/formErrorMessages.js';
 
 /**
  * Validates if a phone number is a valid Indian mobile number

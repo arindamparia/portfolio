@@ -6,6 +6,7 @@ import { personalInfo, socialLinks } from '../../constants/personalInfo';
 import { vibrateLight, vibrateError, vibrateSuccess } from '../../utils/vibration';
 import { API_BASE_URL } from '../../utils/api';
 import { validateIndianPhoneNumber } from '../../utils/phoneValidation';
+import { getRandomMessage, getRandomSuccess } from '../../constants/formErrorMessages';
 import ToastContainer from './Toast';
 
 const Contact = () => {
@@ -25,102 +26,44 @@ const Contact = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [toasts, setToasts] = useState([]);
 
-    // Sarcastic error messages
-    const sarcasticMessages = {
-        firstName: [
-            "Your name is required, unless you're a secret agent 🕵️",
-            "Come on, even anonymous users have names!",
-            "First name? Or should I call you 'User123'?",
-            "I promise I won't sell your name... probably 😏"
-        ],
-        lastName: [
-            "Last name too! Don't be shy 😊",
-            "One name isn't enough, you're not Madonna!",
-            "Surname please? Or are you royalty? 👑",
-            "Your last name won't bite, I promise!"
-        ],
-        email: [
-            "Email please! Carrier pigeons are so last century 🐦",
-            "How else will I spam... I mean, contact you? 📧",
-            "No email = no reply. Simple math! 🤷",
-            "Your email address, please? I left my crystal ball at home 🔮"
-        ],
-        mobile: [
-            "Phone number? Don't worry, I won't call at 3 AM... maybe 😈",
-            "10 digits please! Your cat's paws won't work here 🐱",
-            "A valid number would be nice, unlike my life choices 📱",
-            "Mobile number required! Smoke signals don't count 💨"
-        ],
-        message: [
-            "Message field is emptier than my fridge! 🍕",
-            "Say something! Anything! Even 'Hi' works! 👋",
-            "10 characters minimum. You can do better than 'ok' 💪",
-            "Don't leave me hanging! Type something interesting 🎭"
-        ],
-        nameTooShort: [
-            "That's a bit short, isn't it? Are you a spy? 🕶️",
-            "3 characters minimum! This isn't Twitter 🐦",
-            "Your name is longer than that... right? 🤔"
-        ],
-        nameInvalid: [
-            "Letters only please! Numbers belong in passwords 🔢",
-            "Is that really your name? Seems kinda... digital 🤖",
-            "Nice try, but emojis aren't names... yet 😅"
-        ],
-        mobileInvalid: [
-            "That doesn't look like a valid Indian number 🇮🇳",
-            "10 digits starting with 6, 7, 8, or 9. It's not rocket science! 🚀",
-            "Are you sure that's your number? Seems suspicious 🤨"
-        ],
-        emailInvalid: [
-            "That email looks faker than my enthusiasm on Monday mornings ☕",
-            "Please enter a REAL email address. I'm begging you 🙏",
-            "Email format: something@somewhere.com. You got this! 💡"
-        ]
-    };
-
-    const getRandomMessage = (type) => {
-        const messages = sarcasticMessages[type];
-        return messages[Math.floor(Math.random() * messages.length)];
-    };
-
     const validateField = (name, value) => {
         switch (name) {
             case 'firstName':
             case 'lastName':
+                const fieldName = name === 'firstName' ? 'firstName' : 'lastName';
                 if (!value.trim()) {
-                    return getRandomMessage(name);
+                    return getRandomMessage(fieldName, 'required');
                 }
                 if (value.trim().length < 3) {
-                    return getRandomMessage('nameTooShort');
+                    return getRandomMessage(fieldName, 'tooShort');
                 }
                 if (!/^[A-Za-z]+$/.test(value)) {
-                    return getRandomMessage('nameInvalid');
+                    return getRandomMessage(fieldName, 'invalid');
                 }
                 return '';
             case 'mobile':
                 if (!value.trim()) {
-                    return getRandomMessage('mobile');
+                    return getRandomMessage('phone', 'required');
                 }
                 const validation = validateIndianPhoneNumber(value);
                 if (!validation.isValid) {
-                    return validation.error || getRandomMessage('mobileInvalid');
+                    return validation.error;
                 }
                 return '';
             case 'email':
                 if (!value.trim()) {
-                    return getRandomMessage('email');
+                    return getRandomMessage('email', 'required');
                 }
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                    return getRandomMessage('emailInvalid');
+                    return getRandomMessage('email', 'invalid');
                 }
                 return '';
             case 'message':
                 if (!value.trim()) {
-                    return getRandomMessage('message');
+                    return getRandomMessage('message', 'required');
                 }
                 if (value.trim().length < 10) {
-                    return getRandomMessage('message');
+                    return getRandomMessage('message', 'tooShort');
                 }
                 return '';
             default:
@@ -210,7 +153,7 @@ const Contact = () => {
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             vibrateError();
-            showToast("Oops! Some fields need your attention 🤦", 'error');
+            showToast(getRandomMessage('form', 'submitError'), 'error');
             return;
         }
 
@@ -246,7 +189,7 @@ const Contact = () => {
 
             if (response.ok) {
                 vibrateSuccess();
-                showToast("🎉 Success! Your message was sent. I'll get back to you faster than you can say 'JavaScript'!", 'success', 6000);
+                showToast(getRandomMessage('form', 'submitSuccess'), 'success', 6000);
                 setFormData({
                     salutation: '',
                     firstName: '',
@@ -265,7 +208,7 @@ const Contact = () => {
         } catch (error) {
             vibrateError();
             console.error('Error submitting form:', error);
-            showToast("Network error! Check if the server is running, or if your internet is just playing hide and seek 🙈", 'error', 7000);
+            showToast(getRandomMessage('form', 'networkError'), 'error', 7000);
         } finally {
             setIsSubmitting(false);
         }
@@ -426,7 +369,7 @@ const Contact = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                                 >
-                                    <FaCheckCircle /> Perfect!
+                                    <FaCheckCircle /> {getRandomSuccess('firstName')}
                                 </motion.span>
                             )}
                         </div>
@@ -478,7 +421,7 @@ const Contact = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                                 >
-                                    <FaCheckCircle /> Awesome!
+                                    <FaCheckCircle /> {getRandomSuccess('lastName')}
                                 </motion.span>
                             )}
                         </div>
@@ -527,7 +470,7 @@ const Contact = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                                 >
-                                    <FaCheckCircle /> Great!
+                                    <FaCheckCircle /> {getRandomSuccess('email')}
                                 </motion.span>
                             )}
                         </div>
@@ -615,7 +558,7 @@ const Contact = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                                 >
-                                    <FaCheckCircle /> Excellent!
+                                    <FaCheckCircle /> {getRandomSuccess('phone')}
                                 </motion.span>
                             )}
                         </div>
@@ -681,7 +624,7 @@ const Contact = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                             >
-                                <FaCheckCircle /> Looking forward to reading this!
+                                <FaCheckCircle /> {getRandomSuccess('message')}
                             </motion.span>
                         )}
                     </div>
