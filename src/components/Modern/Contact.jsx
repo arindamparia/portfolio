@@ -55,11 +55,40 @@ const Contact = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                    <a href="mailto:aashaywase@icloud.com" className="contact-link">
-                        <FaEnvelope /> aashaywase@icloud.com
+                    <a href="mailto:arindamparia321@gmail.com" className="contact-link">
+                        <FaEnvelope /> arindamparia321@gmail.com
                     </a>
-                    <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" className="contact-link">
+                    <a href="https://www.linkedin.com/in/arindam-paria-557170191/" target="_blank" rel="noopener noreferrer" className="contact-link">
                         <FaLinkedin /> LinkedIn
+                    </a>
+                </motion.div>
+                <motion.div
+                    style={{ marginTop: '1rem', color: 'var(--text-secondary)', textAlign: 'center' }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.25 }}
+                >
+                    <a href="tel:+919064175719" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                        📱 +91 9064175719
+                    </a>
+                </motion.div>
+                <motion.div
+                    className="social-links"
+                    style={{ marginTop: '1rem', display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                    <a href="https://github.com/arindamparia" target="_blank" rel="noopener noreferrer" className="social-link">
+                        GitHub
+                    </a>
+                    <a href="https://www.linkedin.com/in/arindam-paria-557170191/" target="_blank" rel="noopener noreferrer" className="social-link">
+                        LinkedIn
+                    </a>
+                    <a href="https://leetcode.com/u/ARINDAM9064/" target="_blank" rel="noopener noreferrer" className="social-link">
+                        LeetCode
                     </a>
                 </motion.div>
 

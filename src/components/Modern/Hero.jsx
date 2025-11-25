@@ -22,8 +22,8 @@ const Hero = () => {
                         transition={{ duration: 0.8, delay: 0.2 }}
                     >
                         <p className="greeting">Hello, I'm</p>
-                        <h1>Aashay Wase</h1>
-                        <h2>Salesforce Developer</h2>
+                        <h1>Arindam</h1>
+                        <h2>Software Engineer</h2>
                         <div className="hero-buttons">
                             <a href="/cv.pdf" className="btn" download>Download CV</a>
                             <a href="#contact" className="btn btn-secondary">Contact</a>

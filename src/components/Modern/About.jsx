@@ -2,8 +2,19 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FaBriefcase, FaGraduationCap } from 'react-icons/fa';
 import { VscChevronDown } from 'react-icons/vsc';
+import { experienceData } from '../../data/experience';
+import { educationData } from '../../data/education';
 
 const About = () => {
+    // Get the most recent experience
+    const recentExperience = experienceData[0];
+    const primaryEducation = educationData[0];
+
+    // Calculate years of experience
+    const startYear = 2023;
+    const currentYear = new Date().getFullYear();
+    const yearsOfExperience = currentYear - startYear + 1;
+
     return (
         <section id="about">
             <div className="container">
@@ -48,21 +59,21 @@ const About = () => {
                                     <FaBriefcase />
                                 </div>
                                 <h3>Experience</h3>
-                                <p>5+ years<br />Salesforce Development</p>
+                                <p>{yearsOfExperience}+ years<br />{recentExperience.role}</p>
                             </div>
                             <div className="info-card">
                                 <div className="info-card-icon">
                                     <FaGraduationCap />
                                 </div>
                                 <h3>Education</h3>
-                                <p>B.E. Electronics<br />MBA Marketing</p>
+                                <p>{primaryEducation.degree}<br />{primaryEducation.institution}</p>
                             </div>
                         </div>
                         <p style={{ color: 'var(--text-secondary)', lineHeight: '1.8' }}>
-                            Experienced Salesforce Developer with 5+ years delivering robust solutions across Sales,
-                            Service, and Experience Clouds. Expert in Apex, LWC, Flows, and Integration, with a
-                            proven track record of automating processes and optimizing performance. Skilled in CI/CD
-                            (Copado/Git), Adaptive Card UI, and Conga Composer automation.
+                            Passionate software engineer with expertise in building scalable applications and solving complex problems.
+                            Experienced in Java, Spring Boot, Salesforce Commerce Cloud, and Modern Web Technologies.
+                            Currently working at {recentExperience.company}, with a strong foundation in backend development,
+                            microservices architecture, and enterprise solutions.
                         </p>
                     </motion.div>
                 </div>
