@@ -195,12 +195,18 @@ const Contact = () => {
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
 
-            // Generate displayed messages for all fields with errors
-            const newDisplayedMessages = {};
-            Object.keys(newErrors).forEach(field => {
-                newDisplayedMessages[field] = newErrors[field];
+            // Preserve existing displayed messages, only add new ones for fields that don't have them
+            setDisplayedMessages(prev => {
+                const updatedMessages = { ...prev };
+                Object.keys(newErrors).forEach(field => {
+                    // Only set message if this field doesn't already have a displayed message
+                    if (!prev[field]) {
+                        updatedMessages[field] = newErrors[field];
+                    }
+                    // If it already has a message, keep the existing one to prevent regeneration
+                });
+                return updatedMessages;
             });
-            setDisplayedMessages(newDisplayedMessages);
 
             vibrateError();
             showToast(getRandomMessage('form', 'submitError'), 'error');
