@@ -126,10 +126,13 @@ const Contact = () => {
                 }));
             }
 
-            setErrors({
-                ...errors,
-                [name]: error
-            });
+            // Only update errors if the error value actually changed
+            if (prevError !== error) {
+                setErrors({
+                    ...errors,
+                    [name]: error
+                });
+            }
         }
     };
 
@@ -144,6 +147,7 @@ const Contact = () => {
         setFocusedField('');
 
         const error = validateField(name, value);
+        const prevError = errors[name];
 
         // Only set the message on FIRST blur (when field wasn't already touched)
         if (!wasAlreadyTouched) {
@@ -154,10 +158,13 @@ const Contact = () => {
             }));
         }
 
-        setErrors({
-            ...errors,
-            [name]: error
-        });
+        // Only update errors if the error value actually changed
+        if (prevError !== error) {
+            setErrors({
+                ...errors,
+                [name]: error
+            });
+        }
     };
 
     const handleFocus = (name) => {
