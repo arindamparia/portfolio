@@ -1,13 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaGraduationCap } from 'react-icons/fa';
+import { FaCertificate } from 'react-icons/fa';
 import { VscChevronDown } from 'react-icons/vsc';
-import { educationData } from '../../data/education';
+import { certificationsData } from '../../data/certifications';
 import { vibrateMedium } from '../../utils/vibration';
 
-const Education = () => {
+const Certifications = () => {
     return (
-        <section id="education">
+        <section id="certifications" style={{ background: 'var(--bg-secondary)' }}>
             <div className="container">
                 <motion.p
                     className="section-subtitle"
@@ -16,7 +16,7 @@ const Education = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
                 >
-                    My Academic Journey
+                    Professional Credentials
                 </motion.p>
                 <motion.h2
                     className="section-title"
@@ -25,10 +25,10 @@ const Education = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.1 }}
                 >
-                    Education
+                    Certifications
                 </motion.h2>
                 <div className="education-grid">
-                    {educationData.map((edu, index) => (
+                    {certificationsData.map((cert, index) => (
                         <motion.div
                             key={index}
                             className="education-card"
@@ -38,12 +38,11 @@ const Education = () => {
                             transition={{ duration: 0.5, delay: index * 0.2 }}
                         >
                             <div className="education-icon">
-                                <FaGraduationCap />
+                                <FaCertificate />
                             </div>
-                            <span className="education-year">{edu.year}</span>
-                            <h3 className="education-degree">{edu.degree}</h3>
-                            <h4 className="education-institution">{edu.institution}</h4>
-                            <p className="education-details">{edu.details}</p>
+                            <span className="education-year">{cert.year}</span>
+                            <h3 className="education-degree">{cert.name}</h3>
+                            <h4 className="education-institution">{cert.issuer}</h4>
                         </motion.div>
                     ))}
                 </div>
@@ -54,7 +53,7 @@ const Education = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.5 }}
                 >
-                    <a href="#certifications" onClick={vibrateMedium}>
+                    <a href="#projects" onClick={vibrateMedium}>
                         <VscChevronDown />
                     </a>
                 </motion.div>
@@ -63,4 +62,4 @@ const Education = () => {
     );
 };
 
-export default Education;
+export default Certifications;

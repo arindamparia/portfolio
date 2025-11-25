@@ -9,6 +9,7 @@ const Projects = lazy(() => import('../IDE/Projects'));
 const Experience = lazy(() => import('../IDE/Experience'));
 const Skills = lazy(() => import('../IDE/Skills'));
 const Education = lazy(() => import('../IDE/Education'));
+const Certifications = lazy(() => import('../IDE/Certifications'));
 const Contact = lazy(() => import('../IDE/Contact'));
 
 const IDELayout = () => {
@@ -21,6 +22,7 @@ const IDELayout = () => {
             case 'experience': return <Experience />;
             case 'skills': return <Skills />;
             case 'education': return <Education />;
+            case 'certifications': return <Certifications />;
             case 'contact': return <Contact />;
             default: return <Home />;
         }
