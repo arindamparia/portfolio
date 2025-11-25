@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import UAParser from 'ua-parser-js';
+import { UAParser } from 'ua-parser-js';
 import { sql } from './src/config/database.js';
 
 const app = express();
