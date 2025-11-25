@@ -41,7 +41,7 @@ const About = () => {
                 <div className="about-content">
                     <motion.img
                         src={assets.aboutImage}
-                        alt="About"
+                        alt={`About ${personalInfo.name.full} - Professional Software Engineer`}
                         className="about-image"
                         loading="lazy"
                         initial={{ opacity: 0, x: -50 }}

@@ -27,6 +27,7 @@ function App() {
   const toggleView = () => {
     // Only allow switching to IDE view on desktop
     if (!isDesktop && viewMode === 'modern') {
+      alert('💻 IDE View is available on laptop or tablet!\n\nThe IDE view provides a VS Code-style interface and is optimized for larger screens (1024px+). Please open this portfolio on a laptop or tablet to experience this feature.');
       return; // Do nothing on mobile when trying to switch to IDE
     }
     setViewMode(prev => prev === 'ide' ? 'modern' : 'ide');
@@ -55,10 +56,9 @@ function App() {
       <button
         className="theme-toggle"
         onClick={toggleView}
-        title={!isDesktop && viewMode === 'modern' ? 'IDE View requires desktop (1024px+)' : `Switch to ${viewMode === 'ide' ? 'Modern' : 'IDE'} View`}
-        disabled={!isDesktop && viewMode === 'modern'}
+        title={!isDesktop && viewMode === 'modern' ? 'Click to learn about IDE View' : `Switch to ${viewMode === 'ide' ? 'Modern' : 'IDE'} View`}
         style={{
-          cursor: !isDesktop && viewMode === 'modern' ? 'not-allowed' : 'pointer'
+          cursor: 'pointer'
         }}
       >
         {viewMode === 'ide' ? '🎨 Modern' : '💻 IDE'}

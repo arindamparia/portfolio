@@ -12,8 +12,9 @@ const Hero = () => {
                 <div className="hero-content">
                     <motion.img
                         src={assets.profileImage}
-                        alt="Profile"
+                        alt={`${personalInfo.name.full} - ${personalInfo.title}`}
                         className="profile-image"
+                        loading="lazy"
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.8 }}
