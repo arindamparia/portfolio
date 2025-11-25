@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { VscChevronDown } from 'react-icons/vsc';
 import { projectsData } from '../../data/projects';
+import { vibrateMedium } from '../../utils/vibration';
 
 const Projects = () => {
     return (
@@ -55,7 +56,7 @@ const Projects = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.5 }}
                 >
-                    <a href="#contact">
+                    <a href="#contact" onClick={vibrateMedium}>
                         <VscChevronDown />
                     </a>
                 </motion.div>

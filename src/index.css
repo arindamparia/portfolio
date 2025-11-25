@@ -749,6 +749,20 @@ body {
   min-height: 120px;
 }
 
+.theme-modern .form-group input.error,
+.theme-modern .form-group select.error,
+.theme-modern .form-group textarea.error {
+  border-color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.05);
+}
+
+.theme-modern .error-message {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
 .theme-modern .form-submit {
   text-align: center;
   margin-top: 1.5rem;
