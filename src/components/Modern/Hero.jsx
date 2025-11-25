@@ -1,7 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
+import { VscChevronDown } from 'react-icons/vsc';
 import { personalInfo, socialLinks, assets } from '../../constants/personalInfo';
+import { vibrateMedium, vibrateLight } from '../../utils/vibration';
 
 const Hero = () => {
     return (
@@ -26,19 +28,30 @@ const Hero = () => {
                         <h1>{personalInfo.name.first}</h1>
                         <h2>{personalInfo.title}</h2>
                         <div className="hero-buttons">
-                            <a href={assets.cvPath} className="btn" download>Download CV</a>
-                            <a href="#contact" className="btn btn-secondary">Contact</a>
+                            <a href={assets.cvPath} className="btn" download onClick={vibrateLight}>Download CV</a>
+                            <a href="#contact" className="btn btn-secondary" onClick={vibrateLight}>Contact</a>
                         </div>
                         <div className="social-icons">
-                            <a href={socialLinks.linkedin.url} target="_blank" rel="noopener noreferrer">
+                            <a href={socialLinks.linkedin.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight}>
                                 <FaLinkedin />
                             </a>
-                            <a href={socialLinks.github.url} target="_blank" rel="noopener noreferrer">
+                            <a href={socialLinks.github.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight}>
                                 <FaGithub />
                             </a>
                         </div>
                     </motion.div>
                 </div>
+                <motion.div
+                    className="section-arrow"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                    <a href="#about" onClick={vibrateMedium}>
+                        <VscChevronDown />
+                    </a>
+                </motion.div>
             </div>
         </section>
     );
