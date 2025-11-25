@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const Home = () => {
+const Home = ({ setActiveTab }) => {
     return (
         <div style={{ padding: '2rem', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
             <motion.div
@@ -25,8 +25,8 @@ const Home = () => {
                 </div>
 
                 <div style={{ marginTop: '3rem', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                    <button className="btn" onClick={() => document.getElementById('projects-tab')?.click()}>View Projects</button>
-                    <button className="btn" style={{ background: 'transparent', border: '1px solid var(--accent-primary)' }} onClick={() => document.getElementById('contact-tab')?.click()}>Contact Me</button>
+                    <button className="btn" onClick={() => setActiveTab('projects')}>View Projects</button>
+                    <button className="btn" style={{ background: 'transparent', border: '1px solid var(--accent-primary)' }} onClick={() => setActiveTab('contact')}>Contact Me</button>
                 </div>
             </motion.div>
         </div>
