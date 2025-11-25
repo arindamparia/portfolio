@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { UAParser } from 'ua-parser-js';
 import { sql } from './src/config/database.js';
+import { validateContactData, parseUserAgent, sanitizeContactData } from './src/utils/contactValidation.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -19,20 +20,13 @@ app.get('/api/health', (req, res) => {
 // Contact form submission endpoint
 app.post('/api/contact', async (req, res) => {
     try {
-        const {
-            salutation,
-            firstName,
-            lastName,
-            email,
-            mobile,
-            company,
-            message,
-            userAgent,
-            language,
-            screenResolution,
-            timezone,
-            referrer
-        } = req.body;
+        const { userAgent } = req.body;
+
+        // Validate contact data
+        const validation = validateContactData(req.body);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
 
         // Get client IP address (handle proxy scenarios)
         const ipAddress = req.headers['x-forwarded-for']?.split(',')[0].trim() ||
@@ -42,62 +36,10 @@ app.post('/api/contact', async (req, res) => {
 
         // Parse user agent to extract browser, OS, and device information
         const parser = new UAParser(userAgent);
-        const uaResult = parser.getResult();
+        const { browser, os, deviceType } = parseUserAgent(parser);
 
-        const browser = uaResult.browser.name ?
-                       `${uaResult.browser.name} ${uaResult.browser.version || ''}`.trim() :
-                       'Unknown';
-        const os = uaResult.os.name ?
-                  `${uaResult.os.name} ${uaResult.os.version || ''}`.trim() :
-                  'Unknown';
-        const deviceType = uaResult.device.type || 'desktop';
-
-        // Validate required fields
-        if (!salutation || !firstName || !lastName || !email || !mobile || !message) {
-            return res.status(400).json({
-                error: 'Salutation, first name, last name, email, mobile, and message are required'
-            });
-        }
-
-        // Validate field lengths
-        if (firstName.trim().length < 3) {
-            return res.status(400).json({
-                error: 'First name must be at least 3 characters'
-            });
-        }
-
-        if (lastName.trim().length < 3) {
-            return res.status(400).json({
-                error: 'Last name must be at least 3 characters'
-            });
-        }
-
-        if (message.trim().length < 10) {
-            return res.status(400).json({
-                error: 'Message must be at least 10 characters'
-            });
-        }
-
-        // Validate only letters in names
-        if (!/^[A-Za-z\s]+$/.test(firstName) || !/^[A-Za-z\s]+$/.test(lastName)) {
-            return res.status(400).json({
-                error: 'Names should only contain letters'
-            });
-        }
-
-        // Validate email format
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            return res.status(400).json({
-                error: 'Please enter a valid email address'
-            });
-        }
-
-        // Validate mobile number (10 digits)
-        if (!/^\d{10}$/.test(mobile)) {
-            return res.status(400).json({
-                error: 'Please enter a valid 10-digit mobile number'
-            });
-        }
+        // Sanitize data for database insertion
+        const sanitized = sanitizeContactData(req.body);
 
         // Insert into database with comprehensive user tracking
         const result = await sql`
@@ -107,22 +49,22 @@ app.post('/api/contact', async (req, res) => {
                 screen_resolution, language, timezone, referrer
             )
             VALUES (
-                ${salutation || null},
-                ${firstName.trim()},
-                ${lastName.trim()},
-                ${email.trim()},
-                ${mobile.trim()},
-                ${company?.trim() || null},
-                ${message.trim()},
+                ${sanitized.salutation},
+                ${sanitized.firstName},
+                ${sanitized.lastName},
+                ${sanitized.email},
+                ${sanitized.mobile},
+                ${sanitized.company},
+                ${sanitized.message},
                 ${ipAddress},
-                ${userAgent || null},
+                ${sanitized.userAgent},
                 ${browser},
                 ${os},
                 ${deviceType},
-                ${screenResolution || null},
-                ${language || null},
-                ${timezone || null},
-                ${referrer || null}
+                ${sanitized.screenResolution},
+                ${sanitized.language},
+                ${sanitized.timezone},
+                ${sanitized.referrer}
             )
             RETURNING id, salutation, first_name, last_name, email, mobile, company,
                      ip_address, browser, operating_system, device_type, created_at

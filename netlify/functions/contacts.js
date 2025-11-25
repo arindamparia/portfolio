@@ -3,7 +3,7 @@ import { neon } from '@neondatabase/serverless';
 // Neon database connection
 const sql = neon(process.env.DATABASE_URL);
 
-export default async (req, context) => {
+export default async (req) => {
     // Set CORS headers
     const headers = {
         'Access-Control-Allow-Origin': '*',
