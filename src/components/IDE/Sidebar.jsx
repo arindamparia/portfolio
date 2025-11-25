@@ -1,7 +1,9 @@
 import React from 'react';
 import { VscFiles, VscSearch, VscSourceControl, VscDebugAlt, VscExtensions, VscAccount, VscSettingsGear, VscChevronRight, VscChevronDown } from 'react-icons/vsc';
-import { FaReact, FaJs, FaHtml5, FaCss3, FaMarkdown, FaEnvelope, FaCode, FaGithub, FaLinkedin, FaCertificate } from 'react-icons/fa';
-import { SiJson, SiLeetcode } from 'react-icons/si';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import { SiLeetcode } from 'react-icons/si';
+import { ideFiles } from '../../constants/ideFiles.jsx';
+import { socialLinks } from '../../constants/personalInfo.js';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
     const [isOpen, setIsOpen] = React.useState(true);
@@ -19,15 +21,6 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         setTimeout(() => setShowDisabledPrompt(false), 3000);
     };
 
-    const files = [
-        { name: 'home.jsx', icon: <FaReact color="#61DAFB" />, id: 'home' },
-        { name: 'projects.js', icon: <FaJs color="#F7DF1E" />, id: 'projects' },
-        { name: 'experience.json', icon: <SiJson color="#F7DF1E" />, id: 'experience' },
-        { name: 'skills.json', icon: <SiJson color="#F7DF1E" />, id: 'skills' },
-        { name: 'education.md', icon: <FaMarkdown color="#42A5F5" />, id: 'education' },
-        { name: 'certifications.json', icon: <SiJson color="#F7DF1E" />, id: 'certifications' },
-        { name: 'contact.css', icon: <FaCss3 color="#42A5F5" />, id: 'contact' },
-    ];
 
     return (
         <div className="ide-sidebar-container" style={{ display: 'flex', height: '100%' }}>
@@ -41,13 +34,13 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                 <div className="activity-icon" style={{ marginBottom: '20px', cursor: 'pointer' }} onClick={() => handleDisabledClick('Extensions')}><VscExtensions size={24} color="#858585" /></div>
 
                 <div style={{ marginTop: 'auto' }}>
-                    <a href="https://github.com/arindamparia" target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ marginBottom: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'center', color: '#858585' }}>
+                    <a href={socialLinks.github.url} target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ marginBottom: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'center', color: '#858585' }} aria-label={socialLinks.github.label}>
                         <FaGithub size={24} />
                     </a>
-                    <a href="https://www.linkedin.com/in/arindam-paria-557170191/" target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ marginBottom: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'center', color: '#858585' }}>
+                    <a href={socialLinks.linkedin.url} target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ marginBottom: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'center', color: '#858585' }} aria-label={socialLinks.linkedin.label}>
                         <FaLinkedin size={24} />
                     </a>
-                    <a href="https://leetcode.com/u/ARINDAM9064/" target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ marginBottom: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'center', color: '#858585' }}>
+                    <a href={socialLinks.leetcode.url} target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ marginBottom: '20px', cursor: 'pointer', display: 'flex', justifyContent: 'center', color: '#858585' }} aria-label={socialLinks.leetcode.label}>
                         <SiLeetcode size={24} />
                     </a>
                 </div>
@@ -103,7 +96,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                 </div>
                 {isOpen && (
                     <div className="file-list" style={{ paddingLeft: '10px' }}>
-                        {files.map((file) => (
+                        {ideFiles.map((file) => (
                             <div
                                 key={file.id}
                                 className={`file-item ${activeTab === file.id ? 'active' : ''}`}

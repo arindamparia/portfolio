@@ -4,6 +4,25 @@
  */
 
 export const formMessages = {
+    // ==================== SALUTATION ====================
+    salutation: {
+        required: [
+            "Pick a title! Mr? Ms? Mrs? Or are you royalty? 👑",
+            "Salutation required! How should I address you? 🎩",
+            "Choose your title! Don't be shy! 😊",
+            "Select one! Even superheroes have titles! 🦸",
+            "Mr, Ms, or Mrs? Pick your fighter! 🥊",
+            "A salutation would be nice! Are you a Sir or Madam? 🎭",
+            "Title please! I need to know how formal to be! 📜"
+        ],
+        success: [
+            "Perfect title! Nice to meet you! 🎩",
+            "Great choice! Now I know how to address you! ✨",
+            "Excellent! Formalities covered! 👌",
+            "Nice pick! Very distinguished! 🌟"
+        ]
+    },
+
     // ==================== FIRST NAME ====================
     firstName: {
         required: [
