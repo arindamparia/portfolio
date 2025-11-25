@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { VscCode } from 'react-icons/vsc';
+import { VscCode, VscChevronDown } from 'react-icons/vsc';
 import { skillsData } from '../../data/skills';
 
 const Skills = () => {
@@ -65,6 +65,17 @@ const Skills = () => {
                         </motion.div>
                     ))}
                 </div>
+                <motion.div
+                    className="section-arrow"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                    <a href="#experience">
+                        <VscChevronDown />
+                    </a>
+                </motion.div>
             </div>
         </section>
     );

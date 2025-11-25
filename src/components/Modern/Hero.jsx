@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
+import { VscChevronDown } from 'react-icons/vsc';
 import { personalInfo, socialLinks, assets } from '../../constants/personalInfo';
 
 const Hero = () => {
@@ -39,6 +40,17 @@ const Hero = () => {
                         </div>
                     </motion.div>
                 </div>
+                <motion.div
+                    className="section-arrow"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                    <a href="#about">
+                        <VscChevronDown />
+                    </a>
+                </motion.div>
             </div>
         </section>
     );

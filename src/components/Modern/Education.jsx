@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaGraduationCap } from 'react-icons/fa';
+import { VscChevronDown } from 'react-icons/vsc';
 import { educationData } from '../../data/education';
 
 const Education = () => {
@@ -45,6 +46,17 @@ const Education = () => {
                         </motion.div>
                     ))}
                 </div>
+                <motion.div
+                    className="section-arrow"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                    <a href="#projects">
+                        <VscChevronDown />
+                    </a>
+                </motion.div>
             </div>
         </section>
     );

@@ -83,7 +83,7 @@ const About = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: 0.5 }}
                 >
-                    <a href="#experience">
+                    <a href="#skills">
                         <VscChevronDown />
                     </a>
                 </motion.div>
