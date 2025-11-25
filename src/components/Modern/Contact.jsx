@@ -55,6 +55,14 @@ const Contact = () => {
                     return 'Please enter a valid email address';
                 }
                 return '';
+            case 'message':
+                if (!value.trim()) {
+                    return 'Message is required';
+                }
+                if (value.trim().length < 10) {
+                    return 'Message must be at least 10 characters';
+                }
+                return '';
             default:
                 return '';
         }
@@ -96,7 +104,7 @@ const Contact = () => {
 
         // Validate all fields
         const newErrors = {};
-        ['firstName', 'lastName', 'email', 'mobile'].forEach(field => {
+        ['firstName', 'lastName', 'email', 'mobile', 'message'].forEach(field => {
             const error = validateField(field, formData[field]);
             if (error) {
                 newErrors[field] = error;
@@ -108,7 +116,8 @@ const Contact = () => {
             firstName: true,
             lastName: true,
             email: true,
-            mobile: true
+            mobile: true,
+            message: true
         });
 
         if (Object.keys(newErrors).length > 0) {
@@ -124,7 +133,7 @@ const Contact = () => {
     };
 
     return (
-        <section id="contact">
+        <section id="contact" style={{ paddingBottom: '4rem' }}>
             <div className="container">
                 <motion.p
                     className="section-subtitle"
@@ -283,14 +292,19 @@ const Contact = () => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="message">Message</label>
+                        <label htmlFor="message">Message *</label>
                         <textarea
                             id="message"
                             name="message"
                             value={formData.message}
                             onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={errors.message && touched.message ? 'error' : ''}
                             placeholder="Tell me about your project, timeline, or how I can help."
                         />
+                        {errors.message && touched.message && (
+                            <span className="error-message">{errors.message}</span>
+                        )}
                     </div>
 
                     <div className="form-submit">

@@ -701,6 +701,7 @@ body {
   margin: 0 auto;
   background: var(--bg-card);
   padding: 2rem;
+  padding-bottom: 3rem;
   border: 2px solid var(--border-medium);
   border-radius: 2rem;
 }
@@ -766,10 +767,14 @@ body {
 .theme-modern .form-submit {
   text-align: center;
   margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
 }
 
 .theme-modern .form-submit .btn {
   padding: 1rem 3rem;
+  min-height: 3rem;
+  display: inline-block;
 }
 
 /* Skills Section - Modern Compact Design */
@@ -1193,6 +1198,7 @@ body {
 
   .theme-modern .contact-form {
     padding: 1.5rem 1rem;
+    padding-bottom: 2.5rem;
     border-radius: 1.5rem;
   }
 
