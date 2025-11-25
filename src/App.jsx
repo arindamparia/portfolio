@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import IDELayout from './components/Layout/IDELayout';
-import ModernLayout from './components/Layout/ModernLayout';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import DesktopRequired from './components/Shared/DesktopRequired';
+
+// Lazy load layouts for better initial load performance
+const IDELayout = lazy(() => import('./components/Layout/IDELayout'));
+const ModernLayout = lazy(() => import('./components/Layout/ModernLayout'));
 
 function App() {
   const [viewMode, setViewMode] = useState('modern');
@@ -32,11 +34,23 @@ function App() {
 
   return (
     <div className={viewMode === 'ide' ? 'theme-ide' : 'theme-modern'}>
-      {viewMode === 'ide' ? (
-        isDesktop ? <IDELayout /> : <DesktopRequired onSwitchToModern={() => setViewMode('modern')} />
-      ) : (
-        <ModernLayout />
-      )}
+      <Suspense fallback={
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          fontSize: '1.2rem'
+        }}>
+          Loading...
+        </div>
+      }>
+        {viewMode === 'ide' ? (
+          isDesktop ? <IDELayout /> : <DesktopRequired onSwitchToModern={() => setViewMode('modern')} />
+        ) : (
+          <ModernLayout />
+        )}
+      </Suspense>
 
       <button
         className="theme-toggle"

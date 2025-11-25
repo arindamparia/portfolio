@@ -43,6 +43,7 @@ const About = () => {
                         src={assets.aboutImage}
                         alt="About"
                         className="about-image"
+                        loading="lazy"
                         initial={{ opacity: 0, x: -50 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}

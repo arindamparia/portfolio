@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import Sidebar from '../IDE/Sidebar';
 import Tabs from '../IDE/Tabs';
 import StatusBar from '../IDE/StatusBar';
 import Home from '../IDE/Home';
-import Projects from '../IDE/Projects';
-import Experience from '../IDE/Experience';
-import Skills from '../IDE/Skills';
-import Education from '../IDE/Education';
-import Contact from '../IDE/Contact';
+
+// Lazy load tab components since they're conditionally rendered
+const Projects = lazy(() => import('../IDE/Projects'));
+const Experience = lazy(() => import('../IDE/Experience'));
+const Skills = lazy(() => import('../IDE/Skills'));
+const Education = lazy(() => import('../IDE/Education'));
+const Contact = lazy(() => import('../IDE/Contact'));
 
 const IDELayout = () => {
     const [activeTab, setActiveTab] = useState('home');
@@ -30,7 +32,9 @@ const IDELayout = () => {
             <div className="main-editor">
                 <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
                 <div className="editor-content">
-                    {renderContent()}
+                    <Suspense fallback={<div style={{ padding: '2rem', fontFamily: 'var(--font-code)', color: '#6a9955' }}>// Loading...</div>}>
+                        {renderContent()}
+                    </Suspense>
                 </div>
             </div>
             <StatusBar />
