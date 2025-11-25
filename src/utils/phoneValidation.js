@@ -36,6 +36,15 @@ export const validateIndianPhoneNumber = (phoneNumber) => {
         };
     }
 
+    // Check if it starts with a valid Indian mobile prefix (6-9)
+    if (!hasValidIndianPrefix(cleanNumber)) {
+        return {
+            isValid: false,
+            formatted: null,
+            error: 'Indian mobile numbers start with 6, 7, 8, or 9 📱'
+        };
+    }
+
     try {
         // Add +91 country code for Indian numbers
         const phoneWithCountryCode = `+91${cleanNumber}`;
@@ -55,7 +64,10 @@ export const validateIndianPhoneNumber = (phoneNumber) => {
         const phoneNumberObj = parsePhoneNumber(phoneWithCountryCode, 'IN');
 
         // Check if it's a mobile number (not landline)
-        if (phoneNumberObj.getType() !== 'MOBILE') {
+        // Note: getType() may return 'MOBILE', 'FIXED_LINE_OR_MOBILE', or undefined for Indian numbers
+        // We accept MOBILE and FIXED_LINE_OR_MOBILE, but reject FIXED_LINE
+        const phoneType = phoneNumberObj.getType();
+        if (phoneType === 'FIXED_LINE') {
             return {
                 isValid: false,
                 formatted: null,
