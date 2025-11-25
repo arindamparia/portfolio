@@ -84,9 +84,6 @@ This is **CRITICAL** - Your database won't work without this!
 
    **Key**: `DATABASE_URL`
    **Value**: Your Neon connection string
-   ```
-   postgresql://neondb_owner:npg_fxr9FMEidA8j@ep-green-meadow-ahm0aoyn-pooler.c-3.us-east-1.aws.neon.tech/Portfolio?sslmode=require&channel_binding=require
-   ```
 
 4. **Important**: Set scope to **"All deploys"**
 

@@ -23,9 +23,6 @@ cp .env.example .env
 
 Then edit `.env` and replace with your actual Neon connection string:
 
-```
-DATABASE_URL=postgresql://neondb_owner:npg_fxr9FMEidA8j@ep-green-meadow-ahm0aoyn-pooler.c-3.us-east-1.aws.neon.tech/Portfolio?sslmode=require&channel_binding=require
-```
 
 **Important:** Never commit the `.env` file to version control. It's already added to `.gitignore`.
 
