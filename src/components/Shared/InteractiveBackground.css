@@ -14,7 +14,7 @@
 
 /* Hero section specific - position below navbar */
 .hero .interactive-background {
-  top: 80px;
+  top: 0;
   /*height: calc(100% - 80px);*/
 }
 

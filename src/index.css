@@ -418,7 +418,7 @@ body {
 
 /* Modern Navigation */
 .theme-modern nav {
-  position: fixed;
+  position: sticky;
   top: 0;
   width: 100%;
   background: var(--bg-primary);
@@ -480,12 +480,12 @@ body {
 
 /* Modern Hero */
 .theme-modern .hero {
-  min-height: auto;
+  min-height: calc(100vh - 80px);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding-top: 100px;
+  /* padding-top removed as nav is now sticky */
   padding-bottom: 2rem;
 }
 
