@@ -15,7 +15,7 @@
 /* Hero section specific - position below navbar */
 .hero .interactive-background {
   top: 80px;
-  height: calc(100% - 80px);
+  /*height: calc(100% - 80px);*/
 }
 
 /* Gradient Background */
@@ -195,11 +195,6 @@ section > div:not(.interactive-background) {
 
 /* Responsive optimizations */
 @media (max-width: 768px) {
-  .hero .interactive-background {
-    top: 92px;
-    height: calc(100% - 92px);
-  }
-
   .mesh-blob {
     width: 300px;
     height: 300px;
