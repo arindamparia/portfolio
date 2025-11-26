@@ -1,15 +1,20 @@
 import { getRandomPhoneError } from '../constants/formErrorMessages.js';
 
 /**
+ * Helper to clean phone number by removing whitespace and dashes
+ * @param {string} phoneNumber - The phone number to clean
+ * @returns {string} Cleaned phone number
+ */
+const cleanPhoneNumber = (phoneNumber) => phoneNumber.trim().replace(/[\s-]/g, '');
+
+/**
  * Validates if a phone number is a valid Indian mobile number
  * @param {string} phoneNumber - The phone number to validate (without country code)
  * @returns {Object} - { isValid: boolean, formatted: string | null, error: string | null }
  */
 export const validateIndianPhoneNumber = (phoneNumber) => {
-    // Remove any whitespace or dashes
-    const cleanNumber = phoneNumber.trim().replace(/[\s-]/g, '');
+    const cleanNumber = cleanPhoneNumber(phoneNumber);
 
-    // Check if the number is empty
     if (!cleanNumber) {
         return {
             isValid: false,
@@ -18,7 +23,6 @@ export const validateIndianPhoneNumber = (phoneNumber) => {
         };
     }
 
-    // Check if it contains only digits
     if (!/^\d+$/.test(cleanNumber)) {
         return {
             isValid: false,
@@ -27,7 +31,6 @@ export const validateIndianPhoneNumber = (phoneNumber) => {
         };
     }
 
-    // Check if it's exactly 10 digits
     if (cleanNumber.length !== 10) {
         return {
             isValid: false,
@@ -36,8 +39,7 @@ export const validateIndianPhoneNumber = (phoneNumber) => {
         };
     }
 
-    // Check if it starts with a valid Indian mobile prefix (6-9)
-    if (!hasValidIndianPrefix(cleanNumber)) {
+    if (!/^[6-9]/.test(cleanNumber)) {
         return {
             isValid: false,
             formatted: null,
@@ -48,10 +50,9 @@ export const validateIndianPhoneNumber = (phoneNumber) => {
     // Format the number as: XXXXX XXXXX
     const formatted = cleanNumber.replace(/(\d{5})(\d{5})/, '$1 $2');
 
-    // Return success with formatted number
     return {
         isValid: true,
-        formatted: formatted,
+        formatted,
         error: null
     };
 };
@@ -61,7 +62,4 @@ export const validateIndianPhoneNumber = (phoneNumber) => {
  * @param {string} phoneNumber - The phone number to validate
  * @returns {boolean}
  */
-export const hasValidIndianPrefix = (phoneNumber) => {
-    const cleanNumber = phoneNumber.trim().replace(/[\s-]/g, '');
-    return /^[6-9]/.test(cleanNumber);
-};
+export const hasValidIndianPrefix = (phoneNumber) => /^[6-9]/.test(cleanPhoneNumber(phoneNumber));

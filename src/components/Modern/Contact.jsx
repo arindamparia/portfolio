@@ -9,6 +9,19 @@ import { validateIndianPhoneNumber } from '../../utils/phoneValidation';
 import { getRandomMessage, getRandomSuccess } from '../../constants/formErrorMessages';
 import ToastContainer from './Toast';
 
+// Constants
+const EMPTY_FORM_DATA = {
+    salutation: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    company: '',
+    mobile: '',
+    message: ''
+};
+
+const REQUIRED_FIELDS = ['salutation', 'firstName', 'lastName', 'email', 'mobile', 'message'];
+
 const Contact = () => {
     // Initialize form data from sessionStorage if available
     const getInitialFormData = () => {
@@ -20,19 +33,10 @@ const Contact = () => {
         } catch (error) {
             console.error('Error loading form data from sessionStorage:', error);
         }
-        return {
-            salutation: '',
-            firstName: '',
-            lastName: '',
-            email: '',
-            company: '',
-            mobile: '',
-            message: ''
-        };
+        return { ...EMPTY_FORM_DATA };
     };
 
     const [formData, setFormData] = useState(getInitialFormData);
-
     const [errors, setErrors] = useState({});
     const [errorTypes, setErrorTypes] = useState({});
     const [touched, setTouched] = useState({});
@@ -55,87 +59,79 @@ const Contact = () => {
         return fieldName === 'mobile' ? 'phone' : fieldName;
     };
 
-    // Helper to get the error type/category for a field
-    const getErrorType = (name, value) => {
-        switch (name) {
-            case 'salutation':
-                if (!value || value.trim() === '') return 'required';
-                return '';
-            case 'firstName':
-            case 'lastName':
-                if (!value.trim()) return 'required';
-                if (value.trim().length < 3) return 'tooShort';
-                if (!/^[A-Za-z]+$/.test(value)) return 'invalid';
-                return '';
-            case 'mobile':
-                if (!value.trim()) return 'required';
-                const cleanNumber = value.trim().replace(/[\s-]/g, '');
-                if (!/^\d+$/.test(cleanNumber)) return 'invalidCharacters';
-                if (cleanNumber.length !== 10) return 'lengthError';
-                if (!/^[6-9]/.test(cleanNumber)) return 'invalidPrefix';
-                return '';
-            case 'email':
-                if (!value.trim()) return 'required';
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'invalid';
-                return '';
-            case 'message':
-                if (!value.trim()) return 'required';
-                if (value.trim().length < 10) return 'tooShort';
-                return '';
-            default:
-                return '';
-        }
-    };
-
+    // Consolidated validation - returns both error type and error message
     const validateField = (name, value) => {
+        const messageFieldName = getMessageFieldName(name);
+
         switch (name) {
             case 'salutation':
                 if (!value || value.trim() === '') {
-                    return getRandomMessage('salutation', 'required');
+                    return { errorType: 'required', errorMessage: getRandomMessage('salutation', 'required') };
                 }
-                return '';
+                return { errorType: '', errorMessage: '' };
+
             case 'firstName':
             case 'lastName':
-                const fieldName = name === 'firstName' ? 'firstName' : 'lastName';
                 if (!value.trim()) {
-                    return getRandomMessage(fieldName, 'required');
+                    return { errorType: 'required', errorMessage: getRandomMessage(name, 'required') };
                 }
                 if (value.trim().length < 3) {
-                    return getRandomMessage(fieldName, 'tooShort');
+                    return { errorType: 'tooShort', errorMessage: getRandomMessage(name, 'tooShort') };
                 }
                 if (!/^[A-Za-z]+$/.test(value)) {
-                    return getRandomMessage(fieldName, 'invalid');
+                    return { errorType: 'invalid', errorMessage: getRandomMessage(name, 'invalid') };
                 }
-                return '';
+                return { errorType: '', errorMessage: '' };
+
             case 'mobile':
                 if (!value.trim()) {
-                    return getRandomMessage('phone', 'required');
+                    return { errorType: 'required', errorMessage: getRandomMessage('phone', 'required') };
                 }
                 const validation = validateIndianPhoneNumber(value);
                 if (!validation.isValid) {
-                    return validation.error;
+                    // Extract error type from validation error
+                    const errorType = validation.error.includes('required') ? 'required' :
+                                    validation.error.includes('character') ? 'invalidCharacters' :
+                                    validation.error.includes('10') ? 'lengthError' : 'invalidPrefix';
+                    return { errorType, errorMessage: validation.error };
                 }
-                return '';
+                return { errorType: '', errorMessage: '' };
+
             case 'email':
                 if (!value.trim()) {
-                    return getRandomMessage('email', 'required');
+                    return { errorType: 'required', errorMessage: getRandomMessage('email', 'required') };
                 }
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                    return getRandomMessage('email', 'invalid');
+                    return { errorType: 'invalid', errorMessage: getRandomMessage('email', 'invalid') };
                 }
-                return '';
+                return { errorType: '', errorMessage: '' };
+
             case 'message':
                 if (!value.trim()) {
-                    return getRandomMessage('message', 'required');
+                    return { errorType: 'required', errorMessage: getRandomMessage('message', 'required') };
                 }
                 if (value.trim().length < 10) {
-                    return getRandomMessage('message', 'tooShort');
+                    return { errorType: 'tooShort', errorMessage: getRandomMessage('message', 'tooShort') };
                 }
-                return '';
+                return { errorType: '', errorMessage: '' };
+
             default:
-                return '';
+                return { errorType: '', errorMessage: '' };
         }
     };
+
+    // Helper to get border color based on field state
+    const getBorderColor = (fieldName) => {
+        if (errors[fieldName] && touched[fieldName]) return '#f5576c';
+        if (!errors[fieldName] && touched[fieldName] && formData[fieldName]) return '#4ade80';
+        if (focusedField === fieldName) return 'var(--accent-primary)';
+        return undefined;
+    };
+
+    // Common animation props for shake effect on error
+    const getShakeAnimation = (fieldName) => ({
+        x: errors[fieldName] && touched[fieldName] ? [0, -10, 10, -10, 10, 0] : 0
+    });
 
     const showToast = (message, type = 'success', duration = 5000) => {
         const id = Date.now();
@@ -149,17 +145,13 @@ const Contact = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        let processedValue = value;
-
         // Apply field-specific character restrictions
+        let processedValue = value;
         if (name === 'firstName' || name === 'lastName') {
-            // Only allow a-z and A-Z in name fields
             processedValue = value.replace(/[^a-zA-Z]/g, '');
         } else if (name === 'mobile') {
-            // Only allow digits in mobile field
             processedValue = value.replace(/[^0-9]/g, '');
         } else if (name !== 'company' && name !== 'message') {
-            // Prevent spaces in all other fields except company and message
             processedValue = value.replace(/\s/g, '');
         }
 
@@ -169,9 +161,7 @@ const Contact = () => {
         });
 
         if (touched[name]) {
-            const error = validateField(name, processedValue);
-            const errorType = getErrorType(name, processedValue);
-            const prevError = errors[name];
+            const { errorType, errorMessage } = validateField(name, processedValue);
             const prevErrorType = errorTypes[name];
 
             // Only update message when error type changes (not when same type generates different random message)
@@ -179,7 +169,7 @@ const Contact = () => {
                 const messageFieldName = getMessageFieldName(name);
                 setDisplayedMessages(prev => ({
                     ...prev,
-                    [name]: error || getRandomSuccess(messageFieldName)
+                    [name]: errorMessage || getRandomSuccess(messageFieldName)
                 }));
 
                 setErrorTypes({
@@ -189,10 +179,10 @@ const Contact = () => {
             }
 
             // Always update error state to reflect current validation
-            if (prevError !== error) {
+            if (errors[name] !== errorMessage) {
                 setErrors({
                     ...errors,
-                    [name]: error
+                    [name]: errorMessage
                 });
             }
         }
@@ -208,16 +198,14 @@ const Contact = () => {
         });
         setFocusedField('');
 
-        const error = validateField(name, value);
-        const errorType = getErrorType(name, value);
-        const prevError = errors[name];
+        const { errorType, errorMessage } = validateField(name, value);
 
         // Only set the message on FIRST blur (when field wasn't already touched)
         if (!wasAlreadyTouched) {
             const messageFieldName = getMessageFieldName(name);
             setDisplayedMessages(prev => ({
                 ...prev,
-                [name]: error || getRandomSuccess(messageFieldName)
+                [name]: errorMessage || getRandomSuccess(messageFieldName)
             }));
             setErrorTypes({
                 ...errorTypes,
@@ -226,10 +214,10 @@ const Contact = () => {
         }
 
         // Only update errors if the error value actually changed
-        if (prevError !== error) {
+        if (errors[name] !== errorMessage) {
             setErrors({
                 ...errors,
-                [name]: error
+                [name]: errorMessage
             });
         }
     };
@@ -244,23 +232,17 @@ const Contact = () => {
         // Validate all fields
         const newErrors = {};
         const newErrorTypes = {};
-        ['salutation', 'firstName', 'lastName', 'email', 'mobile', 'message'].forEach(field => {
-            const error = validateField(field, formData[field]);
-            const errorType = getErrorType(field, formData[field]);
-            if (error) {
-                newErrors[field] = error;
+        REQUIRED_FIELDS.forEach(field => {
+            const { errorType, errorMessage } = validateField(field, formData[field]);
+            if (errorMessage) {
+                newErrors[field] = errorMessage;
                 newErrorTypes[field] = errorType;
             }
         });
 
-        setTouched({
-            salutation: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            mobile: true,
-            message: true
-        });
+        // Mark all required fields as touched
+        const allTouched = REQUIRED_FIELDS.reduce((acc, field) => ({ ...acc, [field]: true }), {});
+        setTouched(allTouched);
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -276,7 +258,6 @@ const Contact = () => {
                     if (!prev[field] || prevErrorType !== currentErrorType) {
                         updatedMessages[field] = newErrors[field];
                     }
-                    // If it already has a message with same error type, keep existing to prevent regeneration
                 });
                 return updatedMessages;
             });
@@ -309,13 +290,7 @@ const Contact = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    salutation: formData.salutation,
-                    firstName: formData.firstName,
-                    lastName: formData.lastName,
-                    email: formData.email,
-                    mobile: formData.mobile,
-                    company: formData.company,
-                    message: formData.message,
+                    ...formData,
                     ...deviceInfo
                 }),
             });
@@ -327,16 +302,7 @@ const Contact = () => {
                 showToast(getRandomMessage('form', 'submitSuccess'), 'success', 6000);
 
                 // Clear form data
-                const emptyFormData = {
-                    salutation: '',
-                    firstName: '',
-                    lastName: '',
-                    email: '',
-                    company: '',
-                    mobile: '',
-                    message: ''
-                };
-                setFormData(emptyFormData);
+                setFormData({ ...EMPTY_FORM_DATA });
 
                 // Clear sessionStorage
                 try {
