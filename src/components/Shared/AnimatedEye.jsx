@@ -93,14 +93,26 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
         let deltaX = caretX - eyeCenterX;
         let deltaY = caretY - eyeCenterY;
 
-        // Calculate angle and limit distance for pupil movement
+        // Calculate angle for direction
         const angle = Math.atan2(deltaY, deltaX);
-        const maxDistance = 15; // Maximum pixels the pupil can move from center (increased for more movement)
-        const distance = Math.min(maxDistance, Math.sqrt(deltaX * deltaX + deltaY * deltaY) / 8);
 
-        // Calculate new pupil position
-        const newX = Math.cos(angle) * distance;
-        const newY = Math.sin(angle) * distance;
+        // Calculate distance but constrain pupil to stay within eye boundaries
+        // Eye dimensions: rx=45, ry=38; Iris radius=20
+        // Maximum movement to keep iris within eye white
+        const maxMoveX = 25; // 45 - 20 = 25
+        const maxMoveY = 18; // 38 - 20 = 18
+
+        // Calculate desired position
+        const rawDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY) / 8;
+        let newX = Math.cos(angle) * rawDistance;
+        let newY = Math.sin(angle) * rawDistance;
+
+        // Constrain to elliptical boundary
+        const scale = Math.sqrt((newX * newX) / (maxMoveX * maxMoveX) + (newY * newY) / (maxMoveY * maxMoveY));
+        if (scale > 1) {
+            newX /= scale;
+            newY /= scale;
+        }
 
         setPupilPosition({ x: newX, y: newY });
     };
@@ -156,17 +168,18 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                 {isOpen ? (
                     <motion.div
                         key="open-eye"
-                        initial={{ scale: 0, rotate: 0 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        exit={{ scale: 0, rotate: 90 }}
-                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                        initial={{ scaleY: 0 }}
+                        animate={{ scaleY: 1 }}
+                        exit={{ scaleY: 0 }}
+                        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
                         style={{
                             width: '100%',
                             height: '100%',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            position: 'relative'
+                            position: 'relative',
+                            transformOrigin: 'center'
                         }}
                     >
                         {/* Eye SVG */}
@@ -343,52 +356,106 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                 ) : (
                     <motion.div
                         key="closed-eye"
-                        initial={{ scaleY: 1 }}
+                        initial={{ scaleY: 0 }}
                         animate={{ scaleY: 1 }}
                         exit={{ scaleY: 0 }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
                         style={{
                             width: '100%',
                             height: '100%',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center'
+                            justifyContent: 'center',
+                            transformOrigin: 'center'
                         }}
                     >
-                        {/* Closed eye */}
+                        {/* Closed eye with realistic eyelids */}
                         <svg
                             width="100%"
                             height="100%"
                             viewBox="0 0 100 100"
                         >
-                            {/* Closed eyelid - curved line */}
-                            <motion.path
-                                d="M 10 50 Q 50 70, 90 50"
-                                fill="none"
-                                stroke="#333"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                initial={{ pathLength: 0 }}
-                                animate={{ pathLength: 1 }}
-                                transition={{ duration: 0.3 }}
+                            <defs>
+                                {/* Gradient for eyelid depth */}
+                                <linearGradient id="eyelidGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stopColor="#a0826d" />
+                                    <stop offset="50%" stopColor="#8b7355" />
+                                    <stop offset="100%" stopColor="#6d5d4f" />
+                                </linearGradient>
+                            </defs>
+
+                            {/* Upper eyelid skin - filled curve */}
+                            <path
+                                d="M 10 50 Q 50 30, 90 50 Q 50 54, 10 50 Z"
+                                fill="url(#eyelidGradient)"
+                                stroke="#6d5d4f"
+                                strokeWidth="1"
                             />
 
-                            {/* Eyelashes */}
-                            {[20, 35, 50, 65, 80].map((x, index) => (
-                                <motion.line
-                                    key={index}
-                                    x1={x}
-                                    y1={50 + (x - 50) * 0.4}
-                                    x2={x}
-                                    y2={50 + (x - 50) * 0.4 + 8}
-                                    stroke="#333"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: index * 0.05 }}
-                                />
-                            ))}
+                            {/* Lower eyelid skin - subtle */}
+                            <path
+                                d="M 10 50 Q 50 54, 90 50 Q 50 58, 10 50 Z"
+                                fill="#9b8270"
+                                stroke="#7a6a5a"
+                                strokeWidth="0.5"
+                            />
+
+                            {/* Eyelid crease line for realism */}
+                            <path
+                                d="M 15 48 Q 50 28, 85 48"
+                                fill="none"
+                                stroke="#6d5d4f"
+                                strokeWidth="1"
+                                opacity="0.6"
+                                strokeLinecap="round"
+                            />
+
+                            {/* Main eyelid line (where eyelids meet) */}
+                            <path
+                                d="M 10 50 Q 50 52, 90 50"
+                                fill="none"
+                                stroke="#2c2c2c"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                            />
+
+                            {/* Upper eyelashes - more prominent when closed */}
+                            {[15, 22, 30, 38, 45, 50, 55, 62, 70, 78, 85].map((x, index) => {
+                                const y = 50 - Math.pow((x - 50) / 40, 2) * 2;
+                                const lashLength = index === 5 ? 9 : 7;
+                                const curve = (x - 50) * 0.15;
+                                return (
+                                    <line
+                                        key={`lash-${index}`}
+                                        x1={x}
+                                        y1={y}
+                                        x2={x + curve}
+                                        y2={y - lashLength}
+                                        stroke="#2c2c2c"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                        opacity="0.85"
+                                    />
+                                );
+                            })}
+
+                            {/* Subtle lower lashes */}
+                            {[25, 40, 50, 60, 75].map((x, index) => {
+                                const y = 50 + Math.pow((x - 50) / 40, 2) * 2;
+                                return (
+                                    <line
+                                        key={`lower-lash-${index}`}
+                                        x1={x}
+                                        y1={y}
+                                        x2={x}
+                                        y2={y + 4}
+                                        stroke="#2c2c2c"
+                                        strokeWidth="0.8"
+                                        strokeLinecap="round"
+                                        opacity="0.5"
+                                    />
+                                );
+                            })}
                         </svg>
                     </motion.div>
                 )}
