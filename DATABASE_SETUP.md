@@ -52,18 +52,22 @@ This will create a `contacts` table with the following structure:
 ```sql
 CREATE TABLE contacts (
     id SERIAL PRIMARY KEY,
-    salutation VARCHAR(10),
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
+    salutation VARCHAR(4),
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    mobile VARCHAR(20) NOT NULL,
+    company VARCHAR(100),
+    message VARCHAR(100) NOT NULL,
     ip_address VARCHAR(45),
-    user_agent TEXT,
-    browser VARCHAR(100),
-    operating_system VARCHAR(100),
-    device_type VARCHAR(50),
+    user_agent VARCHAR(255),
+    browser VARCHAR(50),
+    operating_system VARCHAR(50),
+    device_type VARCHAR(20),
     screen_resolution VARCHAR(20),
-    language VARCHAR(10),
+    language VARCHAR(5),
     timezone VARCHAR(50),
-    referrer TEXT,
+    referrer VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 ```
