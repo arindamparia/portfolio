@@ -102,8 +102,8 @@ const Contact = () => {
                 if (!validation.isValid) {
                     // Extract error type from validation error
                     const errorType = validation.error.includes('required') ? 'required' :
-                                    validation.error.includes('character') ? 'invalidCharacters' :
-                                    validation.error.includes('10') ? 'lengthError' : 'invalidPrefix';
+                        validation.error.includes('character') ? 'invalidCharacters' :
+                            validation.error.includes('10') ? 'lengthError' : 'invalidPrefix';
                     return { errorType, errorMessage: validation.error };
                 }
                 return { errorType: '', errorMessage: '' };
@@ -456,8 +456,8 @@ const Contact = () => {
                                 style={{
                                     borderColor:
                                         errors.salutation && touched.salutation ? '#f5576c' :
-                                        !errors.salutation && touched.salutation && formData.salutation ? '#4ade80' :
-                                        focusedField === 'salutation' ? 'var(--accent-primary)' : undefined,
+                                            !errors.salutation && touched.salutation && formData.salutation ? '#4ade80' :
+                                                focusedField === 'salutation' ? 'var(--accent-primary)' : undefined,
                                     transition: 'all 0.3s ease'
                                 }}
                                 animate={{
@@ -513,8 +513,8 @@ const Contact = () => {
                                 style={{
                                     borderColor:
                                         errors.firstName && touched.firstName ? '#f5576c' :
-                                        !errors.firstName && touched.firstName && formData.firstName ? '#4ade80' :
-                                        focusedField === 'firstName' ? 'var(--accent-primary)' : undefined,
+                                            !errors.firstName && touched.firstName && formData.firstName ? '#4ade80' :
+                                                focusedField === 'firstName' ? 'var(--accent-primary)' : undefined,
                                     transition: 'all 0.3s ease'
                                 }}
                                 animate={{
@@ -568,8 +568,8 @@ const Contact = () => {
                                 style={{
                                     borderColor:
                                         errors.lastName && touched.lastName ? '#f5576c' :
-                                        !errors.lastName && touched.lastName && formData.lastName ? '#4ade80' :
-                                        focusedField === 'lastName' ? 'var(--accent-primary)' : undefined,
+                                            !errors.lastName && touched.lastName && formData.lastName ? '#4ade80' :
+                                                focusedField === 'lastName' ? 'var(--accent-primary)' : undefined,
                                     transition: 'all 0.3s ease'
                                 }}
                                 animate={{
@@ -608,7 +608,8 @@ const Contact = () => {
                             </label>
                             <motion.input
                                 ref={emailRef}
-                                type="email"
+                                type="text"
+                                inputMode="email"
                                 id="email"
                                 name="email"
                                 value={formData.email}
@@ -620,8 +621,8 @@ const Contact = () => {
                                 style={{
                                     borderColor:
                                         errors.email && touched.email ? '#f5576c' :
-                                        !errors.email && touched.email && formData.email ? '#4ade80' :
-                                        focusedField === 'email' ? 'var(--accent-primary)' : undefined,
+                                            !errors.email && touched.email && formData.email ? '#4ade80' :
+                                                focusedField === 'email' ? 'var(--accent-primary)' : undefined,
                                     transition: 'all 0.3s ease'
                                 }}
                                 animate={{
@@ -712,8 +713,8 @@ const Contact = () => {
                                         paddingLeft: '3.5rem',
                                         borderColor:
                                             errors.mobile && touched.mobile ? '#f5576c' :
-                                            !errors.mobile && touched.mobile && formData.mobile ? '#4ade80' :
-                                            focusedField === 'mobile' ? 'var(--accent-primary)' : undefined,
+                                                !errors.mobile && touched.mobile && formData.mobile ? '#4ade80' :
+                                                    focusedField === 'mobile' ? 'var(--accent-primary)' : undefined,
                                         transition: 'all 0.3s ease'
                                     }}
                                     animate={{
@@ -767,8 +768,8 @@ const Contact = () => {
                             style={{
                                 borderColor:
                                     errors.message && touched.message ? '#f5576c' :
-                                    !errors.message && touched.message && formData.message ? '#4ade80' :
-                                    focusedField === 'message' ? 'var(--accent-primary)' : undefined,
+                                        !errors.message && touched.message && formData.message ? '#4ade80' :
+                                            focusedField === 'message' ? 'var(--accent-primary)' : undefined,
                                 transition: 'all 0.3s ease'
                             }}
                             animate={{
