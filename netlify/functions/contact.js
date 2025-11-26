@@ -6,9 +6,41 @@ import { validateContactData, parseUserAgent, sanitizeContactData } from '../../
 const sql = neon(process.env.DATABASE_URL);
 
 export default async (req, context) => {
-    // Set CORS headers
+    // Get allowed origins from environment variable
+    const allowedOrigins = process.env.ALLOWED_ORIGINS
+        ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+        : [];
+
+    const origin = req.headers.get('origin');
+
+    // CORS Logic:
+    // 1. If no origin header: Allow (same-origin request or tools like Postman)
+    // 2. If origin header exists AND ALLOWED_ORIGINS is empty: REJECT (misconfiguration)
+    // 3. If origin header exists: Only allow if in allowedOrigins list
+    let isAllowedOrigin = false;
+    let corsOrigin = 'null';
+
+    if (!origin) {
+        // No origin header - likely same-origin request
+        isAllowedOrigin = true;
+        corsOrigin = '*';
+    } else if (allowedOrigins.length === 0) {
+        // Cross-origin request but ALLOWED_ORIGINS not configured - REJECT for security
+        isAllowedOrigin = false;
+        corsOrigin = 'null';
+    } else if (allowedOrigins.includes(origin)) {
+        // Origin is in allowed list
+        isAllowedOrigin = true;
+        corsOrigin = origin;
+    } else {
+        // Origin not in allowed list - REJECT
+        isAllowedOrigin = false;
+        corsOrigin = 'null';
+    }
+
+    // Set CORS headers with restricted origin
     const headers = {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': corsOrigin,
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Content-Type': 'application/json'
@@ -17,6 +49,14 @@ export default async (req, context) => {
     // Handle preflight request
     if (req.method === 'OPTIONS') {
         return new Response(null, { status: 204, headers });
+    }
+
+    // Reject if origin is not allowed (only for cross-origin requests)
+    if (origin && !isAllowedOrigin) {
+        return new Response(
+            JSON.stringify({ error: `Origin ${origin} not allowed by CORS policy` }),
+            { status: 403, headers }
+        );
     }
 
     // Only allow POST requests
@@ -82,22 +122,31 @@ export default async (req, context) => {
                      ip_address, browser, operating_system, device_type, created_at
         `;
 
+        // Only return minimal data (don't return user's PII back to them)
         return new Response(
             JSON.stringify({
                 success: true,
                 message: 'Contact information saved successfully',
-                data: result[0]
+                id: result[0].id
             }),
             { status: 201, headers }
         );
 
     } catch (error) {
         console.error('Error saving contact:', error);
+
+        // Only expose error details in development
+        const response = {
+            error: 'Failed to save contact information'
+        };
+
+        // Netlify sets NODE_ENV automatically
+        if (process.env.NODE_ENV === 'development' || process.env.CONTEXT === 'dev') {
+            response.details = error.message;
+        }
+
         return new Response(
-            JSON.stringify({
-                error: 'Failed to save contact information',
-                details: error.message
-            }),
+            JSON.stringify(response),
             { status: 500, headers }
         );
     }

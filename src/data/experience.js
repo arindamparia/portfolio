@@ -1,3 +1,14 @@
+/**
+ * Professional Experience Data
+ *
+ * Contains work experience history including:
+ * - Company information
+ * - Role and time period
+ * - Projects worked on with focus areas and achievements
+ *
+ * Used to populate Experience section in both Modern and IDE views
+ */
+
 export const experienceData = [
     {
         "company": "Publicis Sapient",

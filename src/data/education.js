@@ -1,3 +1,15 @@
+/**
+ * Education Background Data
+ *
+ * Academic qualifications in reverse chronological order:
+ * - Degree/qualification level
+ * - Institution name
+ * - Year(s) of study
+ * - Additional details (CGPA, marks, specialization)
+ *
+ * Used in the Education section across both layout views
+ */
+
 export const educationData = [
     {
         degree: "Bachelor of Technology",

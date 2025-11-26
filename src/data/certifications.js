@@ -1,8 +1,19 @@
+/**
+ * Professional Certifications Data
+ *
+ * List of professional certifications and courses completed:
+ * - Certification name
+ * - Year obtained
+ * - Issuing organization
+ *
+ * Displayed in reverse chronological order in the Certifications section
+ */
+
 export const certificationsData = [
     {
         name: 'Certificate of Completion: Spring Boot',
         year: '2024',
-        issuer: 'Udemy'
+        issuer: 'Coding Ninja'
     },
     {
         name: 'Salesforce Certified Agentforce Specialist',

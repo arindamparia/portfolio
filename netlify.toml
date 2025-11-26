@@ -16,12 +16,18 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-[[headers]]
-  for = "/api/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Headers = "Content-Type"
-    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+# CORS CONFIGURATION
+# -----------------
+# CORS is handled in netlify/functions/contact.js using ALLOWED_ORIGINS environment variable
+#
+# IMPORTANT: In production, your site makes SAME-ORIGIN requests (e.g., yoursite.netlify.app → yoursite.netlify.app/api/contact)
+# CORS only applies when OTHER DOMAINS try to call your API (cross-origin requests)
+#
+# Set ALLOWED_ORIGINS in Netlify dashboard: Site settings > Environment variables
+# Only add domains that should be allowed to call your API from a different origin
+# Example: https://another-site.com,https://partner-site.com
+#
+# For development, localhost origins are configured in .env file
 
 # Cache static assets (JS, CSS) for 1 year - they have hashed filenames
 [[headers]]
