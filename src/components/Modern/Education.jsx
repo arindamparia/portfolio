@@ -9,7 +9,7 @@ import InteractiveBackground from '../Shared/InteractiveBackground';
 const Education = () => {
     return (
         <section id="education">
-            <InteractiveBackground variant="gradient" colorScheme="pink" intensity={0.5} />
+            <InteractiveBackground variant="gradient" colorScheme="pink" intensity={0.2} />
             <div className="container">
                 <motion.p
                     className="section-subtitle"

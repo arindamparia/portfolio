@@ -19,7 +19,7 @@ const Skills = () => {
 
     return (
         <section id="skills" style={{ background: 'var(--bg-secondary)', padding: '4rem 0' }}>
-            <InteractiveBackground variant="geometric" colorScheme="green" intensity={0.4} />
+            <InteractiveBackground variant="gradient" colorScheme="green" intensity={0.2} />
             <div className="container">
                 <motion.p
                     className="section-subtitle"

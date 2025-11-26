@@ -9,7 +9,7 @@ import InteractiveBackground from '../Shared/InteractiveBackground';
 const Certifications = () => {
     return (
         <section id="certifications" style={{ background: 'var(--bg-secondary)' }}>
-            <InteractiveBackground variant="mesh" colorScheme="purple" intensity={0.4} />
+            <InteractiveBackground variant="gradient" colorScheme="purple" intensity={0.2} />
             <div className="container">
                 <motion.p
                     className="section-subtitle"

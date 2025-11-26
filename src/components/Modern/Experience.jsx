@@ -8,7 +8,7 @@ import InteractiveBackground from '../Shared/InteractiveBackground';
 const Experience = () => {
     return (
         <section id="experience">
-            <InteractiveBackground variant="waves" colorScheme="teal" intensity={0.5} />
+            <InteractiveBackground variant="gradient" colorScheme="teal" intensity={0.2} />
             <div className="container">
                 <motion.p
                     className="section-subtitle"

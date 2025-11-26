@@ -36,7 +36,7 @@ const About = () => {
 
     return (
         <section id="about">
-            <InteractiveBackground variant="mesh" colorScheme="blue" intensity={0.5} />
+            <InteractiveBackground variant="gradient" colorScheme="blue" intensity={0.2} />
             <div className="container">
                 <motion.p
                     className="section-subtitle"
