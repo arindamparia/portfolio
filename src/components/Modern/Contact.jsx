@@ -7,6 +7,7 @@ import { vibrateLight, vibrateError, vibrateSuccess } from '../../utils/vibratio
 import { API_BASE_URL } from '../../utils/api';
 import { validateIndianPhoneNumber } from '../../utils/phoneValidation';
 import { getRandomMessage, getRandomSuccess } from '../../constants/formErrorMessages';
+import { FIELD_LIMITS } from '../../utils/contactValidation';
 import ToastContainer from './Toast';
 import AnimatedEye from '../Shared/AnimatedEye';
 
@@ -163,6 +164,12 @@ const Contact = () => {
             processedValue = value.replace(/[^0-9]/g, '');
         } else if (name !== 'company' && name !== 'message') {
             processedValue = value.replace(/\s/g, '');
+        }
+
+        // Enforce maximum length limits - prevent typing beyond database limits
+        const maxLength = FIELD_LIMITS[name];
+        if (maxLength && processedValue.length > maxLength) {
+            processedValue = processedValue.substring(0, maxLength);
         }
 
         setFormData({
