@@ -9,7 +9,7 @@ import InteractiveBackground from '../Shared/InteractiveBackground';
 const Hero = () => {
     return (
         <section id="home" className="hero">
-            <InteractiveBackground variant="gradient" colorScheme="purple" intensity={0.2} />
+            <InteractiveBackground variant="universe" colorScheme="purple" intensity={0.5} />
             <div className="container">
                 <div className="hero-content">
                     <motion.img

@@ -358,12 +358,12 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
 
   return (
     <div className="universe-bg">
-      {/* Dark space background with subtle gradient */}
+      {/* Lighter space background with subtle gradient */}
       <div className="space-gradient" style={{
         position: 'absolute',
         width: '100%',
         height: '100%',
-        background: `radial-gradient(ellipse at ${50 + (mousePosition.x - 0.5) * 30}% ${50 + (mousePosition.y - 0.5) * 30}%, #0a0e27 0%, #020308 100%)`,
+        background: `radial-gradient(ellipse at ${50 + (mousePosition.x - 0.5) * 30}% ${50 + (mousePosition.y - 0.5) * 30}%, rgba(20, 25, 60, 0.15) 0%, rgba(10, 15, 35, 0.08) 100%)`,
         transition: 'background 0.5s ease'
       }} />
 
@@ -381,7 +381,7 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
               animate={{
                 x: `calc(${star.x}% + ${offsetX * 0.3}px)`,
                 y: `calc(${star.y}% + ${offsetY * 0.3}px)`,
-                opacity: [0.2, 0.4, 0.2],
+                opacity: [0.4, 0.7, 0.4],
                 scale: [1, 1.2, 1],
               }}
               transition={{
@@ -394,7 +394,7 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
                 position: 'absolute',
                 width: star.size * 30 + 40,
                 height: star.size * 30 + 40,
-                background: `radial-gradient(circle, ${colors.primary}40, ${colors.accent}20, transparent)`,
+                background: `radial-gradient(circle, ${colors.primary}70, ${colors.accent}40, transparent)`,
                 borderRadius: '50%',
                 filter: 'blur(20px)',
               }}
@@ -420,9 +420,9 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
                 position: 'absolute',
                 width: star.size * 5 + 6,
                 height: star.size * 5 + 6,
-                background: `radial-gradient(circle at 30% 30%, ${colors.light}60, ${colors.secondary}80)`,
+                background: `radial-gradient(circle at 30% 30%, ${colors.light}, ${colors.secondary})`,
                 borderRadius: '50%',
-                boxShadow: `0 0 ${star.size * 3}px ${colors.accent}60`,
+                boxShadow: `0 0 ${star.size * 4}px ${colors.accent}, 0 0 ${star.size * 2}px ${colors.light}`,
               }}
             />
           );
@@ -435,8 +435,8 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
               animate={{
                 x: `calc(${star.x}% + ${offsetX}px)`,
                 y: `calc(${star.y}% + ${offsetY}px)`,
-                opacity: [0.3, 1, 0.3],
-                scale: [0.8, 1.2, 0.8],
+                opacity: [0.5, 1, 0.5],
+                scale: [0.9, 1.3, 0.9],
               }}
               transition={{
                 x: { type: 'spring', stiffness: 30, damping: 15 },
@@ -450,8 +450,8 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
                 height: star.size,
                 background: '#ffffff',
                 borderRadius: '50%',
-                boxShadow: `0 0 ${star.size * 2}px #ffffff80`,
-                filter: 'blur(0.5px)',
+                boxShadow: `0 0 ${star.size * 3}px #ffffff, 0 0 ${star.size * 5}px rgba(255, 255, 255, 0.5)`,
+                filter: 'blur(0.3px)',
               }}
             />
           );
