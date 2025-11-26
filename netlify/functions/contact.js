@@ -6,12 +6,27 @@ import { validateContactData, parseUserAgent, sanitizeContactData } from '../../
 const sql = neon(process.env.DATABASE_URL);
 
 export default async (req, context) => {
-    // Get allowed origins from environment variable
+    // Helper to normalize origin (remove trailing slash)
+    const normalizeOrigin = (url) => url ? url.replace(/\/$/, '') : '';
+
+    // Get allowed origins from environment variable and normalize them
     const allowedOrigins = process.env.ALLOWED_ORIGINS
-        ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+        ? process.env.ALLOWED_ORIGINS.split(',').map(origin => normalizeOrigin(origin.trim()))
         : [];
 
     const origin = req.headers.get('origin');
+    console.log('=== CORS DEBUG ===');
+
+    console.log('Raw ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS);
+
+    console.log('Parsed allowedOrigins:', allowedOrigins);
+
+    console.log('Request origin:', origin);
+
+    console.log('================');
+    const normalizedOrigin = normalizeOrigin(origin);
+
+    console.log(`CORS Check: Origin='${origin}' (Normalized='${normalizedOrigin}'), Allowed=[${allowedOrigins.join(', ')}]`);
 
     // CORS Logic:
     // 1. If no origin header: Allow (same-origin request or tools like Postman)
@@ -26,14 +41,16 @@ export default async (req, context) => {
         corsOrigin = '*';
     } else if (allowedOrigins.length === 0) {
         // Cross-origin request but ALLOWED_ORIGINS not configured - REJECT for security
+        console.warn('CORS Warning: ALLOWED_ORIGINS environment variable is not set or empty.');
         isAllowedOrigin = false;
         corsOrigin = 'null';
-    } else if (allowedOrigins.includes(origin)) {
+    } else if (allowedOrigins.includes(normalizedOrigin)) {
         // Origin is in allowed list
         isAllowedOrigin = true;
-        corsOrigin = origin;
+        corsOrigin = origin; // Return the original origin as requested
     } else {
         // Origin not in allowed list - REJECT
+        console.warn(`CORS Blocked: Origin '${normalizedOrigin}' is not in the allowed list.`);
         isAllowedOrigin = false;
         corsOrigin = 'null';
     }
@@ -82,9 +99,9 @@ export default async (req, context) => {
 
         // Get client IP address
         const ipAddress = req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
-                         req.headers.get('x-real-ip') ||
-                         context.ip ||
-                         'unknown';
+            req.headers.get('x-real-ip') ||
+            context.ip ||
+            'unknown';
 
         // Parse user agent to extract browser, OS, and device information
         const parser = new UAParser(userAgent);

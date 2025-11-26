@@ -35,7 +35,28 @@ export const socialLinks = {
 
 // Assets
 export const assets = {
-    profileImage: 'https://via.placeholder.com/400',
-    aboutImage: 'https://via.placeholder.com/300x400',
+    // ==============================================================
+    // CLOUDINARY SETUP INSTRUCTIONS:
+    // ==============================================================
+    // 1. Sign up for free at https://cloudinary.com
+    // 2. Upload your profile picture to Cloudinary Media Library
+    // 3. Copy the "Public ID" (e.g., "portfolio/profile-pic")
+    // 4. Get your "Cloud Name" from dashboard
+    // 5. Replace the URLs below using one of these methods:
+    //
+    // METHOD 1 - Direct URL (Recommended - Simple):
+    // profileImage: 'https://res.cloudinary.com/YOUR_CLOUD_NAME/image/upload/c_fill,w_400,h_400,q_auto,f_auto/YOUR_PUBLIC_ID'
+    //
+    // METHOD 2 - Using helper function:
+    // import { buildCloudinaryUrl } from '../utils/cloudinaryHelper';
+    // profileImage: buildCloudinaryUrl('YOUR_CLOUD_NAME', 'YOUR_PUBLIC_ID', { width: 400, height: 400 })
+    //
+    // EXAMPLE:
+    // If your cloud name is "demo" and public ID is "portfolio/arindam-photo"
+    // profileImage: 'https://res.cloudinary.com/demo/image/upload/c_fill,w_400,h_400,q_auto,f_auto/portfolio/arindam-photo'
+    // ==============================================================
+
+    profileImage: 'https://res.cloudinary.com/dnju7wfma/image/upload/c_fill,w_400,h_400,q_auto,f_auto/1709320939738_1_gkcoyp',
+    aboutImage: 'https://via.placeholder.com/300x400', // TODO: Replace with your Cloudinary URL
     cvPath: '/cv.pdf'
 };

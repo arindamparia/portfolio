@@ -5,51 +5,14 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-padding-top: 80px; /* Account for fixed navbar */
+}
+
 body {
   overflow: hidden;
   /* App handles scrolling */
-  cursor: none; /* Hide default cursor for custom cursor */
-}
-
-/* =========================================
-   CUSTOM INTERACTIVE CURSOR
-   ========================================= */
-.custom-cursor,
-.custom-cursor-dot {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 9999;
-  border-radius: 50%;
-}
-
-.custom-cursor {
-  width: 32px;
-  height: 32px;
-  background-color: rgba(99, 102, 241, 0.5);
-  border: 2px solid rgba(99, 102, 241, 0.8);
-  mix-blend-mode: difference;
-  transition: width 0.3s ease, height 0.3s ease;
-}
-
-.custom-cursor-dot {
-  width: 8px;
-  height: 8px;
-  background-color: rgba(139, 92, 246, 0.9);
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
-}
-
-/* Fallback for devices without custom cursor support */
-@media (pointer: coarse) {
-  body {
-    cursor: auto;
-  }
-
-  .custom-cursor,
-  .custom-cursor-dot {
-    display: none;
-  }
+  cursor: auto; /* Use normal system cursor */
 }
 
 /* =========================================
@@ -283,12 +246,67 @@ body {
 }
 
 .theme-modern section {
-  padding: 2rem 0;
+  padding: 4rem 0 2rem 0;
   min-height: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   scroll-margin-top: 100px;
+  position: relative;
+}
+
+/* Static gradient backgrounds for non-Hero sections */
+.theme-modern section:not(.hero)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* About Section - Blue gradient */
+.theme-modern #about::before {
+  background: radial-gradient(ellipse at 30% 40%, rgba(59, 130, 246, 0.08) 0%, rgba(37, 99, 235, 0.04) 50%, rgba(29, 78, 216, 0.02) 100%),
+              linear-gradient(135deg, rgba(96, 165, 250, 0.05) 0%, transparent 60%);
+}
+
+/* Skills Section - Green gradient */
+.theme-modern #skills::before {
+  background: radial-gradient(ellipse at 70% 30%, rgba(34, 197, 94, 0.08) 0%, rgba(22, 163, 74, 0.04) 50%, rgba(21, 128, 61, 0.02) 100%),
+              linear-gradient(225deg, rgba(134, 239, 172, 0.05) 0%, transparent 60%);
+}
+
+/* Experience Section - Teal gradient */
+.theme-modern #experience::before {
+  background: radial-gradient(ellipse at 50% 60%, rgba(20, 184, 166, 0.08) 0%, rgba(13, 148, 136, 0.04) 50%, rgba(15, 118, 110, 0.02) 100%),
+              linear-gradient(180deg, rgba(94, 234, 212, 0.05) 0%, transparent 60%);
+}
+
+/* Projects Section - Orange gradient */
+.theme-modern #projects::before {
+  background: radial-gradient(ellipse at 40% 50%, rgba(251, 146, 60, 0.08) 0%, rgba(249, 115, 22, 0.04) 50%, rgba(234, 88, 12, 0.02) 100%),
+              linear-gradient(315deg, rgba(253, 186, 116, 0.05) 0%, transparent 60%);
+}
+
+/* Education Section - Pink gradient */
+.theme-modern #education::before {
+  background: radial-gradient(ellipse at 60% 40%, rgba(236, 72, 153, 0.08) 0%, rgba(219, 39, 119, 0.04) 50%, rgba(190, 24, 93, 0.02) 100%),
+              linear-gradient(45deg, rgba(249, 168, 212, 0.05) 0%, transparent 60%);
+}
+
+/* Certifications Section - Purple gradient */
+.theme-modern #certifications::before {
+  background: radial-gradient(ellipse at 35% 35%, rgba(168, 85, 247, 0.08) 0%, rgba(147, 51, 234, 0.04) 50%, rgba(126, 34, 206, 0.02) 100%),
+              linear-gradient(135deg, rgba(192, 132, 252, 0.05) 0%, transparent 60%);
+}
+
+/* Contact Section - Indigo gradient */
+.theme-modern #contact::before {
+  background: radial-gradient(ellipse at 50% 50%, rgba(99, 102, 241, 0.08) 0%, rgba(79, 70, 229, 0.04) 50%, rgba(67, 56, 202, 0.02) 100%),
+              linear-gradient(270deg, rgba(129, 140, 248, 0.05) 0%, transparent 60%);
 }
 
 .theme-modern .section-subtitle {
@@ -494,9 +512,10 @@ body {
 
 .theme-modern .hero-text .greeting {
   font-size: 1rem;
-  color: var(--text-secondary);
+  color: #ffffff;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 .theme-modern .hero h1 {
@@ -504,13 +523,16 @@ body {
   margin-bottom: 0.5rem;
   line-height: 1.2;
   font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8), 0 4px 24px rgba(0, 0, 0, 0.6), 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 .theme-modern .hero h2 {
   font-size: 1.5rem;
-  color: var(--text-secondary);
+  color: #ffffff;
   margin-bottom: 2rem;
   font-weight: 500;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7), 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .theme-modern .hero-buttons {
@@ -518,6 +540,47 @@ body {
   gap: 1rem;
   justify-content: center;
   margin-bottom: 1.5rem;
+}
+
+/* Hero buttons - white for visibility on dark background */
+.theme-modern .hero .btn {
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.theme-modern .hero .btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 3px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Hero primary button (Download CV) */
+.theme-modern .hero .btn-primary {
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #ffffff;
+}
+
+.theme-modern .hero .btn-primary:hover {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000000;
+  border: 2px solid #ffffff;
+}
+
+/* Hero secondary button */
+.theme-modern .hero .btn-secondary {
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+.theme-modern .hero .btn-secondary:hover {
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #ffffff;
 }
 
 .theme-modern .social-icons {
@@ -535,6 +598,17 @@ body {
 .theme-modern .social-icons a:hover {
   color: var(--text-secondary);
   transform: scale(1.1);
+}
+
+/* Hero section social icons - white for dark background */
+.theme-modern .hero .social-icons a {
+  color: #ffffff;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6)) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.4));
+}
+
+.theme-modern .hero .social-icons a:hover {
+  color: #e0e0e0;
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.8)) drop-shadow(0 6px 20px rgba(0, 0, 0, 0.5));
 }
 
 /* About Section */
@@ -1099,13 +1173,18 @@ body {
 
 /* Responsive Design for Mobile to Laptop */
 @media (max-width: 768px) {
+  html {
+    scroll-padding-top: 100px; /* More padding for mobile navbar */
+  }
+
   .theme-modern .container {
     padding: 0 1rem;
   }
 
   .theme-modern section {
-    padding: 3rem 0;
+    padding: 4rem 0 3rem 0;
     min-height: auto;
+    scroll-margin-top: 120px;
   }
 
   .theme-modern .section-title {
