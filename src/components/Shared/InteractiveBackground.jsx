@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import './InteractiveBackground.css';
 
@@ -343,32 +343,36 @@ const GeometricBackground = ({ mousePosition, colors, intensity }) => {
 const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
   const starCount = 60;
 
-  // Generate stars with better distribution across the entire section
-  // Use a grid-based approach with randomization for even distribution
-  const gridSize = Math.ceil(Math.sqrt(starCount));
-  const cellWidth = 100 / gridSize;
-  const cellHeight = 100 / gridSize;
+  // Memoize stars to prevent recalculation on every render
+  // This ensures stable positions and prevents jittering
+  const stars = useMemo(() => {
+    // Generate stars with better distribution across the entire section
+    // Use a grid-based approach with randomization for even distribution
+    const gridSize = Math.ceil(Math.sqrt(starCount));
+    const cellWidth = 100 / gridSize;
+    const cellHeight = 100 / gridSize;
 
-  const stars = Array.from({ length: starCount }, (_, i) => {
-    const gridX = i % gridSize;
-    const gridY = Math.floor(i / gridSize);
+    return Array.from({ length: starCount }, (_, i) => {
+      const gridX = i % gridSize;
+      const gridY = Math.floor(i / gridSize);
 
-    // Add randomization within each grid cell for natural look
-    const x = gridX * cellWidth + Math.random() * cellWidth;
-    const y = gridY * cellHeight + Math.random() * cellHeight;
+      // Add randomization within each grid cell for natural look
+      const x = gridX * cellWidth + Math.random() * cellWidth;
+      const y = gridY * cellHeight + Math.random() * cellHeight;
 
-    return {
-      id: i,
-      x: Math.min(x, 98), // Keep within bounds
-      y: Math.min(y, 98),
-      size: Math.random() * 2.5 + 0.5,
-      speed: Math.random() * 0.6 + 0.2,
-      twinkleDelay: Math.random() * 4,
-      orbitRadius: Math.random() * 40 + 15,
-      orbitSpeed: Math.random() * 1.5 + 0.8,
-      type: i % 8 === 0 ? 'nebula' : i % 6 === 0 ? 'planet' : 'star'
-    };
-  });
+      return {
+        id: i,
+        x: Math.min(x, 98), // Keep within bounds
+        y: Math.min(y, 98),
+        size: Math.random() * 2.5 + 0.5,
+        speed: Math.random() * 0.6 + 0.2,
+        twinkleDelay: Math.random() * 4,
+        orbitRadius: Math.random() * 40 + 15,
+        orbitSpeed: Math.random() * 1.5 + 0.8,
+        type: i % 8 === 0 ? 'nebula' : i % 6 === 0 ? 'planet' : 'star'
+      };
+    });
+  }, [starCount]);
 
   return (
     <div className="universe-bg">
