@@ -15,11 +15,11 @@
  */
 
 export const skillsData = {
-    "languages": ["Java", "JavaScript", "Python", "C", "C++"],
+    "languages": ["Java", "JavaScript", "C", "C++"],
     "frontend": ["HTML/CSS", "React", "Tailwind"],
-    "backend": ["Spring Boot", "Spring Security", "Java Reactive", "Java Microservices", "Spring AI", "Node.js", "Express.js"],
+    "backend": ["Spring Boot", "Spring Security", "Spring AI", "Java Reactive", "Java Microservices", "Node.js"],
     "database": ["MySQL", "PostgreSQL", "MongoDB"],
-    "enterprise": ["Salesforce Commerce Cloud", "nCino", "Salesforce"],
+    "enterprise": ["nCino", "Salesforce Sales Cloud", "Salesforce Commerce Cloud"],
     "cloud_devops": ["AWS", "Docker", "Jenkins"],
     "fundamentals": ["Data Structures", "Algorithms", "OOPs"],
     "tools": ["GIT", "Junit & Mockito"]
