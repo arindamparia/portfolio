@@ -366,9 +366,8 @@ body {
   position: fixed;
   top: 0;
   width: 100%;
-  background: rgba(17, 24, 39, 0.85);
+  background: var(--bg-primary);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
   border-bottom: 1px solid var(--border-light);
   padding: 1rem 0;
