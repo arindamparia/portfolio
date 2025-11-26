@@ -1,3 +1,14 @@
+/**
+ * Personal Projects Data
+ *
+ * Collection of side projects and personal work including:
+ * - Project name and description
+ * - Technologies used
+ * - Project type (Web App, Automation, Extension, etc.)
+ *
+ * Displayed in the Projects section of both Modern and IDE views
+ */
+
 export const projectsData = [
     {
         name: 'Blogify',

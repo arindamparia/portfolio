@@ -229,6 +229,11 @@ const Contact = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Prevent multiple submissions while already processing
+        if (isSubmitting) {
+            return;
+        }
+
         // Validate all fields
         const newErrors = {};
         const newErrorTypes = {};

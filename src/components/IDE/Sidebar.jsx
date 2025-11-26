@@ -1,3 +1,20 @@
+/**
+ * IDE Sidebar Component
+ *
+ * Mimics VS Code's sidebar with:
+ * - Activity Bar (left): Icon buttons for different views
+ * - File Explorer: Collapsible list of portfolio "files"
+ * - Social media links
+ * - Profile menu
+ * - Disabled feature notifications
+ *
+ * Features:
+ * - Only Files view is functional (other views show "disabled" message)
+ * - Collapsible file tree
+ * - Haptic feedback on interactions
+ * - Profile quick access menu
+ */
+
 import React from 'react';
 import { VscFiles, VscSearch, VscSourceControl, VscDebugAlt, VscExtensions, VscAccount, VscSettingsGear, VscChevronRight, VscChevronDown } from 'react-icons/vsc';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
@@ -5,7 +22,7 @@ import { SiLeetcode } from 'react-icons/si';
 import { ideFiles } from '../../constants/ideFiles.jsx';
 import { socialLinks } from '../../constants/personalInfo.js';
 
-// Common styles
+// Style constants for consistent styling across the component
 const ICON_STYLE = {
     marginBottom: '20px',
     cursor: 'pointer'
@@ -43,17 +60,27 @@ const DISABLED_PROMPT_STYLE = {
 };
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
+    // Track whether file explorer is expanded or collapsed
     const [isOpen, setIsOpen] = React.useState(true);
+
+    // Track whether profile menu popup is visible
     const [showProfileMenu, setShowProfileMenu] = React.useState(false);
+
+    // Track disabled feature notification
     const [showDisabledPrompt, setShowDisabledPrompt] = React.useState(false);
     const [disabledFeature, setDisabledFeature] = React.useState('');
 
+    /**
+     * Handle clicks on disabled features (Search, Source Control, Debug, etc.)
+     * Shows a temporary notification and provides haptic feedback
+     */
     const handleDisabledClick = (featureName) => {
         setDisabledFeature(featureName);
         setShowDisabledPrompt(true);
         if (navigator.vibrate) {
             navigator.vibrate(50);
         }
+        // Auto-hide notification after 3 seconds
         setTimeout(() => setShowDisabledPrompt(false), 3000);
     };
 

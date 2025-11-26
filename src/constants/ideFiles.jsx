@@ -1,7 +1,27 @@
+/**
+ * IDE Files Configuration
+ *
+ * Defines the "files" shown in the VS Code-style file explorer.
+ * Each file represents a different section of the portfolio.
+ *
+ * Properties:
+ * - name: Display name with file extension (for visual effect)
+ * - icon: React icon component with appropriate color
+ * - id: Unique identifier used for routing/navigation
+ *
+ * File extensions are chosen to match common file types for visual appeal:
+ * - .jsx for React components
+ * - .js for JavaScript logic
+ * - .json for data
+ * - .md for documentation-style content
+ * - .css for styling sections
+ *
+ * Used by IDE Sidebar and Tabs components
+ */
+
 import { FaReact, FaJs, FaCss3, FaMarkdown } from 'react-icons/fa';
 import { SiJson } from 'react-icons/si';
 
-// Shared file list for IDE components (Sidebar and Tabs)
 export const ideFiles = [
     { name: 'home.jsx', icon: <FaReact color="#61DAFB" />, id: 'home' },
     { name: 'projects.js', icon: <FaJs color="#F7DF1E" />, id: 'projects' },
