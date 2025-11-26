@@ -346,7 +346,7 @@ const Contact = () => {
     const getCharacterCount = () => {
         const count = formData.message.length;
         const min = 10;
-        const max = 1000;
+        const max = 500;
 
         if (count === 0) return { text: "Start typing your epic message! ✍️", color: '#888' };
         if (count < min) return { text: `${min - count} more characters needed. You're almost there! 💪`, color: '#f5576c' };
@@ -501,6 +501,7 @@ const Contact = () => {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 onFocus={() => handleFocus('firstName')}
+                                maxLength={30}
                                 className={errors.firstName && touched.firstName ? 'error' : ''}
                                 style={{
                                     borderColor:
@@ -555,6 +556,7 @@ const Contact = () => {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 onFocus={() => handleFocus('lastName')}
+                                maxLength={30}
                                 className={errors.lastName && touched.lastName ? 'error' : ''}
                                 style={{
                                     borderColor:
@@ -606,6 +608,7 @@ const Contact = () => {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 onFocus={() => handleFocus('email')}
+                                maxLength={80}
                                 className={errors.email && touched.email ? 'error' : ''}
                                 style={{
                                     borderColor:
@@ -660,6 +663,7 @@ const Contact = () => {
                                 onChange={handleChange}
                                 onFocus={() => handleFocus('company')}
                                 onBlur={() => setFocusedField('')}
+                                maxLength={80}
                                 style={{
                                     borderColor: focusedField === 'company' ? 'var(--accent-primary)' : undefined,
                                     transition: 'all 0.3s ease'
@@ -752,7 +756,7 @@ const Contact = () => {
                             onFocus={() => handleFocus('message')}
                             className={errors.message && touched.message ? 'error' : ''}
                             placeholder="Tell me about your project, timeline, or how I can help."
-                            maxLength={1000}
+                            maxLength={500}
                             style={{
                                 borderColor:
                                     errors.message && touched.message ? '#f5576c' :
