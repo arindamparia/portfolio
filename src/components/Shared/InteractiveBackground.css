@@ -6,7 +6,10 @@
   height: 100%;
   overflow: hidden;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 /* Gradient Background */
@@ -175,6 +178,13 @@
 /* Ensure sections with interactive backgrounds have position relative */
 section {
   position: relative;
+  isolation: isolate;
+}
+
+section > .container,
+section > div:not(.interactive-background) {
+  position: relative;
+  z-index: 2;
 }
 
 /* Responsive optimizations */

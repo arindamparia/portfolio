@@ -17,19 +17,31 @@ const InteractiveBackground = ({
 }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 });
   const containerRef = useRef(null);
+  const rafRef = useRef(null);
 
   useEffect(() => {
     const updateMousePosition = (e) => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width;
-        const y = (e.clientY - rect.top) / rect.height;
-        setMousePosition({ x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) });
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
       }
+
+      rafRef.current = requestAnimationFrame(() => {
+        if (containerRef.current) {
+          const rect = containerRef.current.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width;
+          const y = (e.clientY - rect.top) / rect.height;
+          setMousePosition({ x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) });
+        }
+      });
     };
 
-    window.addEventListener('mousemove', updateMousePosition);
-    return () => window.removeEventListener('mousemove', updateMousePosition);
+    window.addEventListener('mousemove', updateMousePosition, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', updateMousePosition);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
   }, []);
 
   // Color schemes
@@ -122,7 +134,7 @@ const GradientBackground = ({ mousePosition, colors, intensity }) => {
 
 // Floating Particles Background
 const ParticlesBackground = ({ mousePosition, colors, intensity }) => {
-  const particleCount = 30;
+  const particleCount = 12;
   const particles = Array.from({ length: particleCount }, (_, i) => ({
     id: i,
     initialX: Math.random() * 100,
@@ -294,11 +306,11 @@ const GeometricBackground = ({ mousePosition, colors, intensity }) => {
   const offsetY = (mousePosition.y - 0.5) * 100 * intensity;
   const rotation = (mousePosition.x - 0.5) * 20 * intensity;
 
-  const shapes = Array.from({ length: 15 }, (_, i) => ({
+  const shapes = Array.from({ length: 8 }, (_, i) => ({
     id: i,
-    x: (i % 5) * 25,
-    y: Math.floor(i / 5) * 33,
-    size: Math.random() * 60 + 40,
+    x: (i % 4) * 30,
+    y: Math.floor(i / 4) * 45,
+    size: Math.random() * 50 + 35,
     type: i % 3 === 0 ? 'circle' : i % 3 === 1 ? 'square' : 'triangle',
     color: i % 3 === 0 ? colors.primary : i % 3 === 1 ? colors.secondary : colors.accent
   }));
@@ -329,19 +341,19 @@ const GeometricBackground = ({ mousePosition, colors, intensity }) => {
 
 // Universe Particles Background - Space/Galaxy Theme
 const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
-  const starCount = 80;
+  const starCount = 25;
 
   // Generate stars with varying sizes and positions
   const stars = Array.from({ length: starCount }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     y: Math.random() * 100,
-    size: Math.random() * 3 + 0.5,
-    speed: Math.random() * 0.8 + 0.2,
-    twinkleDelay: Math.random() * 5,
-    orbitRadius: Math.random() * 50 + 20,
-    orbitSpeed: Math.random() * 2 + 1,
-    type: i % 5 === 0 ? 'nebula' : i % 3 === 0 ? 'planet' : 'star'
+    size: Math.random() * 2.5 + 0.5,
+    speed: Math.random() * 0.6 + 0.2,
+    twinkleDelay: Math.random() * 4,
+    orbitRadius: Math.random() * 40 + 15,
+    orbitSpeed: Math.random() * 1.5 + 0.8,
+    type: i % 8 === 0 ? 'nebula' : i % 6 === 0 ? 'planet' : 'star'
   }));
 
   return (

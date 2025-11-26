@@ -12,32 +12,30 @@ body {
 }
 
 /* =========================================
-   CUSTOM INTERACTIVE CURSOR
+   ELEGANT CUSTOM CURSOR
    ========================================= */
-.custom-cursor,
-.custom-cursor-dot {
+.elegant-cursor {
   position: fixed;
-  top: 0;
-  left: 0;
+  width: 20px;
+  height: 20px;
+  margin-left: -10px;
+  margin-top: -10px;
   pointer-events: none;
   z-index: 9999;
+  border: 2px solid rgba(99, 102, 241, 0.6);
   border-radius: 50%;
+  transition: all 0.15s ease-out;
+  will-change: transform;
+  transform-origin: center center;
 }
 
-.custom-cursor {
-  width: 32px;
-  height: 32px;
-  background-color: rgba(99, 102, 241, 0.5);
-  border: 2px solid rgba(99, 102, 241, 0.8);
-  mix-blend-mode: difference;
-  transition: width 0.3s ease, height 0.3s ease;
-}
-
-.custom-cursor-dot {
-  width: 8px;
-  height: 8px;
-  background-color: rgba(139, 92, 246, 0.9);
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+.elegant-cursor.hovering {
+  width: 40px;
+  height: 40px;
+  margin-left: -20px;
+  margin-top: -20px;
+  background-color: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.8);
 }
 
 /* Fallback for devices without custom cursor support */
@@ -46,8 +44,7 @@ body {
     cursor: auto;
   }
 
-  .custom-cursor,
-  .custom-cursor-dot {
+  .elegant-cursor {
     display: none;
   }
 }
