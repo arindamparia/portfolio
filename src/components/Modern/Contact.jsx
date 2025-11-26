@@ -434,8 +434,7 @@ const Contact = () => {
                 >
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="salutation" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <AnimatedEye isOpen={!!formData.salutation} inputRef={salutationRef} size="1.5rem" />
+                            <label htmlFor="salutation">
                                 Salutation *
                             </label>
                             <motion.select

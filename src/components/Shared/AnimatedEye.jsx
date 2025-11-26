@@ -7,72 +7,134 @@ import { motion, AnimatePresence } from 'framer-motion';
  * An interactive eye component that:
  * - Closes when the associated input is empty
  * - Opens when the input has content
- * - Tracks the cursor position within the input field
+ * - Tracks the text cursor (caret) position within the input field
  *
  * @param {boolean} isOpen - Whether the eye should be open (has content) or closed (empty)
- * @param {Object} inputRef - Reference to the input element to track cursor position
+ * @param {Object} inputRef - Reference to the input element to track text cursor position
  * @param {string} size - Size of the eye (default: '2rem')
  */
 const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
     const [pupilPosition, setPupilPosition] = useState({ x: 0, y: 0 });
     const eyeRef = useRef(null);
 
-    useEffect(() => {
-        if (!isOpen || !inputRef?.current) return;
+    /**
+     * Calculate the pixel position of the text cursor within an input/textarea
+     */
+    const getCaretCoordinates = (element) => {
+        const { selectionStart, value, tagName } = element;
 
-        const handleMouseMove = (e) => {
-            if (!eyeRef.current || !inputRef.current) return;
+        if (selectionStart === null || selectionStart === undefined) {
+            return null;
+        }
 
-            // Get the bounding rectangles
-            const eyeRect = eyeRef.current.getBoundingClientRect();
-            const inputRect = inputRef.current.getBoundingClientRect();
+        // Create a mirror div to measure text
+        const mirror = document.createElement('div');
+        const computed = window.getComputedStyle(element);
 
-            // Check if mouse is over the input field
-            const isOverInput = e.clientX >= inputRect.left &&
-                              e.clientX <= inputRect.right &&
-                              e.clientY >= inputRect.top &&
-                              e.clientY <= inputRect.bottom;
+        // Copy relevant styles
+        mirror.style.position = 'absolute';
+        mirror.style.visibility = 'hidden';
+        mirror.style.whiteSpace = tagName === 'TEXTAREA' ? 'pre-wrap' : 'pre';
+        mirror.style.wordWrap = 'break-word';
+        mirror.style.font = computed.font;
+        mirror.style.fontSize = computed.fontSize;
+        mirror.style.fontFamily = computed.fontFamily;
+        mirror.style.fontWeight = computed.fontWeight;
+        mirror.style.letterSpacing = computed.letterSpacing;
+        mirror.style.padding = computed.padding;
+        mirror.style.border = computed.border;
+        mirror.style.boxSizing = computed.boxSizing;
+        mirror.style.width = computed.width;
 
-            if (!isOverInput) {
-                // Reset pupil to center when not over input
-                setPupilPosition({ x: 0, y: 0 });
-                return;
-            }
+        // Get text up to cursor
+        const textBeforeCursor = value.substring(0, selectionStart);
+        mirror.textContent = textBeforeCursor;
 
-            // Calculate the center of the eye
-            const eyeCenterX = eyeRect.left + eyeRect.width / 2;
-            const eyeCenterY = eyeRect.top + eyeRect.height / 2;
+        // Add a span to measure the exact cursor position
+        const span = document.createElement('span');
+        span.textContent = '|';
+        mirror.appendChild(span);
 
-            // Get mouse position relative to eye center
-            let deltaX = e.clientX - eyeCenterX;
-            let deltaY = e.clientY - eyeCenterY;
+        document.body.appendChild(mirror);
 
-            // Calculate angle and limit distance for pupil movement
-            const angle = Math.atan2(deltaY, deltaX);
-            const maxDistance = 8; // Maximum pixels the pupil can move from center
-            const distance = Math.min(maxDistance, Math.sqrt(deltaX * deltaX + deltaY * deltaY) / 10);
+        const spanRect = span.getBoundingClientRect();
+        const mirrorRect = mirror.getBoundingClientRect();
 
-            // Calculate new pupil position
-            const newX = Math.cos(angle) * distance;
-            const newY = Math.sin(angle) * distance;
+        const x = spanRect.left - mirrorRect.left;
+        const y = spanRect.top - mirrorRect.top + (spanRect.height / 2);
 
-            setPupilPosition({ x: newX, y: newY });
-        };
+        document.body.removeChild(mirror);
 
-        const handleFocus = () => {
-            // Reset pupil to center on focus
+        return { x, y };
+    };
+
+    const updatePupilPosition = () => {
+        if (!eyeRef.current || !inputRef.current) return;
+
+        const caretPos = getCaretCoordinates(inputRef.current);
+        if (!caretPos) {
             setPupilPosition({ x: 0, y: 0 });
-        };
+            return;
+        }
+
+        // Get the bounding rectangles
+        const eyeRect = eyeRef.current.getBoundingClientRect();
+        const inputRect = inputRef.current.getBoundingClientRect();
+
+        // Calculate the absolute position of the caret
+        const caretX = inputRect.left + caretPos.x;
+        const caretY = inputRect.top + caretPos.y;
+
+        // Calculate the center of the eye
+        const eyeCenterX = eyeRect.left + eyeRect.width / 2;
+        const eyeCenterY = eyeRect.top + eyeRect.height / 2;
+
+        // Get caret position relative to eye center
+        let deltaX = caretX - eyeCenterX;
+        let deltaY = caretY - eyeCenterY;
+
+        // Calculate angle and limit distance for pupil movement
+        const angle = Math.atan2(deltaY, deltaX);
+        const maxDistance = 8; // Maximum pixels the pupil can move from center
+        const distance = Math.min(maxDistance, Math.sqrt(deltaX * deltaX + deltaY * deltaY) / 10);
+
+        // Calculate new pupil position
+        const newX = Math.cos(angle) * distance;
+        const newY = Math.sin(angle) * distance;
+
+        setPupilPosition({ x: newX, y: newY });
+    };
+
+    useEffect(() => {
+        if (!isOpen || !inputRef?.current) {
+            setPupilPosition({ x: 0, y: 0 });
+            return;
+        }
 
         const inputElement = inputRef.current;
 
-        // Add event listeners to window for reliable mouse tracking
-        window.addEventListener('mousemove', handleMouseMove);
-        inputElement.addEventListener('focus', handleFocus);
+        // Update pupil position on various events
+        const handleUpdate = () => {
+            // Small delay to ensure DOM has updated
+            requestAnimationFrame(updatePupilPosition);
+        };
+
+        // Listen for input changes, cursor movement, and focus
+        inputElement.addEventListener('input', handleUpdate);
+        inputElement.addEventListener('click', handleUpdate);
+        inputElement.addEventListener('keyup', handleUpdate);
+        inputElement.addEventListener('focus', handleUpdate);
+        inputElement.addEventListener('select', handleUpdate);
+
+        // Initial update
+        handleUpdate();
 
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            inputElement.removeEventListener('focus', handleFocus);
+            inputElement.removeEventListener('input', handleUpdate);
+            inputElement.removeEventListener('click', handleUpdate);
+            inputElement.removeEventListener('keyup', handleUpdate);
+            inputElement.removeEventListener('focus', handleUpdate);
+            inputElement.removeEventListener('select', handleUpdate);
         };
     }, [isOpen, inputRef]);
 
