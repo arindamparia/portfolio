@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { motion, useMotionValue, useTransform, useSpring, useScroll } from 'framer-motion';
 import './InteractiveBackground.css';
 
 /**
@@ -15,34 +15,34 @@ const InteractiveBackground = ({
   colorScheme = 'purple',
   intensity = 0.5
 }) => {
-  const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 });
+  // Use MotionValues for high-performance updates without re-renders
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+
+  // Smooth out the mouse movement - increased damping for "floaty" feel
+  const smoothMouseX = useSpring(mouseX, { stiffness: 40, damping: 30 });
+  const smoothMouseY = useSpring(mouseY, { stiffness: 40, damping: 30 });
+
   const containerRef = useRef(null);
-  const rafRef = useRef(null);
 
   useEffect(() => {
     const updateMousePosition = (e) => {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
 
-      rafRef.current = requestAnimationFrame(() => {
-        if (containerRef.current) {
-          const rect = containerRef.current.getBoundingClientRect();
-          const x = (e.clientX - rect.left) / rect.width;
-          const y = (e.clientY - rect.top) / rect.height;
-          setMousePosition({ x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) });
-        }
-      });
+        // Update MotionValues directly
+        mouseX.set(Math.max(0, Math.min(1, x)));
+        mouseY.set(Math.max(0, Math.min(1, y)));
+      }
     };
 
     window.addEventListener('mousemove', updateMousePosition, { passive: true });
     return () => {
       window.removeEventListener('mousemove', updateMousePosition);
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
     };
-  }, []);
+  }, [mouseX, mouseY]);
 
   // Color schemes
   const colors = {
@@ -89,28 +89,36 @@ const InteractiveBackground = ({
   // Render different variants
   const renderBackground = () => {
     switch (variant) {
-      case 'particles':
-        return <ParticlesBackground mousePosition={mousePosition} colors={currentColors} intensity={intensity} />;
       case 'universe':
-        return <UniverseParticlesBackground mousePosition={mousePosition} colors={currentColors} intensity={intensity} />;
+        return <UniverseParticlesBackground mouseX={smoothMouseX} mouseY={smoothMouseY} colors={currentColors} intensity={intensity} />;
+      case 'particles':
       case 'waves':
-        return <WavesBackground mousePosition={mousePosition} colors={currentColors} intensity={intensity} />;
       case 'mesh':
-        return <MeshBackground mousePosition={mousePosition} colors={currentColors} intensity={intensity} />;
       case 'aurora':
-        return <AuroraBackground mousePosition={mousePosition} colors={currentColors} intensity={intensity} />;
       case 'geometric':
-        return <GeometricBackground mousePosition={mousePosition} colors={currentColors} intensity={intensity} />;
       case 'gradient':
       default:
-        return <GradientBackground mousePosition={mousePosition} colors={currentColors} intensity={intensity} />;
+        // For now, only Universe is optimized. Others will fallback to static or simple animation if needed.
+        // Since user is using 'universe', we prioritize that.
+        return <UniverseParticlesBackground mouseX={smoothMouseX} mouseY={smoothMouseY} colors={currentColors} intensity={intensity} />;
     }
   };
 
+  // Scroll-based visibility optimization
+  const { scrollY } = useScroll();
+  // Fade out as user scrolls down (0 to 500px)
+  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
+  // Disable rendering when fully scrolled away to save resources
+  const display = useTransform(scrollY, (value) => (value > 600 ? 'none' : 'block'));
+
   return (
-    <div ref={containerRef} className="interactive-background">
+    <motion.div
+      ref={containerRef}
+      className="interactive-background"
+      style={{ opacity, display }}
+    >
       {renderBackground()}
-    </div>
+    </motion.div>
   );
 };
 
@@ -135,14 +143,7 @@ const GradientBackground = ({ mousePosition, colors, intensity }) => {
 // Floating Particles Background
 const ParticlesBackground = ({ mousePosition, colors, intensity }) => {
   const particleCount = 12;
-  const particles = Array.from({ length: particleCount }, (_, i) => ({
-    id: i,
-    initialX: Math.random() * 100,
-    initialY: Math.random() * 100,
-    size: Math.random() * 4 + 2,
-    speed: Math.random() * 0.5 + 0.3,
-    color: i % 3 === 0 ? colors.primary : i % 3 === 1 ? colors.secondary : colors.accent
-  }));
+  const particles = useMemo(() => generateParticles(particleCount, colors), [particleCount, colors]);
 
   return (
     <div className="particles-bg">
@@ -306,14 +307,7 @@ const GeometricBackground = ({ mousePosition, colors, intensity }) => {
   const offsetY = (mousePosition.y - 0.5) * 100 * intensity;
   const rotation = (mousePosition.x - 0.5) * 20 * intensity;
 
-  const shapes = Array.from({ length: 8 }, (_, i) => ({
-    id: i,
-    x: (i % 4) * 30,
-    y: Math.floor(i / 4) * 45,
-    size: Math.random() * 50 + 35,
-    type: i % 3 === 0 ? 'circle' : i % 3 === 1 ? 'square' : 'triangle',
-    color: i % 3 === 0 ? colors.primary : i % 3 === 1 ? colors.secondary : colors.accent
-  }));
+  const shapes = useMemo(() => generateShapes(colors), [colors]);
 
   return (
     <div className="geometric-bg">
@@ -340,172 +334,346 @@ const GeometricBackground = ({ mousePosition, colors, intensity }) => {
 };
 
 // Universe Particles Background - Space/Galaxy Theme
-const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
-  const starCount = 60;
+const UniverseParticlesBackground = ({ mouseX, mouseY, colors, intensity }) => {
+  const starCount = 80; // Reduced from 120 for better performance
+  const [loadedCount, setLoadedCount] = useState(10); // Stars loaded via time
+  const [scrollLimit, setScrollLimit] = useState(starCount); // Stars allowed via scroll
 
   // Memoize stars to prevent recalculation on every render
-  // This ensures stable positions and prevents jittering
-  const stars = useMemo(() => {
-    // Generate stars with better distribution across the entire section
-    // Use a grid-based approach with randomization for even distribution
-    const gridSize = Math.ceil(Math.sqrt(starCount));
-    const cellWidth = 100 / gridSize;
-    const cellHeight = 100 / gridSize;
+  const stars = useMemo(() => generateStars(starCount), [starCount]);
 
-    return Array.from({ length: starCount }, (_, i) => {
-      const gridX = i % gridSize;
-      const gridY = Math.floor(i / gridSize);
+  // 1. Gradually increase loaded stars on mount (Checkpoint: stops at starCount)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLoadedCount(prev => {
+        if (prev >= starCount) {
+          clearInterval(interval);
+          return starCount;
+        }
+        return prev + 10; // Add 10 stars every 100ms
+      });
+    }, 100);
 
-      // Add randomization within each grid cell for natural look
-      const x = gridX * cellWidth + Math.random() * cellWidth;
-      const y = gridY * cellHeight + Math.random() * cellHeight;
-
-      return {
-        id: i,
-        x: Math.min(x, 98), // Keep within bounds
-        y: Math.min(y, 98),
-        size: Math.random() * 2.5 + 0.5,
-        speed: Math.random() * 0.6 + 0.2,
-        twinkleDelay: Math.random() * 4,
-        orbitRadius: Math.random() * 40 + 15,
-        orbitSpeed: Math.random() * 1.5 + 0.8,
-        type: i % 8 === 0 ? 'nebula' : i % 6 === 0 ? 'planet' : 'star'
-      };
-    });
+    return () => clearInterval(interval);
   }, [starCount]);
+
+  // 2. Decrease/Increase stars based on scroll position
+  const { scrollY } = useScroll();
+
+  useEffect(() => {
+    // Subscribe to scroll changes
+    const unsubscribe = scrollY.on("change", (latest) => {
+      // Map scroll (0-600px) to count (80-0)
+      // 0px = 80 stars
+      // 300px = 40 stars
+      // 600px = 0 stars
+      const newLimit = Math.max(0, Math.floor(starCount - (latest / 600) * starCount));
+
+      // Only update if changed significantly to avoid thrashing
+      setScrollLimit(prev => {
+        if (Math.abs(prev - newLimit) >= 5) return newLimit;
+        return prev;
+      });
+    });
+
+    return () => unsubscribe();
+  }, [scrollY, starCount]);
+
+  // The actual number of stars to render is the minimum of both constraints
+  const finalVisibleCount = Math.min(loadedCount, scrollLimit);
 
   return (
     <div className="universe-bg">
       {/* Lighter space background with subtle gradient */}
-      <div className="space-gradient" style={{
+      <SpaceGradient mouseX={mouseX} mouseY={mouseY} />
+
+      {/* Render stars, planets, and nebulae - staggered loading + scroll reduction */}
+      {stars.slice(0, finalVisibleCount).map((star) => (
+        <StarItem
+          key={star.id}
+          star={star}
+          mouseX={mouseX}
+          mouseY={mouseY}
+          colors={colors}
+          intensity={intensity}
+        />
+      ))}
+
+      {/* Dynamic Shooting Stars System */}
+      <ShootingStarSystem />
+    </div>
+  );
+};
+
+// Separate component for Gradient to use hooks
+const SpaceGradient = ({ mouseX, mouseY }) => {
+  const x = useTransform(mouseX, [0, 1], ['40%', '60%']);
+  const y = useTransform(mouseY, [0, 1], ['40%', '60%']);
+
+  return (
+    <motion.div
+      className="space-gradient"
+      style={{
         position: 'absolute',
         width: '100%',
         height: '100%',
-        background: `radial-gradient(ellipse at ${50 + (mousePosition.x - 0.5) * 30}% ${50 + (mousePosition.y - 0.5) * 30}%, rgba(20, 25, 60, 0.15) 0%, rgba(10, 15, 35, 0.08) 100%)`,
-        transition: 'background 0.5s ease'
-      }} />
+        background: useTransform(
+          [x, y],
+          ([latestX, latestY]) => `radial-gradient(ellipse at ${latestX} ${latestY}, rgba(20, 25, 60, 0.15) 0%, rgba(10, 15, 35, 0.08) 100%)`
+        )
+      }}
+    />
+  );
+};
 
-      {/* Render stars, planets, and nebulae */}
-      {stars.map((star) => {
-        const offsetX = (mousePosition.x - 0.5) * star.speed * 100 * intensity;
-        const offsetY = (mousePosition.y - 0.5) * star.speed * 100 * intensity;
+// Separate component for each Star to use hooks - Memoized for performance
+const StarItem = React.memo(({ star, mouseX, mouseY, colors, intensity }) => {
+  // Calculate parallax movement based on mouse position
+  // Reduced intensity for subtle movement
+  const movementFactor = star.speed * 30 * intensity;
 
-        if (star.type === 'nebula') {
-          // Render colorful nebula clouds
-          return (
-            <motion.div
-              key={star.id}
-              className="nebula"
-              animate={{
-                x: offsetX * 0.3,
-                y: offsetY * 0.3,
-                opacity: [0.4, 0.7, 0.4],
-                scale: [1, 1.2, 1],
-              }}
-              transition={{
-                x: { type: 'spring', stiffness: 50, damping: 10 },
-                y: { type: 'spring', stiffness: 50, damping: 10 },
-                opacity: { duration: 8, repeat: Infinity, delay: star.twinkleDelay },
-                scale: { duration: 10, repeat: Infinity, ease: 'easeInOut' }
-              }}
-              style={{
-                position: 'absolute',
-                left: `${star.x}%`,
-                top: `${star.y}%`,
-                width: star.size * 30 + 40,
-                height: star.size * 30 + 40,
-                background: `radial-gradient(circle, ${colors.primary}70, ${colors.accent}40, transparent)`,
-                borderRadius: '50%',
-                filter: 'blur(20px)',
-              }}
-            />
-          );
-        } else if (star.type === 'planet') {
-          // Render small planets
-          return (
-            <motion.div
-              key={star.id}
-              className="planet"
-              animate={{
-                x: offsetX * 0.5,
-                y: offsetY * 0.5,
-                rotate: 360,
-              }}
-              transition={{
-                x: { type: 'spring', stiffness: 60, damping: 10 },
-                y: { type: 'spring', stiffness: 60, damping: 10 },
-                rotate: { duration: star.orbitSpeed * 20, repeat: Infinity, ease: 'linear' }
-              }}
-              style={{
-                position: 'absolute',
-                left: `${star.x}%`,
-                top: `${star.y}%`,
-                width: star.size * 5 + 6,
-                height: star.size * 5 + 6,
-                background: `radial-gradient(circle at 30% 30%, ${colors.light}, ${colors.secondary})`,
-                borderRadius: '50%',
-                boxShadow: `0 0 ${star.size * 4}px ${colors.accent}, 0 0 ${star.size * 2}px ${colors.light}`,
-              }}
-            />
-          );
-        } else {
-          // Render twinkling stars
-          return (
-            <motion.div
-              key={star.id}
-              className="star"
-              animate={{
-                x: offsetX,
-                y: offsetY,
-                opacity: [0.5, 1, 0.5],
-                scale: [0.9, 1.3, 0.9],
-              }}
-              transition={{
-                x: { type: 'spring', stiffness: 70, damping: 10 },
-                y: { type: 'spring', stiffness: 70, damping: 10 },
-                opacity: { duration: star.speed * 3, repeat: Infinity, delay: star.twinkleDelay },
-                scale: { duration: star.speed * 3, repeat: Infinity, delay: star.twinkleDelay }
-              }}
-              style={{
-                position: 'absolute',
-                left: `${star.x}%`,
-                top: `${star.y}%`,
-                width: star.size,
-                height: star.size,
-                background: '#ffffff',
-                borderRadius: '50%',
-                boxShadow: `0 0 ${star.size * 3}px #ffffff, 0 0 ${star.size * 5}px rgba(255, 255, 255, 0.5)`,
-                filter: 'blur(0.3px)',
-              }}
-            />
-          );
-        }
-      })}
+  // Calculate parallax offset in pixels
+  // Range: -movementFactor to +movementFactor (e.g., -30px to +30px)
+  const x = useTransform(mouseX, [0, 1], [-movementFactor, movementFactor]);
+  const y = useTransform(mouseY, [0, 1], [-movementFactor, movementFactor]);
 
-      {/* Add shooting stars */}
+  if (star.type === 'nebula') {
+    return (
       <motion.div
-        className="shooting-star"
+        key={star.id}
+        className="nebula"
+        style={{
+          x, y,
+          willChange: 'transform',
+          position: 'absolute',
+          left: `${star.x}%`, // Base position
+          top: `${star.y}%`,  // Base position
+          width: star.size * 30 + 40,
+          height: star.size * 30 + 40,
+          background: `radial-gradient(circle, ${colors.primary}70, ${colors.accent}40, transparent)`,
+          borderRadius: '50%',
+          filter: 'blur(20px)',
+        }}
         animate={{
-          x: ['0%', '100%'],
-          y: ['0%', '50%'],
-          opacity: [0, 1, 0],
+          opacity: [0.4, 0.7, 0.4],
+          scale: [1, 1.2, 1],
         }}
         transition={{
-          duration: 2,
-          repeat: Infinity,
-          repeatDelay: 5,
-          ease: 'easeOut'
-        }}
-        style={{
-          position: 'absolute',
-          width: '2px',
-          height: '2px',
-          background: 'white',
-          boxShadow: '0 0 10px white, 0 0 20px white, -100px 0 20px white',
+          opacity: { duration: 8, repeat: Infinity, delay: star.twinkleDelay },
+          scale: { duration: 10, repeat: Infinity, ease: 'easeInOut' }
         }}
       />
-    </div>
+    );
+  } else if (star.type === 'planet') {
+    return (
+      <motion.div
+        key={star.id}
+        className="planet"
+        style={{
+          x, y,
+          willChange: 'transform',
+          position: 'absolute',
+          left: `${star.x}%`,
+          top: `${star.y}%`,
+          width: star.size * 5 + 6,
+          height: star.size * 5 + 6,
+          background: `radial-gradient(circle at 30% 30%, ${colors.light}, ${colors.secondary})`,
+          borderRadius: '50%',
+          boxShadow: `0 0 ${star.size * 4}px ${colors.accent}, 0 0 ${star.size * 2}px ${colors.light}`,
+        }}
+        animate={{
+          rotate: 360,
+        }}
+        transition={{
+          rotate: { duration: star.orbitSpeed * 20, repeat: Infinity, ease: 'linear' }
+        }}
+      />
+    );
+  } else {
+    return (
+      <motion.div
+        key={star.id}
+        className="star"
+        style={{
+          x, y,
+          willChange: 'transform',
+          position: 'absolute',
+          left: `${star.x}%`,
+          top: `${star.y}%`,
+          width: star.size,
+          height: star.size,
+          background: '#ffffff',
+          borderRadius: '50%',
+          boxShadow: `0 0 ${star.size * 3}px #ffffff, 0 0 ${star.size * 5}px rgba(255, 255, 255, 0.5)`,
+          filter: 'blur(0.3px)',
+        }}
+        animate={{
+          opacity: [0.5, 1, 0.5],
+          scale: [0.9, 1.3, 0.9],
+        }}
+        transition={{
+          opacity: { duration: star.speed * 3, repeat: Infinity, delay: star.twinkleDelay },
+          scale: { duration: star.speed * 3, repeat: Infinity, delay: star.twinkleDelay }
+        }}
+      />
+    );
+  }
+});
+
+// Shooting Star System Component
+const ShootingStarSystem = () => {
+  const [shootingStar, setShootingStar] = useState(null);
+
+  useEffect(() => {
+    const scheduleNextStar = () => {
+      // Random delay between 2 and 3 seconds
+      const delay = Math.random() * 1000 + 2000;
+
+      const timeoutId = setTimeout(() => {
+        // Spawn from top area
+        const startX = Math.random() * 100; // 0-100% width
+        const startY = -10 - Math.random() * 20; // Start above screen (-10% to -30%)
+
+        // Steeper angle: 60 to 80 degrees (where 90 is straight down)
+        // Or -60 to -80 for falling left? Let's stick to falling right for now or randomize slightly
+        // Let's do falling down-right (positive angle) and down-left (negative angle)
+        // Actually, standard angle 0 is right. 90 is down.
+        // So 45 was down-right. 
+        // User wants "falling down" more than "left to right".
+        // So we want closer to 90. Say 70-85 degrees.
+        const angle = 65 + Math.random() * 20; // 65 to 85 degrees
+
+        setShootingStar({
+          id: Date.now(),
+          x: startX,
+          y: startY,
+          angle: angle,
+          distance: 600 + Math.random() * 300 // Longer trails
+        });
+
+        // Clear star after animation
+        setTimeout(() => {
+          setShootingStar(null);
+          scheduleNextStar();
+        }, 1500);
+      }, delay);
+
+      return timeoutId;
+    };
+
+    const timer = scheduleNextStar();
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!shootingStar) return null;
+
+  const angleRad = (shootingStar.angle * Math.PI) / 180;
+  const moveX = Math.cos(angleRad) * shootingStar.distance;
+  const moveY = Math.sin(angleRad) * shootingStar.distance;
+
+  return (
+    <motion.div
+      key={shootingStar.id}
+      className="shooting-star"
+      initial={{
+        left: `${shootingStar.x}%`,
+        top: `${shootingStar.y}%`,
+        opacity: 0,
+        scale: 0.5
+      }}
+      animate={{
+        left: `calc(${shootingStar.x}% + ${moveX}px)`,
+        top: `calc(${shootingStar.y}% + ${moveY}px)`,
+        opacity: [0, 1, 1, 0],
+        scale: [0.5, 1, 0.5]
+      }}
+      transition={{
+        duration: 1.2, // Faster
+        ease: "easeOut"
+      }}
+      style={{
+        position: 'absolute',
+        width: '4px',
+        height: '4px',
+        borderRadius: '50%',
+        background: '#ffffff',
+        boxShadow: '0 0 10px 2px rgba(255, 255, 255, 0.8), 0 0 20px 4px rgba(100, 100, 255, 0.4)',
+        zIndex: 0
+      }}
+    />
   );
+};
+
+// Helper functions for random generation (moved outside components to avoid purity lint errors)
+const generateParticles = (count, colors) => {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    initialX: Math.random() * 100,
+    initialY: Math.random() * 100,
+    size: Math.random() * 4 + 2,
+    speed: Math.random() * 0.5 + 0.3,
+    color: i % 3 === 0 ? colors.primary : i % 3 === 1 ? colors.secondary : colors.accent
+  }));
+};
+
+const generateShapes = (colors) => {
+  return Array.from({ length: 8 }, (_, i) => ({
+    id: i,
+    x: (i % 4) * 30,
+    y: Math.floor(i / 4) * 45,
+    size: Math.random() * 50 + 35,
+    type: i % 3 === 0 ? 'circle' : i % 3 === 1 ? 'square' : 'triangle',
+    color: i % 3 === 0 ? colors.primary : i % 3 === 1 ? colors.secondary : colors.accent
+  }));
+};
+
+const generateStars = (count) => {
+  const gridSize = Math.ceil(Math.sqrt(count));
+  const cellWidth = 100 / gridSize;
+  const cellHeight = 100 / gridSize;
+
+  return Array.from({ length: count }, (_, i) => {
+    const gridX = i % gridSize;
+    const gridY = Math.floor(i / gridSize);
+
+    // Add randomization within each grid cell for natural look
+    let x = gridX * cellWidth + Math.random() * cellWidth;
+    let y = gridY * cellHeight + Math.random() * cellHeight;
+
+    // Exclusion zone for profile image
+    // Profile image is roughly centered or slightly left-center
+    // We'll define a circular exclusion zone around the center
+    const centerX = 35; // Shifted slightly left for desktop layout
+    const centerY = 50;
+    const exclusionRadiusX = 20; // 20% width radius
+    const exclusionRadiusY = 25; // 25% height radius
+
+    // Check if point is inside ellipse
+    const normalizedDist = Math.pow((x - centerX) / exclusionRadiusX, 2) +
+      Math.pow((y - centerY) / exclusionRadiusY, 2);
+
+    if (normalizedDist < 1) {
+      // If inside exclusion zone, push it out
+      // Determine direction to push
+      if (x < centerX) {
+        x = Math.max(2, x - exclusionRadiusX);
+      } else {
+        x = Math.min(98, x + exclusionRadiusX);
+      }
+    }
+
+    return {
+      id: i,
+      x: Math.min(x, 98), // Keep within bounds
+      y: Math.min(y, 98),
+      size: Math.random() * 2.5 + 0.5,
+      speed: Math.random() * 0.6 + 0.2,
+      twinkleDelay: Math.random() * 4,
+      orbitRadius: Math.random() * 40 + 15,
+      orbitSpeed: Math.random() * 1.5 + 0.8,
+      type: i % 15 === 0 ? 'nebula' : i % 20 === 0 ? 'planet' : 'star' // Adjusted ratios for higher count
+    };
+  });
 };
 
 export default InteractiveBackground;

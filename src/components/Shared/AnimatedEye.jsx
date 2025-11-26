@@ -68,7 +68,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
         return { x, y };
     };
 
-    const updatePupilPosition = () => {
+    const updatePupilPosition = React.useCallback(() => {
         if (!eyeRef.current || !inputRef.current) return;
 
         const caretPos = getCaretCoordinates(inputRef.current);
@@ -115,7 +115,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
         }
 
         setPupilPosition({ x: newX, y: newY });
-    };
+    }, [inputRef]);
 
     useEffect(() => {
         // We want to track pupil even if closed, so it's ready when opened? 
@@ -151,7 +151,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
             inputElement.removeEventListener('focus', handleUpdate);
             inputElement.removeEventListener('select', handleUpdate);
         };
-    }, [inputRef]); // Removed isOpen dependency to allow tracking while closing/opening
+    }, [inputRef, updatePupilPosition]); // Removed isOpen dependency to allow tracking while closing/opening
 
     // Eyelid Animation Variants
     // We animate the 'd' attribute (path definition) to smoothly morph between open and closed shapes.
@@ -321,6 +321,10 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                 {/* Eyelid Crease (Only visible when open/semi-open) */}
                 <motion.path
                     d="M 15 40 Q 50 20, 85 40"
+                    initial={{
+                        d: isOpen ? "M 15 35 Q 50 15, 85 35" : "M 15 48 Q 50 28, 85 48",
+                        opacity: isOpen ? 0.3 : 0.6
+                    }}
                     animate={{
                         d: isOpen ? "M 15 35 Q 50 15, 85 35" : "M 15 48 Q 50 28, 85 48",
                         opacity: isOpen ? 0.3 : 0.6
@@ -419,6 +423,10 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
 
                 {/* Eyelid Line (The meeting point) */}
                 <motion.path
+                    initial={{
+                        d: isOpen ? "M 5 50 Q 50 8, 95 50" : "M 10 50 Q 50 52, 90 50",
+                        strokeWidth: isOpen ? 2.5 : 2.5
+                    }}
                     animate={{
                         d: isOpen ? "M 5 50 Q 50 8, 95 50" : "M 10 50 Q 50 52, 90 50",
                         strokeWidth: isOpen ? 2.5 : 2.5
@@ -430,6 +438,9 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                 />
                 {/* Lower Eyelid Line */}
                 <motion.path
+                    initial={{
+                        d: isOpen ? "M 5 50 Q 50 88, 95 50" : "M 10 50 Q 50 52, 90 50"
+                    }}
                     animate={{
                         d: isOpen ? "M 5 50 Q 50 88, 95 50" : "M 10 50 Q 50 52, 90 50",
                     }}
