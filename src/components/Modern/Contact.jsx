@@ -10,15 +10,15 @@ import { getRandomMessage, getRandomSuccess } from '../../constants/formErrorMes
 import ToastContainer from './Toast';
 
 const Contact = () => {
-    // Initialize form data from localStorage if available
+    // Initialize form data from sessionStorage if available
     const getInitialFormData = () => {
         try {
-            const savedData = localStorage.getItem('contactFormData');
+            const savedData = sessionStorage.getItem('contactFormData');
             if (savedData) {
                 return JSON.parse(savedData);
             }
         } catch (error) {
-            console.error('Error loading form data from localStorage:', error);
+            console.error('Error loading form data from sessionStorage:', error);
         }
         return {
             salutation: '',
@@ -41,12 +41,12 @@ const Contact = () => {
     const [toasts, setToasts] = useState([]);
     const [displayedMessages, setDisplayedMessages] = useState({});
 
-    // Save form data to localStorage whenever it changes
+    // Save form data to sessionStorage whenever it changes
     useEffect(() => {
         try {
-            localStorage.setItem('contactFormData', JSON.stringify(formData));
+            sessionStorage.setItem('contactFormData', JSON.stringify(formData));
         } catch (error) {
-            console.error('Error saving form data to localStorage:', error);
+            console.error('Error saving form data to sessionStorage:', error);
         }
     }, [formData]);
 
@@ -338,11 +338,11 @@ const Contact = () => {
                 };
                 setFormData(emptyFormData);
 
-                // Clear localStorage
+                // Clear sessionStorage
                 try {
-                    localStorage.removeItem('contactFormData');
+                    sessionStorage.removeItem('contactFormData');
                 } catch (error) {
-                    console.error('Error clearing form data from localStorage:', error);
+                    console.error('Error clearing form data from sessionStorage:', error);
                 }
 
                 setTouched({});

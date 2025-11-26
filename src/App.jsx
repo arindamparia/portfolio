@@ -35,7 +35,7 @@ function App() {
     // Check if there's unsaved form data when switching from modern view
     if (viewMode === 'modern') {
       try {
-        const savedFormData = localStorage.getItem('contactFormData');
+        const savedFormData = sessionStorage.getItem('contactFormData');
         if (savedFormData) {
           const formData = JSON.parse(savedFormData);
           const hasData = Object.values(formData).some(value => value && value.trim() !== '');
