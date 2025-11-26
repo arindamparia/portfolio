@@ -56,7 +56,7 @@ export const assets = {
     // profileImage: 'https://res.cloudinary.com/demo/image/upload/c_fill,w_400,h_400,q_auto,f_auto/portfolio/arindam-photo'
     // ==============================================================
 
-    profileImage: 'https://via.placeholder.com/400', // TODO: Replace with your Cloudinary URL
+    profileImage: 'https://res.cloudinary.com/dnju7wfma/image/upload/c_fill,w_400,h_400,q_auto,f_auto/1709320939738_1_gkcoyp',
     aboutImage: 'https://via.placeholder.com/300x400', // TODO: Replace with your Cloudinary URL
     cvPath: '/cv.pdf'
 };
