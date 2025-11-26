@@ -31,6 +31,31 @@ function App() {
       alert('💻 IDE View is available on laptop or tablet!\n\nThe IDE view provides a VS Code-style interface and is optimized for larger screens (1024px+). Please open this portfolio on a laptop or tablet to experience this feature.');
       return; // Do nothing on mobile when trying to switch to IDE
     }
+
+    // Check if there's unsaved form data when switching from modern view
+    if (viewMode === 'modern') {
+      try {
+        const savedFormData = sessionStorage.getItem('contactFormData');
+        if (savedFormData) {
+          const formData = JSON.parse(savedFormData);
+          const hasData = Object.values(formData).some(value => value && value.trim() !== '');
+
+          if (hasData) {
+            const confirmed = window.confirm(
+              '📝 You have unsaved form data!\n\n' +
+              'Your contact form will be preserved and restored when you return to Modern view.\n\n' +
+              'Click OK to switch to IDE view, or Cancel to stay.'
+            );
+            if (!confirmed) {
+              return; // User cancelled, don't switch views
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error checking form data:', error);
+      }
+    }
+
     setViewMode(prev => prev === 'ide' ? 'modern' : 'ide');
   };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaEnvelope, FaLinkedin, FaGithub, FaExclamationTriangle, FaCheckCircle, FaUser, FaPhone, FaBuilding, FaCommentDots } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
@@ -10,26 +10,81 @@ import { getRandomMessage, getRandomSuccess } from '../../constants/formErrorMes
 import ToastContainer from './Toast';
 
 const Contact = () => {
-    const [formData, setFormData] = useState({
-        salutation: '',
-        firstName: '',
-        lastName: '',
-        email: '',
-        company: '',
-        mobile: '',
-        message: ''
-    });
+    // Initialize form data from sessionStorage if available
+    const getInitialFormData = () => {
+        try {
+            const savedData = sessionStorage.getItem('contactFormData');
+            if (savedData) {
+                return JSON.parse(savedData);
+            }
+        } catch (error) {
+            console.error('Error loading form data from sessionStorage:', error);
+        }
+        return {
+            salutation: '',
+            firstName: '',
+            lastName: '',
+            email: '',
+            company: '',
+            mobile: '',
+            message: ''
+        };
+    };
+
+    const [formData, setFormData] = useState(getInitialFormData);
 
     const [errors, setErrors] = useState({});
+    const [errorTypes, setErrorTypes] = useState({});
     const [touched, setTouched] = useState({});
     const [focusedField, setFocusedField] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [toasts, setToasts] = useState([]);
     const [displayedMessages, setDisplayedMessages] = useState({});
 
+    // Save form data to sessionStorage whenever it changes
+    useEffect(() => {
+        try {
+            sessionStorage.setItem('contactFormData', JSON.stringify(formData));
+        } catch (error) {
+            console.error('Error saving form data to sessionStorage:', error);
+        }
+    }, [formData]);
+
     // Helper to get the correct message field name
     const getMessageFieldName = (fieldName) => {
         return fieldName === 'mobile' ? 'phone' : fieldName;
+    };
+
+    // Helper to get the error type/category for a field
+    const getErrorType = (name, value) => {
+        switch (name) {
+            case 'salutation':
+                if (!value || value.trim() === '') return 'required';
+                return '';
+            case 'firstName':
+            case 'lastName':
+                if (!value.trim()) return 'required';
+                if (value.trim().length < 3) return 'tooShort';
+                if (!/^[A-Za-z]+$/.test(value)) return 'invalid';
+                return '';
+            case 'mobile':
+                if (!value.trim()) return 'required';
+                const cleanNumber = value.trim().replace(/[\s-]/g, '');
+                if (!/^\d+$/.test(cleanNumber)) return 'invalidCharacters';
+                if (cleanNumber.length !== 10) return 'lengthError';
+                if (!/^[6-9]/.test(cleanNumber)) return 'invalidPrefix';
+                return '';
+            case 'email':
+                if (!value.trim()) return 'required';
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'invalid';
+                return '';
+            case 'message':
+                if (!value.trim()) return 'required';
+                if (value.trim().length < 10) return 'tooShort';
+                return '';
+            default:
+                return '';
+        }
     };
 
     const validateField = (name, value) => {
@@ -115,18 +170,25 @@ const Contact = () => {
 
         if (touched[name]) {
             const error = validateField(name, processedValue);
+            const errorType = getErrorType(name, processedValue);
             const prevError = errors[name];
+            const prevErrorType = errorTypes[name];
 
-            // Only update message if validation state changed
-            if ((prevError && !error) || (!prevError && error)) {
+            // Only update message when error type changes (not when same type generates different random message)
+            if (prevErrorType !== errorType) {
                 const messageFieldName = getMessageFieldName(name);
                 setDisplayedMessages(prev => ({
                     ...prev,
                     [name]: error || getRandomSuccess(messageFieldName)
                 }));
+
+                setErrorTypes({
+                    ...errorTypes,
+                    [name]: errorType
+                });
             }
 
-            // Only update errors if the error value actually changed
+            // Always update error state to reflect current validation
             if (prevError !== error) {
                 setErrors({
                     ...errors,
@@ -147,6 +209,7 @@ const Contact = () => {
         setFocusedField('');
 
         const error = validateField(name, value);
+        const errorType = getErrorType(name, value);
         const prevError = errors[name];
 
         // Only set the message on FIRST blur (when field wasn't already touched)
@@ -156,6 +219,10 @@ const Contact = () => {
                 ...prev,
                 [name]: error || getRandomSuccess(messageFieldName)
             }));
+            setErrorTypes({
+                ...errorTypes,
+                [name]: errorType
+            });
         }
 
         // Only update errors if the error value actually changed
@@ -176,10 +243,13 @@ const Contact = () => {
 
         // Validate all fields
         const newErrors = {};
+        const newErrorTypes = {};
         ['salutation', 'firstName', 'lastName', 'email', 'mobile', 'message'].forEach(field => {
             const error = validateField(field, formData[field]);
+            const errorType = getErrorType(field, formData[field]);
             if (error) {
                 newErrors[field] = error;
+                newErrorTypes[field] = errorType;
             }
         });
 
@@ -195,18 +265,27 @@ const Contact = () => {
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
 
-            // Preserve existing displayed messages, only add new ones for fields that don't have them
+            // Update displayed messages and error types based on whether type changed
             setDisplayedMessages(prev => {
                 const updatedMessages = { ...prev };
                 Object.keys(newErrors).forEach(field => {
-                    // Only set message if this field doesn't already have a displayed message
-                    if (!prev[field]) {
+                    const prevErrorType = errorTypes[field];
+                    const currentErrorType = newErrorTypes[field];
+
+                    // Only update message if field doesn't have one OR if error type changed
+                    if (!prev[field] || prevErrorType !== currentErrorType) {
                         updatedMessages[field] = newErrors[field];
                     }
-                    // If it already has a message, keep the existing one to prevent regeneration
+                    // If it already has a message with same error type, keep existing to prevent regeneration
                 });
                 return updatedMessages;
             });
+
+            // Update error types for all fields with errors
+            setErrorTypes(prev => ({
+                ...prev,
+                ...newErrorTypes
+            }));
 
             vibrateError();
             showToast(getRandomMessage('form', 'submitError'), 'error');
@@ -246,7 +325,9 @@ const Contact = () => {
             if (response.ok) {
                 vibrateSuccess();
                 showToast(getRandomMessage('form', 'submitSuccess'), 'success', 6000);
-                setFormData({
+
+                // Clear form data
+                const emptyFormData = {
                     salutation: '',
                     firstName: '',
                     lastName: '',
@@ -254,9 +335,19 @@ const Contact = () => {
                     company: '',
                     mobile: '',
                     message: ''
-                });
+                };
+                setFormData(emptyFormData);
+
+                // Clear sessionStorage
+                try {
+                    sessionStorage.removeItem('contactFormData');
+                } catch (error) {
+                    console.error('Error clearing form data from sessionStorage:', error);
+                }
+
                 setTouched({});
                 setErrors({});
+                setErrorTypes({});
                 setDisplayedMessages({});
             } else {
                 vibrateError();
