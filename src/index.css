@@ -480,12 +480,12 @@ body {
 
 /* Modern Hero */
 .theme-modern .hero {
-  min-height: auto;
+  min-height: calc(100vh - 80px);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding-top: 100px;
+  /* padding-top removed as nav is now sticky */
   padding-bottom: 2rem;
 }
 
