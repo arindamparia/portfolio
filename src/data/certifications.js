@@ -13,7 +13,7 @@ export const certificationsData = [
     {
         name: 'Certificate of Completion: Spring Boot',
         year: '2024',
-        issuer: 'Udemy'
+        issuer: 'Coding Ninja'
     },
     {
         name: 'Salesforce Certified Agentforce Specialist',
