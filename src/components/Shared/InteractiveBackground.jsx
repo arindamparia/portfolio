@@ -341,7 +341,7 @@ const GeometricBackground = ({ mousePosition, colors, intensity }) => {
 
 // Universe Particles Background - Space/Galaxy Theme
 const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
-  const starCount = 25;
+  const starCount = 60;
 
   // Generate stars with varying sizes and positions
   const stars = Array.from({ length: starCount }, (_, i) => ({

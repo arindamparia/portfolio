@@ -1,9 +1,9 @@
 .interactive-background {
   position: absolute;
-  top: 80px;
+  top: 0;
   left: 0;
   width: 100%;
-  height: calc(100% - 80px);
+  height: 100%;
   overflow: hidden;
   pointer-events: none;
   z-index: 1;
@@ -189,11 +189,6 @@ section > div:not(.interactive-background) {
 
 /* Responsive optimizations */
 @media (max-width: 768px) {
-  .interactive-background {
-    top: 92px;
-    height: calc(100% - 92px);
-  }
-
   .mesh-blob {
     width: 300px;
     height: 300px;
