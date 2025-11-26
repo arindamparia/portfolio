@@ -16,7 +16,6 @@
 
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import DesktopRequired from './components/Shared/DesktopRequired';
-import InteractiveCursor from './components/Shared/InteractiveCursor';
 
 // Lazy load layouts for better initial load performance
 // These components are code-split and only loaded when needed
@@ -118,9 +117,6 @@ function App() {
           <ModernLayout />
         )}
       </Suspense>
-
-      {/* Custom animated cursor that follows mouse movement */}
-      <InteractiveCursor />
 
       {/* Floating toggle button to switch between Modern and IDE views */}
       <button

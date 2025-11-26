@@ -2,6 +2,27 @@
 // Used by both server.js and Netlify functions
 
 /**
+ * Field length limits matching database schema
+ */
+export const FIELD_LIMITS = {
+    salutation: 3,
+    firstName: 30,
+    lastName: 30,
+    email: 80,
+    mobile: 20,
+    company: 80,
+    message: 100,
+    userAgent: 200,
+    browser: 30,
+    operatingSystem: 30,
+    deviceType: 10,
+    screenResolution: 15,
+    language: 5,
+    timezone: 40,
+    referrer: 200
+};
+
+/**
  * Validation result structure
  * @typedef {Object} ValidationResult
  * @property {boolean} valid - Whether validation passed
@@ -24,7 +45,7 @@ export function validateContactData(data) {
         };
     }
 
-    // Validate field lengths
+    // Validate field lengths (minimum)
     if (firstName.trim().length < 3) {
         return {
             valid: false,
@@ -43,6 +64,42 @@ export function validateContactData(data) {
         return {
             valid: false,
             error: 'Message must be at least 10 characters'
+        };
+    }
+
+    // Validate field lengths (maximum)
+    if (firstName.length > FIELD_LIMITS.firstName) {
+        return {
+            valid: false,
+            error: `First name must not exceed ${FIELD_LIMITS.firstName} characters`
+        };
+    }
+
+    if (lastName.length > FIELD_LIMITS.lastName) {
+        return {
+            valid: false,
+            error: `Last name must not exceed ${FIELD_LIMITS.lastName} characters`
+        };
+    }
+
+    if (email.length > FIELD_LIMITS.email) {
+        return {
+            valid: false,
+            error: `Email must not exceed ${FIELD_LIMITS.email} characters`
+        };
+    }
+
+    if (mobile.length > FIELD_LIMITS.mobile) {
+        return {
+            valid: false,
+            error: `Mobile must not exceed ${FIELD_LIMITS.mobile} characters`
+        };
+    }
+
+    if (message.length > FIELD_LIMITS.message) {
+        return {
+            valid: false,
+            error: `Message must not exceed ${FIELD_LIMITS.message} characters`
         };
     }
 
@@ -95,23 +152,35 @@ export function parseUserAgent(parser) {
 }
 
 /**
+ * Truncate a string to a maximum length
+ * @param {string} value - String to truncate
+ * @param {number} maxLength - Maximum length
+ * @returns {string} Truncated string
+ */
+function truncate(value, maxLength) {
+    if (!value) return value;
+    return value.length > maxLength ? value.substring(0, maxLength) : value;
+}
+
+/**
  * Sanitize and prepare contact data for database insertion
+ * Truncates fields to match database VARCHAR limits to prevent errors
  * @param {Object} data - Raw contact form data
  * @returns {Object} Sanitized data ready for database
  */
 export function sanitizeContactData(data) {
     return {
-        salutation: data.salutation || null,
-        firstName: data.firstName.trim(),
-        lastName: data.lastName.trim(),
-        email: data.email.trim(),
-        mobile: data.mobile.trim(),
-        company: data.company?.trim() || null,
-        message: data.message.trim(),
-        userAgent: data.userAgent || null,
-        language: data.language || null,
-        screenResolution: data.screenResolution || null,
-        timezone: data.timezone || null,
-        referrer: data.referrer || null
+        salutation: truncate(data.salutation || null, FIELD_LIMITS.salutation),
+        firstName: truncate(data.firstName.trim(), FIELD_LIMITS.firstName),
+        lastName: truncate(data.lastName.trim(), FIELD_LIMITS.lastName),
+        email: truncate(data.email.trim(), FIELD_LIMITS.email),
+        mobile: truncate(data.mobile.trim(), FIELD_LIMITS.mobile),
+        company: truncate(data.company?.trim() || null, FIELD_LIMITS.company),
+        message: truncate(data.message.trim(), FIELD_LIMITS.message),
+        userAgent: truncate(data.userAgent || null, FIELD_LIMITS.userAgent),
+        language: truncate(data.language || null, FIELD_LIMITS.language),
+        screenResolution: truncate(data.screenResolution || null, FIELD_LIMITS.screenResolution),
+        timezone: truncate(data.timezone || null, FIELD_LIMITS.timezone),
+        referrer: truncate(data.referrer || null, FIELD_LIMITS.referrer)
     };
 }

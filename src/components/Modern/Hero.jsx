@@ -4,10 +4,12 @@ import { FaLinkedin, FaGithub } from 'react-icons/fa';
 import { VscChevronDown } from 'react-icons/vsc';
 import { personalInfo, socialLinks, assets } from '../../constants/personalInfo';
 import { vibrateMedium, vibrateLight } from '../../utils/vibration';
+import InteractiveBackground from '../Shared/InteractiveBackground';
 
 const Hero = () => {
     return (
         <section id="home" className="hero">
+            <InteractiveBackground variant="universe" colorScheme="purple" intensity={0.5} />
             <div className="container">
                 <div className="hero-content">
                     <motion.img

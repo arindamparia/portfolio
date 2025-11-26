@@ -7,6 +7,7 @@ import { vibrateLight, vibrateError, vibrateSuccess } from '../../utils/vibratio
 import { API_BASE_URL } from '../../utils/api';
 import { validateIndianPhoneNumber } from '../../utils/phoneValidation';
 import { getRandomMessage, getRandomSuccess } from '../../constants/formErrorMessages';
+import { FIELD_LIMITS } from '../../utils/contactValidation';
 import ToastContainer from './Toast';
 import AnimatedEye from '../Shared/AnimatedEye';
 
@@ -163,6 +164,12 @@ const Contact = () => {
             processedValue = value.replace(/[^0-9]/g, '');
         } else if (name !== 'company' && name !== 'message') {
             processedValue = value.replace(/\s/g, '');
+        }
+
+        // Enforce maximum length limits - prevent typing beyond database limits
+        const maxLength = FIELD_LIMITS[name];
+        if (maxLength && processedValue.length > maxLength) {
+            processedValue = processedValue.substring(0, maxLength);
         }
 
         setFormData({
@@ -346,7 +353,7 @@ const Contact = () => {
     const getCharacterCount = () => {
         const count = formData.message.length;
         const min = 10;
-        const max = 1000;
+        const max = 100;
 
         if (count === 0) return { text: "Start typing your epic message! ✍️", color: '#888' };
         if (count < min) return { text: `${min - count} more characters needed. You're almost there! 💪`, color: '#f5576c' };
@@ -501,6 +508,7 @@ const Contact = () => {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 onFocus={() => handleFocus('firstName')}
+                                maxLength={30}
                                 className={errors.firstName && touched.firstName ? 'error' : ''}
                                 style={{
                                     borderColor:
@@ -555,6 +563,7 @@ const Contact = () => {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 onFocus={() => handleFocus('lastName')}
+                                maxLength={30}
                                 className={errors.lastName && touched.lastName ? 'error' : ''}
                                 style={{
                                     borderColor:
@@ -606,6 +615,7 @@ const Contact = () => {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 onFocus={() => handleFocus('email')}
+                                maxLength={80}
                                 className={errors.email && touched.email ? 'error' : ''}
                                 style={{
                                     borderColor:
@@ -660,6 +670,7 @@ const Contact = () => {
                                 onChange={handleChange}
                                 onFocus={() => handleFocus('company')}
                                 onBlur={() => setFocusedField('')}
+                                maxLength={80}
                                 style={{
                                     borderColor: focusedField === 'company' ? 'var(--accent-primary)' : undefined,
                                     transition: 'all 0.3s ease'
@@ -752,7 +763,7 @@ const Contact = () => {
                             onFocus={() => handleFocus('message')}
                             className={errors.message && touched.message ? 'error' : ''}
                             placeholder="Tell me about your project, timeline, or how I can help."
-                            maxLength={1000}
+                            maxLength={100}
                             style={{
                                 borderColor:
                                     errors.message && touched.message ? '#f5576c' :
