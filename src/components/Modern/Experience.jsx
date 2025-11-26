@@ -3,10 +3,12 @@ import { motion } from 'framer-motion';
 import { VscChevronDown } from 'react-icons/vsc';
 import { experienceData } from '../../data/experience';
 import { vibrateMedium } from '../../utils/vibration';
+import InteractiveBackground from '../Shared/InteractiveBackground';
 
 const Experience = () => {
     return (
         <section id="experience">
+            <InteractiveBackground variant="waves" colorScheme="teal" intensity={0.5} />
             <div className="container">
                 <motion.p
                     className="section-subtitle"

@@ -1,0 +1,221 @@
+.interactive-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Gradient Background */
+.gradient-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Particles Background */
+.particles-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.particle {
+  box-shadow: 0 0 10px currentColor;
+}
+
+/* Waves Background */
+.waves-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Mesh Background */
+.mesh-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.mesh-blob {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: float 8s ease-in-out infinite;
+}
+
+.mesh-blob-1 {
+  top: 10%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.mesh-blob-2 {
+  top: 50%;
+  right: 20%;
+  animation-delay: 2s;
+}
+
+.mesh-blob-3 {
+  bottom: 10%;
+  left: 50%;
+  animation-delay: 4s;
+}
+
+.mesh-blur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(80px);
+  -webkit-backdrop-filter: blur(80px);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+/* Aurora Background */
+.aurora-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.aurora-strip {
+  position: absolute;
+  width: 150%;
+  height: 300px;
+  filter: blur(60px);
+  opacity: 0.5;
+  animation: aurora-flow 10s ease-in-out infinite;
+}
+
+.aurora-strip-1 {
+  top: 10%;
+  left: -25%;
+  animation-delay: 0s;
+}
+
+.aurora-strip-2 {
+  top: 40%;
+  left: -25%;
+  animation-delay: 3s;
+}
+
+.aurora-strip-3 {
+  top: 70%;
+  left: -25%;
+  animation-delay: 6s;
+}
+
+@keyframes aurora-flow {
+  0%, 100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateX(50px) translateY(-30px) rotate(5deg);
+    opacity: 0.6;
+  }
+}
+
+/* Geometric Background */
+.geometric-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.geo-shape {
+  position: absolute;
+  opacity: 0.3;
+  transition: all 0.3s ease;
+}
+
+.geo-circle {
+  border-radius: 50%;
+}
+
+.geo-square {
+  border-radius: 10px;
+}
+
+.geo-triangle {
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+/* Ensure sections with interactive backgrounds have position relative */
+section {
+  position: relative;
+}
+
+/* Responsive optimizations */
+@media (max-width: 768px) {
+  .mesh-blob {
+    width: 300px;
+    height: 300px;
+  }
+
+  .aurora-strip {
+    height: 200px;
+  }
+
+  .geo-shape {
+    opacity: 0.2;
+  }
+}
+
+/* Universe/Space Background */
+.universe-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  background: #020308;
+}
+
+.space-gradient {
+  pointer-events: none;
+}
+
+.star, .planet, .nebula, .shooting-star {
+  pointer-events: none;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .interactive-background * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

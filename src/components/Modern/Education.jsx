@@ -4,10 +4,12 @@ import { FaGraduationCap } from 'react-icons/fa';
 import { VscChevronDown } from 'react-icons/vsc';
 import { educationData } from '../../data/education';
 import { vibrateMedium } from '../../utils/vibration';
+import InteractiveBackground from '../Shared/InteractiveBackground';
 
 const Education = () => {
     return (
         <section id="education">
+            <InteractiveBackground variant="gradient" colorScheme="pink" intensity={0.5} />
             <div className="container">
                 <motion.p
                     className="section-subtitle"

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { VscCode, VscChevronDown } from 'react-icons/vsc';
 import { skillsData } from '../../data/skills';
 import { vibrateMedium } from '../../utils/vibration';
+import InteractiveBackground from '../Shared/InteractiveBackground';
 
 const Skills = () => {
     const categoryNames = {
@@ -18,6 +19,7 @@ const Skills = () => {
 
     return (
         <section id="skills" style={{ background: 'var(--bg-secondary)', padding: '4rem 0' }}>
+            <InteractiveBackground variant="geometric" colorScheme="green" intensity={0.4} />
             <div className="container">
                 <motion.p
                     className="section-subtitle"

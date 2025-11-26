@@ -6,6 +6,7 @@ import { experienceData } from '../../data/experience';
 import { educationData } from '../../data/education';
 import { personalInfo, assets } from '../../constants/personalInfo';
 import { vibrateMedium } from '../../utils/vibration';
+import InteractiveBackground from '../Shared/InteractiveBackground';
 
 const About = () => {
     // Get the most recent experience
@@ -35,6 +36,7 @@ const About = () => {
 
     return (
         <section id="about">
+            <InteractiveBackground variant="mesh" colorScheme="blue" intensity={0.5} />
             <div className="container">
                 <motion.p
                     className="section-subtitle"

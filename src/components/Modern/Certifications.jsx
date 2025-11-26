@@ -4,10 +4,12 @@ import { FaCertificate } from 'react-icons/fa';
 import { VscChevronDown } from 'react-icons/vsc';
 import { certificationsData } from '../../data/certifications';
 import { vibrateMedium } from '../../utils/vibration';
+import InteractiveBackground from '../Shared/InteractiveBackground';
 
 const Certifications = () => {
     return (
         <section id="certifications" style={{ background: 'var(--bg-secondary)' }}>
+            <InteractiveBackground variant="mesh" colorScheme="purple" intensity={0.4} />
             <div className="container">
                 <motion.p
                     className="section-subtitle"
