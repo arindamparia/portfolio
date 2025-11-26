@@ -397,8 +397,8 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
               key={star.id}
               className="nebula"
               animate={{
-                x: `calc(${star.x}% + ${offsetX * 0.3}px)`,
-                y: `calc(${star.y}% + ${offsetY * 0.3}px)`,
+                x: offsetX * 0.3,
+                y: offsetY * 0.3,
                 opacity: [0.4, 0.7, 0.4],
                 scale: [1, 1.2, 1],
               }}
@@ -410,6 +410,8 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
               }}
               style={{
                 position: 'absolute',
+                left: `${star.x}%`,
+                top: `${star.y}%`,
                 width: star.size * 30 + 40,
                 height: star.size * 30 + 40,
                 background: `radial-gradient(circle, ${colors.primary}70, ${colors.accent}40, transparent)`,
@@ -425,8 +427,8 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
               key={star.id}
               className="planet"
               animate={{
-                x: `calc(${star.x}% + ${offsetX * 0.5}px)`,
-                y: `calc(${star.y}% + ${offsetY * 0.5}px)`,
+                x: offsetX * 0.5,
+                y: offsetY * 0.5,
                 rotate: 360,
               }}
               transition={{
@@ -436,6 +438,8 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
               }}
               style={{
                 position: 'absolute',
+                left: `${star.x}%`,
+                top: `${star.y}%`,
                 width: star.size * 5 + 6,
                 height: star.size * 5 + 6,
                 background: `radial-gradient(circle at 30% 30%, ${colors.light}, ${colors.secondary})`,
@@ -451,8 +455,8 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
               key={star.id}
               className="star"
               animate={{
-                x: `calc(${star.x}% + ${offsetX}px)`,
-                y: `calc(${star.y}% + ${offsetY}px)`,
+                x: offsetX,
+                y: offsetY,
                 opacity: [0.5, 1, 0.5],
                 scale: [0.9, 1.3, 0.9],
               }}
@@ -464,6 +468,8 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
               }}
               style={{
                 position: 'absolute',
+                left: `${star.x}%`,
+                top: `${star.y}%`,
                 width: star.size,
                 height: star.size,
                 background: '#ffffff',
