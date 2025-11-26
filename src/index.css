@@ -542,13 +542,45 @@ body {
   margin-bottom: 1.5rem;
 }
 
-/* Hero buttons - add shadow for visibility on dark background */
+/* Hero buttons - white for visibility on dark background */
 .theme-modern .hero .btn {
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #ffffff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .theme-modern .hero .btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 2px solid #ffffff;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 3px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Hero primary button (Download CV) */
+.theme-modern .hero .btn-primary {
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #ffffff;
+}
+
+.theme-modern .hero .btn-primary:hover {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000000;
+  border: 2px solid #ffffff;
+}
+
+/* Hero secondary button */
+.theme-modern .hero .btn-secondary {
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+.theme-modern .hero .btn-secondary:hover {
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid #ffffff;
 }
 
 .theme-modern .social-icons {
