@@ -68,7 +68,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
         return { x, y };
     };
 
-    const updatePupilPosition = () => {
+    const updatePupilPosition = React.useCallback(() => {
         if (!eyeRef.current || !inputRef.current) return;
 
         const caretPos = getCaretCoordinates(inputRef.current);
@@ -115,7 +115,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
         }
 
         setPupilPosition({ x: newX, y: newY });
-    };
+    }, [inputRef]);
 
     useEffect(() => {
         // We want to track pupil even if closed, so it's ready when opened? 
@@ -151,7 +151,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
             inputElement.removeEventListener('focus', handleUpdate);
             inputElement.removeEventListener('select', handleUpdate);
         };
-    }, [inputRef]); // Removed isOpen dependency to allow tracking while closing/opening
+    }, [inputRef, updatePupilPosition]); // Removed isOpen dependency to allow tracking while closing/opening
 
     // Eyelid Animation Variants
     // We animate the 'd' attribute (path definition) to smoothly morph between open and closed shapes.

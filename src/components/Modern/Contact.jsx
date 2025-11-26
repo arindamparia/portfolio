@@ -72,7 +72,6 @@ const Contact = () => {
 
     // Consolidated validation - returns both error type and error message
     const validateField = (name, value) => {
-        const messageFieldName = getMessageFieldName(name);
 
         switch (name) {
             case 'salutation':
@@ -131,18 +130,7 @@ const Contact = () => {
         }
     };
 
-    // Helper to get border color based on field state
-    const getBorderColor = (fieldName) => {
-        if (errors[fieldName] && touched[fieldName]) return '#f5576c';
-        if (!errors[fieldName] && touched[fieldName] && formData[fieldName]) return '#4ade80';
-        if (focusedField === fieldName) return 'var(--accent-primary)';
-        return undefined;
-    };
 
-    // Common animation props for shake effect on error
-    const getShakeAnimation = (fieldName) => ({
-        x: errors[fieldName] && touched[fieldName] ? [0, -10, 10, -10, 10, 0] : 0
-    });
 
     const showToast = (message, type = 'success', duration = 5000) => {
         const id = Date.now();

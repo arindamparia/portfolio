@@ -16,10 +16,11 @@ const Hero = () => {
                         src={assets.profileImage}
                         alt={`${personalInfo.name.full} - ${personalInfo.title}`}
                         className="profile-image"
-                        loading="lazy"
-                        initial={{ opacity: 0, scale: 0.8 }}
+                        fetchPriority="high"
+                        // Removed loading="lazy" as this is the LCP element
+                        // Simplified animation to prevent delaying LCP
+                        initial={{ opacity: 1, scale: 1 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.8 }}
                     />
                     <motion.div
                         className="hero-text"
