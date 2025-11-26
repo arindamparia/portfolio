@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaEnvelope, FaLinkedin, FaGithub, FaExclamationTriangle, FaCheckCircle, FaUser, FaPhone, FaBuilding, FaCommentDots } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
@@ -8,6 +8,7 @@ import { API_BASE_URL } from '../../utils/api';
 import { validateIndianPhoneNumber } from '../../utils/phoneValidation';
 import { getRandomMessage, getRandomSuccess } from '../../constants/formErrorMessages';
 import ToastContainer from './Toast';
+import AnimatedEye from '../Shared/AnimatedEye';
 
 // Constants
 const EMPTY_FORM_DATA = {
@@ -44,6 +45,15 @@ const Contact = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [toasts, setToasts] = useState([]);
     const [displayedMessages, setDisplayedMessages] = useState({});
+
+    // Refs for input fields to track cursor position for animated eyes
+    const salutationRef = useRef(null);
+    const firstNameRef = useRef(null);
+    const lastNameRef = useRef(null);
+    const emailRef = useRef(null);
+    const companyRef = useRef(null);
+    const mobileRef = useRef(null);
+    const messageRef = useRef(null);
 
     // Save form data to sessionStorage whenever it changes
     useEffect(() => {
@@ -424,8 +434,12 @@ const Contact = () => {
                 >
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="salutation">Salutation *</label>
+                            <label htmlFor="salutation" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <AnimatedEye isOpen={!!formData.salutation} inputRef={salutationRef} size="1.5rem" />
+                                Salutation *
+                            </label>
                             <motion.select
+                                ref={salutationRef}
                                 id="salutation"
                                 name="salutation"
                                 value={formData.salutation}
@@ -475,10 +489,12 @@ const Contact = () => {
                             )}
                         </div>
                         <div className="form-group">
-                            <label htmlFor="firstName">
+                            <label htmlFor="firstName" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <AnimatedEye isOpen={!!formData.firstName} inputRef={firstNameRef} size="1.5rem" />
                                 {inputIcons.firstName} First Name *
                             </label>
                             <motion.input
+                                ref={firstNameRef}
                                 type="text"
                                 id="firstName"
                                 name="firstName"
@@ -527,10 +543,12 @@ const Contact = () => {
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="lastName">
+                            <label htmlFor="lastName" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <AnimatedEye isOpen={!!formData.lastName} inputRef={lastNameRef} size="1.5rem" />
                                 {inputIcons.lastName} Last Name *
                             </label>
                             <motion.input
+                                ref={lastNameRef}
                                 type="text"
                                 id="lastName"
                                 name="lastName"
@@ -576,10 +594,12 @@ const Contact = () => {
                             )}
                         </div>
                         <div className="form-group">
-                            <label htmlFor="email">
+                            <label htmlFor="email" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <AnimatedEye isOpen={!!formData.email} inputRef={emailRef} size="1.5rem" />
                                 {inputIcons.email} Email *
                             </label>
                             <motion.input
+                                ref={emailRef}
                                 type="email"
                                 id="email"
                                 name="email"
@@ -628,10 +648,12 @@ const Contact = () => {
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="company">
+                            <label htmlFor="company" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <AnimatedEye isOpen={!!formData.company} inputRef={companyRef} size="1.5rem" />
                                 {inputIcons.company} Company
                             </label>
                             <input
+                                ref={companyRef}
                                 type="text"
                                 id="company"
                                 name="company"
@@ -646,7 +668,8 @@ const Contact = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="mobile">
+                            <label htmlFor="mobile" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <AnimatedEye isOpen={!!formData.mobile} inputRef={mobileRef} size="1.5rem" />
                                 {inputIcons.mobile} Mobile * (Indian numbers only)
                             </label>
                             <div style={{ position: 'relative' }}>
@@ -664,6 +687,7 @@ const Contact = () => {
                                     +91
                                 </span>
                                 <motion.input
+                                    ref={mobileRef}
                                     type="tel"
                                     id="mobile"
                                     name="mobile"
@@ -715,10 +739,12 @@ const Contact = () => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="message">
+                        <label htmlFor="message" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <AnimatedEye isOpen={!!formData.message} inputRef={messageRef} size="1.5rem" />
                             {inputIcons.message} Message *
                         </label>
                         <motion.textarea
+                            ref={messageRef}
                             id="message"
                             name="message"
                             value={formData.message}
