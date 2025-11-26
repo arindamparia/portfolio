@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaEnvelope, FaLinkedin, FaGithub, FaExclamationTriangle, FaCheckCircle, FaUser, FaPhone, FaBuilding, FaCommentDots } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
@@ -10,15 +10,28 @@ import { getRandomMessage, getRandomSuccess } from '../../constants/formErrorMes
 import ToastContainer from './Toast';
 
 const Contact = () => {
-    const [formData, setFormData] = useState({
-        salutation: '',
-        firstName: '',
-        lastName: '',
-        email: '',
-        company: '',
-        mobile: '',
-        message: ''
-    });
+    // Initialize form data from localStorage if available
+    const getInitialFormData = () => {
+        try {
+            const savedData = localStorage.getItem('contactFormData');
+            if (savedData) {
+                return JSON.parse(savedData);
+            }
+        } catch (error) {
+            console.error('Error loading form data from localStorage:', error);
+        }
+        return {
+            salutation: '',
+            firstName: '',
+            lastName: '',
+            email: '',
+            company: '',
+            mobile: '',
+            message: ''
+        };
+    };
+
+    const [formData, setFormData] = useState(getInitialFormData);
 
     const [errors, setErrors] = useState({});
     const [errorTypes, setErrorTypes] = useState({});
@@ -27,6 +40,15 @@ const Contact = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [toasts, setToasts] = useState([]);
     const [displayedMessages, setDisplayedMessages] = useState({});
+
+    // Save form data to localStorage whenever it changes
+    useEffect(() => {
+        try {
+            localStorage.setItem('contactFormData', JSON.stringify(formData));
+        } catch (error) {
+            console.error('Error saving form data to localStorage:', error);
+        }
+    }, [formData]);
 
     // Helper to get the correct message field name
     const getMessageFieldName = (fieldName) => {
@@ -303,7 +325,9 @@ const Contact = () => {
             if (response.ok) {
                 vibrateSuccess();
                 showToast(getRandomMessage('form', 'submitSuccess'), 'success', 6000);
-                setFormData({
+
+                // Clear form data
+                const emptyFormData = {
                     salutation: '',
                     firstName: '',
                     lastName: '',
@@ -311,7 +335,16 @@ const Contact = () => {
                     company: '',
                     mobile: '',
                     message: ''
-                });
+                };
+                setFormData(emptyFormData);
+
+                // Clear localStorage
+                try {
+                    localStorage.removeItem('contactFormData');
+                } catch (error) {
+                    console.error('Error clearing form data from localStorage:', error);
+                }
+
                 setTouched({});
                 setErrors({});
                 setErrorTypes({});
