@@ -117,17 +117,14 @@ const Contact = () => {
             const error = validateField(name, processedValue);
             const prevError = errors[name];
 
-            // Only update message if validation state changed
-            if ((prevError && !error) || (!prevError && error)) {
+            // Update message whenever error changes (including type changes)
+            if (prevError !== error) {
                 const messageFieldName = getMessageFieldName(name);
                 setDisplayedMessages(prev => ({
                     ...prev,
                     [name]: error || getRandomSuccess(messageFieldName)
                 }));
-            }
 
-            // Only update errors if the error value actually changed
-            if (prevError !== error) {
                 setErrors({
                     ...errors,
                     [name]: error
