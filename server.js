@@ -111,9 +111,6 @@ app.post('/api/contact', async (req, res) => {
     }
 });
 
-// NOTE: /api/contacts endpoint removed for security
-// If you need to view contacts, query the database directly or implement proper authentication
-
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
     console.log(`API endpoints:`);
