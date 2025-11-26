@@ -154,6 +154,9 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
     }, [inputRef]); // Removed isOpen dependency to allow tracking while closing/opening
 
     // Eyelid Animation Variants
+    // We animate the 'd' attribute (path definition) to smoothly morph between open and closed shapes.
+    // Open: Arched curve (Q 50 5)
+    // Closed: Flat/Slightly curved down (Q 50 50)
     const upperEyelidVariants = {
         open: { d: "M 0 0 L 100 0 L 100 50 L 95 50 Q 50 5 5 50 L 0 50 Z" },
         closed: { d: "M 0 0 L 100 0 L 100 50 L 95 50 Q 50 50 5 50 L 0 50 Z" }
@@ -208,11 +211,10 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                         <stop offset="100%" stopColor="#000000" />
                     </radialGradient>
 
-                    {/* Eyelid gradient */}
+                    {/* Eyelid gradient - Updated to match page background (white) */}
                     <linearGradient id="eyelidGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#a0826d" />
-                        <stop offset="50%" stopColor="#8b7355" />
-                        <stop offset="100%" stopColor="#6d5d4f" />
+                        <stop offset="0%" stopColor="#ffffff" />
+                        <stop offset="100%" stopColor="#f8f9fa" /> {/* Subtle shift to secondary bg color */}
                     </linearGradient>
 
                     {/* Eye Shadow Filter */}
@@ -236,13 +238,13 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
 
                 {/* --- EYE BALL LAYER --- */}
 
-                {/* Eye white background */}
+                {/* Eye white background - Eye pleasing white */}
                 <ellipse
                     cx="50"
                     cy="50"
                     rx="45"
                     ry="38"
-                    fill="#ffffff"
+                    fill="#F8F5FA"
                     stroke="#d0d0d0"
                     strokeWidth="1.5"
                     filter="url(#eyeShadow)"
@@ -252,7 +254,11 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                 <path d="M 20 45 Q 35 42, 50 45" stroke="#ffcccc" strokeWidth="0.5" fill="none" opacity="0.3" />
                 <path d="M 50 45 Q 65 42, 80 45" stroke="#ffcccc" strokeWidth="0.5" fill="none" opacity="0.3" />
 
-                {/* Iris and Pupil Group - Clipped! */}
+                {/* 
+                    Iris and Pupil Group
+                    Wrapped in a clipPath to ensure the pupil/iris never bleeds outside the eye white
+                    when looking at extreme angles.
+                */}
                 <g clipPath="url(#eyeClip)">
                     <motion.g
                         animate={{
@@ -298,7 +304,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                     animate={isOpen ? "open" : "closed"}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     fill="url(#eyelidGradient)"
-                    stroke="#6d5d4f"
+                    stroke="#e0e0e0"
                     strokeWidth="1"
                 />
 
@@ -308,8 +314,8 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                     initial={isOpen ? "open" : "closed"}
                     animate={isOpen ? "open" : "closed"}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
-                    fill="#9b8270" // Slightly darker for lower lid
-                    stroke="#7a6a5a"
+                    fill="url(#eyelidGradient)"
+                    stroke="#e0e0e0"
                     strokeWidth="0.5"
                 />
 
@@ -322,33 +328,64 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                     }}
                     transition={{ duration: 0.3 }}
                     fill="none"
-                    stroke="#6d5d4f"
+                    stroke="#a0a0a0"
                     strokeWidth="1"
                     strokeLinecap="round"
                 />
 
-                {/* Upper Lashes (Attached to upper lid movement roughly) */}
+                {/* 
+                    Upper Lashes Generation
+                    
+                    We use Quadratic Bezier Curve mathematics to ensure lashes are attached exactly to the eyelid curve.
+                    The eyelid curve is defined as: M 5 50 Q 50 8, 95 50
+                    This corresponds to control points:
+                    P0 = (5, 50)  -> Start point
+                    P1 = (50, 8)  -> Control point (defines the peak of the arch)
+                    P2 = (95, 50) -> End point
+                */}
                 <motion.g
                     variants={lashesVariants}
                     initial={isOpen ? "open" : "closed"}
                     animate={isOpen ? "open" : "closed"}
                     transition={{ duration: 0.3 }}
                 >
-                    {[15, 25, 35, 45, 50, 55, 65, 75, 85].map((x, index) => {
-                        const y = 50 - Math.pow((x - 50) / 45, 2) * 42;
-                        const lashLength = index === 4 ? 8 : 6;
-                        const angle = Math.atan2(50 - y, x - 50);
+                    {/* Iterate t from 0.1 to 0.9 to distribute lashes along the curve (avoiding extreme corners) */}
+                    {[0.1, 0.18, 0.26, 0.34, 0.42, 0.5, 0.58, 0.66, 0.74, 0.82, 0.9].map((t, index) => {
+                        // Quadratic Bezier Formula: B(t) = (1-t)²P₀ + 2(1-t)tP₁ + t²P₂
+                        const p0 = { x: 5, y: 50 };
+                        const p1 = { x: 50, y: 8 };
+                        const p2 = { x: 95, y: 50 };
+
+                        const oneMinusT = 1 - t;
+
+                        // Calculate exact (x, y) position on the curve for this t value
+                        const x = oneMinusT * oneMinusT * p0.x + 2 * oneMinusT * t * p1.x + t * t * p2.x;
+                        const y = oneMinusT * oneMinusT * p0.y + 2 * oneMinusT * t * p1.y + t * t * p2.y;
+
+                        // Calculate the derivative (tangent) to find the normal angle
+                        // B'(t) = 2(1-t)(P1-P0) + 2t(P2-P1)
+                        const dx = 2 * oneMinusT * (p1.x - p0.x) + 2 * t * (p2.x - p1.x);
+                        const dy = 2 * oneMinusT * (p1.y - p0.y) + 2 * t * (p2.y - p1.y);
+
+                        // The normal vector is perpendicular to the tangent.
+                        // atan2(dy, dx) gives the tangent angle.
+                        // Subtracting PI/2 (90 degrees) rotates it to point outwards/upwards.
+                        const angle = Math.atan2(dy, dx) - Math.PI / 2;
+
+                        // Make central lashes slightly longer for a natural look
+                        const lashLength = (index >= 4 && index <= 6) ? 12 : 9;
+
                         return (
                             <line
                                 key={`upper-${index}`}
                                 x1={x}
                                 y1={y}
-                                x2={x + Math.sin(angle) * lashLength}
-                                y2={y - Math.cos(angle) * lashLength}
-                                stroke="#2c2c2c"
-                                strokeWidth="1"
+                                x2={x + Math.cos(angle) * lashLength}
+                                y2={y + Math.sin(angle) * lashLength}
+                                stroke="#1565c0" // Blue lashes when open
+                                strokeWidth="1.5"
                                 strokeLinecap="round"
-                                opacity="0.8"
+                                opacity="0.9"
                             />
                         );
                     })}
@@ -389,7 +426,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                     }}
                     transition={{ duration: 0.3 }}
                     fill="none"
-                    stroke="#8b7355" // Match upper lid stroke
+                    stroke="#333333" // Dark grey for definition
                     strokeLinecap="round"
                 />
                 {/* Lower Eyelid Line */}
@@ -399,7 +436,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                     }}
                     transition={{ duration: 0.3 }}
                     fill="none"
-                    stroke="#8b7355"
+                    stroke="#333333"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                 />
