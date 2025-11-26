@@ -16,12 +16,9 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-[[headers]]
-  for = "/api/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Headers = "Content-Type"
-    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+# NOTE: CORS is now handled in the function code using ALLOWED_ORIGINS environment variable
+# Set ALLOWED_ORIGINS in Netlify dashboard: Site settings > Environment variables
+# Example: https://your-domain.com,https://www.your-domain.com
 
 # Cache static assets (JS, CSS) for 1 year - they have hashed filenames
 [[headers]]

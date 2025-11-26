@@ -8,8 +8,27 @@ import { validateContactData, parseUserAgent, sanitizeContactData } from './src/
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Configure CORS with allowed origins
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+    : ['http://localhost:5173', 'http://localhost:3000'];
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, Postman, etc.)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error(`Origin ${origin} not allowed by CORS`));
+        }
+    },
+    credentials: true
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Health check endpoint
@@ -78,42 +97,25 @@ app.post('/api/contact', async (req, res) => {
 
     } catch (error) {
         console.error('Error saving contact:', error);
-        return res.status(500).json({
-            error: 'Failed to save contact information',
-            details: error.message
-        });
+
+        // Only expose error details in development
+        const response = {
+            error: 'Failed to save contact information'
+        };
+
+        if (process.env.NODE_ENV === 'development') {
+            response.details = error.message;
+        }
+
+        return res.status(500).json(response);
     }
 });
 
-// Get all contacts (for testing/admin purposes)
-app.get('/api/contacts', async (req, res) => {
-    try {
-        const contacts = await sql`
-            SELECT id, salutation, first_name, last_name, email, mobile, company, message,
-                   ip_address, user_agent, browser, operating_system, device_type,
-                   screen_resolution, language, timezone, referrer, created_at
-            FROM contacts
-            ORDER BY created_at DESC
-        `;
-
-        return res.json({
-            success: true,
-            count: contacts.length,
-            data: contacts
-        });
-
-    } catch (error) {
-        console.error('Error fetching contacts:', error);
-        return res.status(500).json({
-            error: 'Failed to fetch contacts',
-            details: error.message
-        });
-    }
-});
+// NOTE: /api/contacts endpoint removed for security
+// If you need to view contacts, query the database directly or implement proper authentication
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
     console.log(`API endpoints:`);
     console.log(`  - POST http://localhost:${PORT}/api/contact`);
-    console.log(`  - GET  http://localhost:${PORT}/api/contacts`);
 });
