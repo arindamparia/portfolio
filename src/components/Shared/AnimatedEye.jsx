@@ -27,6 +27,18 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
             const eyeRect = eyeRef.current.getBoundingClientRect();
             const inputRect = inputRef.current.getBoundingClientRect();
 
+            // Check if mouse is over the input field
+            const isOverInput = e.clientX >= inputRect.left &&
+                              e.clientX <= inputRect.right &&
+                              e.clientY >= inputRect.top &&
+                              e.clientY <= inputRect.bottom;
+
+            if (!isOverInput) {
+                // Reset pupil to center when not over input
+                setPupilPosition({ x: 0, y: 0 });
+                return;
+            }
+
             // Calculate the center of the eye
             const eyeCenterX = eyeRect.left + eyeRect.width / 2;
             const eyeCenterY = eyeRect.top + eyeRect.height / 2;
@@ -54,12 +66,12 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
 
         const inputElement = inputRef.current;
 
-        // Add event listeners
-        inputElement.addEventListener('mousemove', handleMouseMove);
+        // Add event listeners to window for reliable mouse tracking
+        window.addEventListener('mousemove', handleMouseMove);
         inputElement.addEventListener('focus', handleFocus);
 
         return () => {
-            inputElement.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mousemove', handleMouseMove);
             inputElement.removeEventListener('focus', handleFocus);
         };
     }, [isOpen, inputRef]);
