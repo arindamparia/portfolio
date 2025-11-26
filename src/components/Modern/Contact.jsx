@@ -21,6 +21,7 @@ const Contact = () => {
     });
 
     const [errors, setErrors] = useState({});
+    const [errorTypes, setErrorTypes] = useState({});
     const [touched, setTouched] = useState({});
     const [focusedField, setFocusedField] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,6 +31,38 @@ const Contact = () => {
     // Helper to get the correct message field name
     const getMessageFieldName = (fieldName) => {
         return fieldName === 'mobile' ? 'phone' : fieldName;
+    };
+
+    // Helper to get the error type/category for a field
+    const getErrorType = (name, value) => {
+        switch (name) {
+            case 'salutation':
+                if (!value || value.trim() === '') return 'required';
+                return '';
+            case 'firstName':
+            case 'lastName':
+                if (!value.trim()) return 'required';
+                if (value.trim().length < 3) return 'tooShort';
+                if (!/^[A-Za-z]+$/.test(value)) return 'invalid';
+                return '';
+            case 'mobile':
+                if (!value.trim()) return 'required';
+                const cleanNumber = value.trim().replace(/[\s-]/g, '');
+                if (!/^\d+$/.test(cleanNumber)) return 'invalidCharacters';
+                if (cleanNumber.length !== 10) return 'lengthError';
+                if (!/^[6-9]/.test(cleanNumber)) return 'invalidPrefix';
+                return '';
+            case 'email':
+                if (!value.trim()) return 'required';
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'invalid';
+                return '';
+            case 'message':
+                if (!value.trim()) return 'required';
+                if (value.trim().length < 10) return 'tooShort';
+                return '';
+            default:
+                return '';
+        }
     };
 
     const validateField = (name, value) => {
@@ -115,16 +148,26 @@ const Contact = () => {
 
         if (touched[name]) {
             const error = validateField(name, processedValue);
+            const errorType = getErrorType(name, processedValue);
             const prevError = errors[name];
+            const prevErrorType = errorTypes[name];
 
-            // Update message whenever error changes (including type changes)
-            if (prevError !== error) {
+            // Only update message when error type changes (not when same type generates different random message)
+            if (prevErrorType !== errorType) {
                 const messageFieldName = getMessageFieldName(name);
                 setDisplayedMessages(prev => ({
                     ...prev,
                     [name]: error || getRandomSuccess(messageFieldName)
                 }));
 
+                setErrorTypes({
+                    ...errorTypes,
+                    [name]: errorType
+                });
+            }
+
+            // Always update error state to reflect current validation
+            if (prevError !== error) {
                 setErrors({
                     ...errors,
                     [name]: error
@@ -144,6 +187,7 @@ const Contact = () => {
         setFocusedField('');
 
         const error = validateField(name, value);
+        const errorType = getErrorType(name, value);
         const prevError = errors[name];
 
         // Only set the message on FIRST blur (when field wasn't already touched)
@@ -153,6 +197,10 @@ const Contact = () => {
                 ...prev,
                 [name]: error || getRandomSuccess(messageFieldName)
             }));
+            setErrorTypes({
+                ...errorTypes,
+                [name]: errorType
+            });
         }
 
         // Only update errors if the error value actually changed
@@ -173,10 +221,13 @@ const Contact = () => {
 
         // Validate all fields
         const newErrors = {};
+        const newErrorTypes = {};
         ['salutation', 'firstName', 'lastName', 'email', 'mobile', 'message'].forEach(field => {
             const error = validateField(field, formData[field]);
+            const errorType = getErrorType(field, formData[field]);
             if (error) {
                 newErrors[field] = error;
+                newErrorTypes[field] = errorType;
             }
         });
 
@@ -192,18 +243,27 @@ const Contact = () => {
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
 
-            // Preserve existing displayed messages, only add new ones for fields that don't have them
+            // Update displayed messages and error types based on whether type changed
             setDisplayedMessages(prev => {
                 const updatedMessages = { ...prev };
                 Object.keys(newErrors).forEach(field => {
-                    // Only set message if this field doesn't already have a displayed message
-                    if (!prev[field]) {
+                    const prevErrorType = errorTypes[field];
+                    const currentErrorType = newErrorTypes[field];
+
+                    // Only update message if field doesn't have one OR if error type changed
+                    if (!prev[field] || prevErrorType !== currentErrorType) {
                         updatedMessages[field] = newErrors[field];
                     }
-                    // If it already has a message, keep the existing one to prevent regeneration
+                    // If it already has a message with same error type, keep existing to prevent regeneration
                 });
                 return updatedMessages;
             });
+
+            // Update error types for all fields with errors
+            setErrorTypes(prev => ({
+                ...prev,
+                ...newErrorTypes
+            }));
 
             vibrateError();
             showToast(getRandomMessage('form', 'submitError'), 'error');
@@ -254,6 +314,7 @@ const Contact = () => {
                 });
                 setTouched({});
                 setErrors({});
+                setErrorTypes({});
                 setDisplayedMessages({});
             } else {
                 vibrateError();
