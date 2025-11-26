@@ -5,6 +5,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-padding-top: 80px; /* Account for fixed navbar */
+}
+
 body {
   overflow: hidden;
   /* App handles scrolling */
@@ -242,7 +246,7 @@ body {
 }
 
 .theme-modern section {
-  padding: 2rem 0;
+  padding: 4rem 0 2rem 0;
   min-height: auto;
   display: flex;
   flex-direction: column;
@@ -362,8 +366,9 @@ body {
   position: fixed;
   top: 0;
   width: 100%;
-  background: var(--bg-primary);
+  background: rgba(17, 24, 39, 0.85);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
   border-bottom: 1px solid var(--border-light);
   padding: 1rem 0;
@@ -1061,13 +1066,18 @@ body {
 
 /* Responsive Design for Mobile to Laptop */
 @media (max-width: 768px) {
+  html {
+    scroll-padding-top: 100px; /* More padding for mobile navbar */
+  }
+
   .theme-modern .container {
     padding: 0 1rem;
   }
 
   .theme-modern section {
-    padding: 3rem 0;
+    padding: 4rem 0 3rem 0;
     min-height: auto;
+    scroll-margin-top: 120px;
   }
 
   .theme-modern .section-title {
