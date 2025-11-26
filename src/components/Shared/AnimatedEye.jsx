@@ -95,8 +95,8 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
 
         // Calculate angle and limit distance for pupil movement
         const angle = Math.atan2(deltaY, deltaX);
-        const maxDistance = 8; // Maximum pixels the pupil can move from center
-        const distance = Math.min(maxDistance, Math.sqrt(deltaX * deltaX + deltaY * deltaY) / 10);
+        const maxDistance = 15; // Maximum pixels the pupil can move from center (increased for more movement)
+        const distance = Math.min(maxDistance, Math.sqrt(deltaX * deltaX + deltaY * deltaY) / 8);
 
         // Calculate new pupil position
         const newX = Math.cos(angle) * distance;
@@ -169,25 +169,70 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                             position: 'relative'
                         }}
                     >
-                        {/* White of the eye */}
+                        {/* Eye SVG */}
                         <svg
                             width="100%"
                             height="100%"
                             viewBox="0 0 100 100"
                             style={{ position: 'absolute' }}
                         >
-                            {/* Eye background */}
+                            <defs>
+                                {/* Iris gradient for realistic depth */}
+                                <radialGradient id="irisGradient">
+                                    <stop offset="0%" stopColor="#64b5f6" />
+                                    <stop offset="50%" stopColor="#2196f3" />
+                                    <stop offset="100%" stopColor="#1565c0" />
+                                </radialGradient>
+
+                                {/* Pupil gradient for depth */}
+                                <radialGradient id="pupilGradient">
+                                    <stop offset="0%" stopColor="#0d0d0d" />
+                                    <stop offset="100%" stopColor="#000000" />
+                                </radialGradient>
+
+                                {/* Eye shadow */}
+                                <filter id="eyeShadow">
+                                    <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+                                    <feOffset dx="0" dy="1" result="offsetblur" />
+                                    <feComponentTransfer>
+                                        <feFuncA type="linear" slope="0.3" />
+                                    </feComponentTransfer>
+                                    <feMerge>
+                                        <feMergeNode />
+                                        <feMergeNode in="SourceGraphic" />
+                                    </feMerge>
+                                </filter>
+                            </defs>
+
+                            {/* Eye white background with subtle shadow */}
                             <ellipse
                                 cx="50"
                                 cy="50"
                                 rx="45"
-                                ry="40"
-                                fill="white"
-                                stroke="#333"
-                                strokeWidth="2"
+                                ry="38"
+                                fill="#ffffff"
+                                stroke="#d0d0d0"
+                                strokeWidth="1.5"
+                                filter="url(#eyeShadow)"
                             />
 
-                            {/* Iris */}
+                            {/* Subtle eye veins for realism */}
+                            <path
+                                d="M 20 45 Q 35 42, 50 45"
+                                stroke="#ffcccc"
+                                strokeWidth="0.5"
+                                fill="none"
+                                opacity="0.3"
+                            />
+                            <path
+                                d="M 50 45 Q 65 42, 80 45"
+                                stroke="#ffcccc"
+                                strokeWidth="0.5"
+                                fill="none"
+                                opacity="0.3"
+                            />
+
+                            {/* Iris and Pupil Group - moves together */}
                             <motion.g
                                 animate={{
                                     x: pupilPosition.x,
@@ -199,49 +244,100 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                                     damping: 20
                                 }}
                             >
-                                {/* Iris circle */}
+                                {/* Iris outer ring */}
                                 <circle
                                     cx="50"
                                     cy="50"
-                                    r="18"
-                                    fill="#4a90e2"
+                                    r="20"
+                                    fill="url(#irisGradient)"
+                                    opacity="0.95"
                                 />
 
-                                {/* Pupil */}
+                                {/* Iris texture lines for detail */}
+                                {[...Array(12)].map((_, i) => {
+                                    const angle = (i * 30 * Math.PI) / 180;
+                                    const x1 = 50 + Math.cos(angle) * 12;
+                                    const y1 = 50 + Math.sin(angle) * 12;
+                                    const x2 = 50 + Math.cos(angle) * 20;
+                                    const y2 = 50 + Math.sin(angle) * 20;
+                                    return (
+                                        <line
+                                            key={i}
+                                            x1={x1}
+                                            y1={y1}
+                                            x2={x2}
+                                            y2={y2}
+                                            stroke="#1565c0"
+                                            strokeWidth="0.5"
+                                            opacity="0.4"
+                                        />
+                                    );
+                                })}
+
+                                {/* Pupil with gradient */}
                                 <circle
                                     cx="50"
                                     cy="50"
-                                    r="10"
-                                    fill="#1a1a1a"
+                                    r="11"
+                                    fill="url(#pupilGradient)"
                                 />
 
-                                {/* Light reflection */}
+                                {/* Main light reflection - top left */}
                                 <circle
-                                    cx="45"
-                                    cy="45"
-                                    r="4"
+                                    cx="44"
+                                    cy="44"
+                                    r="4.5"
                                     fill="white"
-                                    opacity="0.8"
+                                    opacity="0.9"
+                                />
+
+                                {/* Secondary smaller reflection */}
+                                <circle
+                                    cx="56"
+                                    cy="48"
+                                    r="2"
+                                    fill="white"
+                                    opacity="0.5"
                                 />
                             </motion.g>
 
-                            {/* Top eyelid */}
-                            <motion.path
-                                d="M 5 50 Q 50 10, 95 50"
+                            {/* Upper eyelid - more realistic curve */}
+                            <path
+                                d="M 5 50 Q 50 8, 95 50"
                                 fill="none"
-                                stroke="#333"
-                                strokeWidth="2"
+                                stroke="#8b7355"
+                                strokeWidth="2.5"
                                 strokeLinecap="round"
                             />
 
-                            {/* Bottom eyelid */}
-                            <motion.path
-                                d="M 5 50 Q 50 90, 95 50"
+                            {/* Lower eyelid - gentler curve */}
+                            <path
+                                d="M 5 50 Q 50 88, 95 50"
                                 fill="none"
-                                stroke="#333"
-                                strokeWidth="2"
+                                stroke="#8b7355"
+                                strokeWidth="2.5"
                                 strokeLinecap="round"
                             />
+
+                            {/* Upper eyelashes */}
+                            {[15, 25, 35, 45, 50, 55, 65, 75, 85].map((x, index) => {
+                                const y = 50 - Math.pow((x - 50) / 45, 2) * 42;
+                                const lashLength = index === 4 ? 8 : 6;
+                                const angle = Math.atan2(50 - y, x - 50);
+                                return (
+                                    <line
+                                        key={`upper-${index}`}
+                                        x1={x}
+                                        y1={y}
+                                        x2={x + Math.sin(angle) * lashLength}
+                                        y2={y - Math.cos(angle) * lashLength}
+                                        stroke="#2c2c2c"
+                                        strokeWidth="1"
+                                        strokeLinecap="round"
+                                        opacity="0.8"
+                                    />
+                                );
+                            })}
                         </svg>
                     </motion.div>
                 ) : (

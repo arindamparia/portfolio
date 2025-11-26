@@ -489,8 +489,8 @@ const Contact = () => {
                         </div>
                         <div className="form-group">
                             <label htmlFor="firstName" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <AnimatedEye isOpen={!!formData.firstName} inputRef={firstNameRef} size="1.5rem" />
                                 {inputIcons.firstName} First Name *
+                                <AnimatedEye isOpen={!!formData.firstName} inputRef={firstNameRef} size="1.5rem" />
                             </label>
                             <motion.input
                                 ref={firstNameRef}
@@ -543,8 +543,8 @@ const Contact = () => {
                     <div className="form-row">
                         <div className="form-group">
                             <label htmlFor="lastName" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <AnimatedEye isOpen={!!formData.lastName} inputRef={lastNameRef} size="1.5rem" />
                                 {inputIcons.lastName} Last Name *
+                                <AnimatedEye isOpen={!!formData.lastName} inputRef={lastNameRef} size="1.5rem" />
                             </label>
                             <motion.input
                                 ref={lastNameRef}
@@ -594,8 +594,8 @@ const Contact = () => {
                         </div>
                         <div className="form-group">
                             <label htmlFor="email" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <AnimatedEye isOpen={!!formData.email} inputRef={emailRef} size="1.5rem" />
                                 {inputIcons.email} Email *
+                                <AnimatedEye isOpen={!!formData.email} inputRef={emailRef} size="1.5rem" />
                             </label>
                             <motion.input
                                 ref={emailRef}
@@ -648,8 +648,8 @@ const Contact = () => {
                     <div className="form-row">
                         <div className="form-group">
                             <label htmlFor="company" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <AnimatedEye isOpen={!!formData.company} inputRef={companyRef} size="1.5rem" />
                                 {inputIcons.company} Company
+                                <AnimatedEye isOpen={!!formData.company} inputRef={companyRef} size="1.5rem" />
                             </label>
                             <input
                                 ref={companyRef}
@@ -668,8 +668,8 @@ const Contact = () => {
                         </div>
                         <div className="form-group">
                             <label htmlFor="mobile" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <AnimatedEye isOpen={!!formData.mobile} inputRef={mobileRef} size="1.5rem" />
                                 {inputIcons.mobile} Mobile * (Indian numbers only)
+                                <AnimatedEye isOpen={!!formData.mobile} inputRef={mobileRef} size="1.5rem" />
                             </label>
                             <div style={{ position: 'relative' }}>
                                 <span style={{
@@ -739,8 +739,8 @@ const Contact = () => {
 
                     <div className="form-group">
                         <label htmlFor="message" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <AnimatedEye isOpen={!!formData.message} inputRef={messageRef} size="1.5rem" />
                             {inputIcons.message} Message *
+                            <AnimatedEye isOpen={!!formData.message} inputRef={messageRef} size="1.5rem" />
                         </label>
                         <motion.textarea
                             ref={messageRef}
