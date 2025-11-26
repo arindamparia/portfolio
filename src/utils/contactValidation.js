@@ -11,7 +11,7 @@ export const FIELD_LIMITS = {
     email: 80,
     mobile: 20,
     company: 80,
-    message: 500,
+    message: 100,
     userAgent: 200,
     browser: 30,
     operatingSystem: 30,

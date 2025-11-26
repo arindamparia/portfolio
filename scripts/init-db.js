@@ -15,7 +15,7 @@ async function initDatabase() {
                 email VARCHAR(80) NOT NULL,
                 mobile VARCHAR(20) NOT NULL,
                 company VARCHAR(80),
-                message VARCHAR(500) NOT NULL,
+                message VARCHAR(100) NOT NULL,
                 ip_address VARCHAR(45),
                 user_agent VARCHAR(200),
                 browser VARCHAR(30),

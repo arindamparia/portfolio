@@ -353,7 +353,7 @@ const Contact = () => {
     const getCharacterCount = () => {
         const count = formData.message.length;
         const min = 10;
-        const max = 500;
+        const max = 100;
 
         if (count === 0) return { text: "Start typing your epic message! ✍️", color: '#888' };
         if (count < min) return { text: `${min - count} more characters needed. You're almost there! 💪`, color: '#f5576c' };
@@ -763,7 +763,7 @@ const Contact = () => {
                             onFocus={() => handleFocus('message')}
                             className={errors.message && touched.message ? 'error' : ''}
                             placeholder="Tell me about your project, timeline, or how I can help."
-                            maxLength={500}
+                            maxLength={100}
                             style={{
                                 borderColor:
                                     errors.message && touched.message ? '#f5576c' :
