@@ -255,8 +255,8 @@ body {
   position: relative;
 }
 
-/* Static gradient backgrounds for sections */
-.theme-modern section::before {
+/* Static gradient backgrounds for non-Hero sections */
+.theme-modern section:not(.hero)::before {
   content: '';
   position: absolute;
   top: 0;
