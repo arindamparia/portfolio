@@ -47,8 +47,8 @@ async function migrateDatabase() {
 
         // Optimize message
         try {
-            await sql`ALTER TABLE contacts ALTER COLUMN message TYPE VARCHAR(100)`;
-            console.log('✓ Optimized message: VARCHAR(100)');
+            await sql`ALTER TABLE contacts ALTER COLUMN message TYPE VARCHAR(500)`;
+            console.log('✓ Optimized message: VARCHAR(500)');
         } catch (error) {
             console.log('⚠ Message column error:', error.message);
         }
