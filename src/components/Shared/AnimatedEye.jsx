@@ -188,14 +188,17 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                 justifyContent: 'center',
                 position: 'relative',
                 userSelect: 'none',
-                pointerEvents: 'none'
+                pointerEvents: 'none',
+                backgroundColor: 'transparent', // Ensure no background
+                border: 'none', // Ensure no border
+                outline: 'none' // Ensure no outline
             }}
         >
             <svg
                 width="100%"
                 height="100%"
                 viewBox="0 0 100 100"
-                style={{ overflow: 'visible' }} // Allow lashes to stick out if needed
+                style={{ overflow: 'visible', backgroundColor: 'transparent' }} // Allow lashes to stick out if needed
             >
                 <defs>
                     {/* Iris gradient */}
@@ -304,8 +307,6 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                     animate={isOpen ? "open" : "closed"}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     fill="url(#eyelidGradient)"
-                    stroke="#e0e0e0"
-                    strokeWidth="1"
                 />
 
                 {/* Lower Eyelid Skin */}
@@ -315,8 +316,6 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                     animate={isOpen ? "open" : "closed"}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     fill="url(#eyelidGradient)"
-                    stroke="#e0e0e0"
-                    strokeWidth="0.5"
                 />
 
                 {/* Eyelid Crease (Only visible when open/semi-open) */}
