@@ -252,6 +252,20 @@ body {
   flex-direction: column;
   justify-content: center;
   scroll-margin-top: 100px;
+  position: relative;
+}
+
+/* Static gradient background for non-Hero sections */
+.theme-modern section:not(.hero)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(20, 25, 60, 0.08) 0%, rgba(10, 15, 35, 0.04) 100%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .theme-modern .section-subtitle {

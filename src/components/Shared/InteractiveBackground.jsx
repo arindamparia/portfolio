@@ -403,8 +403,8 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
                 scale: [1, 1.2, 1],
               }}
               transition={{
-                x: { type: 'spring', stiffness: 20, damping: 15 },
-                y: { type: 'spring', stiffness: 20, damping: 15 },
+                x: { type: 'spring', stiffness: 50, damping: 10 },
+                y: { type: 'spring', stiffness: 50, damping: 10 },
                 opacity: { duration: 8, repeat: Infinity, delay: star.twinkleDelay },
                 scale: { duration: 10, repeat: Infinity, ease: 'easeInOut' }
               }}
@@ -432,8 +432,8 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
                 rotate: 360,
               }}
               transition={{
-                x: { type: 'spring', stiffness: 25, damping: 15 },
-                y: { type: 'spring', stiffness: 25, damping: 15 },
+                x: { type: 'spring', stiffness: 60, damping: 10 },
+                y: { type: 'spring', stiffness: 60, damping: 10 },
                 rotate: { duration: star.orbitSpeed * 20, repeat: Infinity, ease: 'linear' }
               }}
               style={{
@@ -461,8 +461,8 @@ const UniverseParticlesBackground = ({ mousePosition, colors, intensity }) => {
                 scale: [0.9, 1.3, 0.9],
               }}
               transition={{
-                x: { type: 'spring', stiffness: 30, damping: 15 },
-                y: { type: 'spring', stiffness: 30, damping: 15 },
+                x: { type: 'spring', stiffness: 70, damping: 10 },
+                y: { type: 'spring', stiffness: 70, damping: 10 },
                 opacity: { duration: star.speed * 3, repeat: Infinity, delay: star.twinkleDelay },
                 scale: { duration: star.speed * 3, repeat: Infinity, delay: star.twinkleDelay }
               }}

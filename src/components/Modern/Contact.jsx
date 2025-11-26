@@ -10,7 +10,6 @@ import { getRandomMessage, getRandomSuccess } from '../../constants/formErrorMes
 import { FIELD_LIMITS } from '../../utils/contactValidation';
 import ToastContainer from './Toast';
 import AnimatedEye from '../Shared/AnimatedEye';
-import InteractiveBackground from '../Shared/InteractiveBackground';
 
 // Constants
 const EMPTY_FORM_DATA = {
@@ -375,7 +374,6 @@ const Contact = () => {
 
     return (
         <section id="contact" style={{ paddingBottom: '4rem' }}>
-            <InteractiveBackground variant="aurora" colorScheme="blue" intensity={0.5} />
             <ToastContainer toasts={toasts} removeToast={removeToast} />
 
             <div className="container">
