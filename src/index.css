@@ -1251,9 +1251,18 @@ body {
   }
 
   .theme-modern .navbar-clock {
-    font-size: 0.75rem;
-    padding: 0.4rem 0.6rem;
-    min-width: 100px;
+    font-size: 0.7rem;
+    padding: 0.35rem 0.5rem;
+    min-width: 90px;
+    gap: 0rem;
+  }
+
+  .theme-modern .navbar-clock > div:first-child {
+    font-size: 0.85rem;
+  }
+
+  .theme-modern .navbar-clock > div:last-child {
+    font-size: 0.6rem;
   }
 
   /* Robust fixed nav for mobile */
