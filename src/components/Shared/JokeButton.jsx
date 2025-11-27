@@ -98,12 +98,13 @@ const JokeButton = () => {
                 }}
                 transition={{
                     layout: {
-                        duration: 0.4,
-                        ease: [0.4, 0, 0.2, 1]
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30
                     },
                     borderRadius: {
-                        duration: 0.4,
-                        ease: [0.4, 0, 0.2, 1]
+                        duration: 0.35,
+                        ease: [0.32, 0.72, 0, 1]
                     }
                 }}
             >
@@ -115,7 +116,7 @@ const JokeButton = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
+                            transition={{ duration: 0.15 }}
                             className="joke-button-content"
                         >
                             <span className="robot-emoji">🤖</span>
@@ -127,7 +128,7 @@ const JokeButton = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2, delay: 0.2 }}
+                            transition={{ duration: 0.2, delay: 0.15 }}
                             className="joke-popup-content"
                         >
                             <button className="joke-close" onClick={handleClose} aria-label="Close">
