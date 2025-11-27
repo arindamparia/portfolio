@@ -42,9 +42,9 @@ const Skills = () => {
                         <motion.div
                             key={category}
                             className="skills-category-card"
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
+                            initial={{ y: 20 }}
+                            whileInView={{ y: 0 }}
+                            viewport={{ once: true, amount: 0.1 }}
                             transition={{ duration: 0.5, delay: categoryIndex * 0.1 }}
                         >
                             <h3 className="skills-category-title">{categoryNames[category]}</h3>
@@ -53,9 +53,9 @@ const Skills = () => {
                                     <motion.div
                                         key={skillIndex}
                                         className="skill-tag"
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        whileInView={{ opacity: 1, scale: 1 }}
-                                        viewport={{ once: true }}
+                                        initial={{ scale: 0.9 }}
+                                        whileInView={{ scale: 1 }}
+                                        viewport={{ once: true, amount: 0.3 }}
                                         transition={{ duration: 0.3, delay: categoryIndex * 0.1 + skillIndex * 0.05 }}
                                     >
                                         <VscCode className="skill-tag-icon" />
