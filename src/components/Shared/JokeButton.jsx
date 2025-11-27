@@ -47,9 +47,21 @@ const JokeButton = () => {
 
     return (
         <>
-            {/* Interactive Robot with Speech Bubble */}
-            <div className="joke-robot-container">
-                {/* Speech Bubble */}
+            {/* Backdrop */}
+            <AnimatePresence>
+                {showPopup && (
+                    <motion.div
+                        className="joke-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={handleClose}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Speech Bubble - Only show when closed */}
+            {!showPopup && (
                 <motion.div
                     className="joke-speech-bubble"
                     initial={{ opacity: 0, y: 10 }}
@@ -58,6 +70,7 @@ const JokeButton = () => {
                         y: 0,
                         scale: [1, 1.05, 1]
                     }}
+                    exit={{ opacity: 0 }}
                     transition={{
                         opacity: { duration: 0.5, delay: 0.5 },
                         y: { duration: 0.5, delay: 0.5 },
@@ -72,76 +85,50 @@ const JokeButton = () => {
                     <span className="bubble-text">Tap me for a dev joke!</span>
                     <div className="bubble-arrow"></div>
                 </motion.div>
+            )}
 
-                {/* Robot Button */}
-                <motion.button
-                    className="joke-robot-button"
-                    onClick={handleButtonClick}
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{
-                        scale: 1,
-                        rotate: 0,
-                    }}
-                    whileHover={{
-                        scale: 1.1,
-                        rotate: [0, -10, 10, -10, 0],
-                        transition: { rotate: { duration: 0.5 } }
-                    }}
-                    whileTap={{ scale: 0.9 }}
-                    transition={{
-                        type: "spring",
-                        stiffness: 260,
-                        damping: 20
-                    }}
-                    aria-label="Get a dev joke from the robot"
-                >
-                    <span className="robot-emoji">🤖</span>
-                </motion.button>
-            </div>
-
-            {/* Popup Modal */}
-            <AnimatePresence>
-                {showPopup && (
-                    <>
-                        {/* Backdrop */}
+            {/* Morphing Button/Popup - Single Element */}
+            <motion.div
+                layout
+                className={showPopup ? "joke-morphing-popup" : "joke-morphing-button"}
+                onClick={!showPopup ? handleButtonClick : undefined}
+                initial={false}
+                animate={{
+                    borderRadius: showPopup ? "20px" : "50%",
+                }}
+                transition={{
+                    layout: {
+                        duration: 0.4,
+                        ease: [0.4, 0, 0.2, 1]
+                    },
+                    borderRadius: {
+                        duration: 0.4,
+                        ease: [0.4, 0, 0.2, 1]
+                    }
+                }}
+            >
+                <AnimatePresence mode="wait">
+                    {!showPopup ? (
+                        // Button State
                         <motion.div
-                            className="joke-backdrop"
+                            key="button"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            onClick={handleClose}
-                        />
-
-                        {/* Popup Content */}
+                            transition={{ duration: 0.2 }}
+                            className="joke-button-content"
+                        >
+                            <span className="robot-emoji">🤖</span>
+                        </motion.div>
+                    ) : (
+                        // Popup State
                         <motion.div
-                            className="joke-popup"
-                            initial={{
-                                scale: 0,
-                                opacity: 0,
-                                x: window.innerWidth > 768 ? '45%' : '40%',
-                                y: window.innerWidth > 768 ? '45%' : '40%'
-                            }}
-                            animate={{
-                                scale: 1,
-                                opacity: 1,
-                                x: 0,
-                                y: 0
-                            }}
-                            exit={{
-                                scale: 0,
-                                opacity: 0,
-                                x: window.innerWidth > 768 ? '45%' : '40%',
-                                y: window.innerWidth > 768 ? '45%' : '40%'
-                            }}
-                            transition={{
-                                type: 'spring',
-                                damping: 20,
-                                stiffness: 300,
-                                opacity: { duration: 0.2 }
-                            }}
-                            style={{
-                                transformOrigin: window.innerWidth > 768 ? 'bottom right' : 'bottom right'
-                            }}
+                            key="popup"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2, delay: 0.2 }}
+                            className="joke-popup-content"
                         >
                             <button className="joke-close" onClick={handleClose} aria-label="Close">
                                 ✕
@@ -188,9 +175,9 @@ const JokeButton = () => {
                                 </button>
                             </div>
                         </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
+                    )}
+                </AnimatePresence>
+            </motion.div>
         </>
     );
 };
