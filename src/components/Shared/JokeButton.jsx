@@ -47,20 +47,57 @@ const JokeButton = () => {
 
     return (
         <>
-            {/* Floating Button */}
-            <motion.button
-                className="joke-button"
-                onClick={handleButtonClick}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-                aria-label="Get a dev joke"
-            >
-                <span className="joke-emoji">😄</span>
-                <span className="joke-text">Dev Joke</span>
-            </motion.button>
+            {/* Interactive Robot with Speech Bubble */}
+            <div className="joke-robot-container">
+                {/* Speech Bubble */}
+                <motion.div
+                    className="joke-speech-bubble"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{
+                        opacity: 1,
+                        y: 0,
+                        scale: [1, 1.05, 1]
+                    }}
+                    transition={{
+                        opacity: { duration: 0.5, delay: 0.5 },
+                        y: { duration: 0.5, delay: 0.5 },
+                        scale: {
+                            duration: 2,
+                            repeat: Infinity,
+                            repeatType: "reverse",
+                            delay: 1
+                        }
+                    }}
+                >
+                    <span className="bubble-text">Tap me for a dev joke!</span>
+                    <div className="bubble-arrow"></div>
+                </motion.div>
+
+                {/* Robot Button */}
+                <motion.button
+                    className="joke-robot-button"
+                    onClick={handleButtonClick}
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{
+                        scale: 1,
+                        rotate: 0,
+                    }}
+                    whileHover={{
+                        scale: 1.1,
+                        rotate: [0, -10, 10, -10, 0],
+                        transition: { rotate: { duration: 0.5 } }
+                    }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{
+                        type: "spring",
+                        stiffness: 260,
+                        damping: 20
+                    }}
+                    aria-label="Get a dev joke from the robot"
+                >
+                    <span className="robot-emoji">🤖</span>
+                </motion.button>
+            </div>
 
             {/* Popup Modal */}
             <AnimatePresence>
