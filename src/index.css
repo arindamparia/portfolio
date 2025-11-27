@@ -854,6 +854,8 @@ body {
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
+  width: 100%;
+  min-width: 0;
 }
 
 .theme-modern .form-group label {
@@ -866,6 +868,7 @@ body {
 .theme-modern .form-group input,
 .theme-modern .form-group select,
 .theme-modern .form-group textarea {
+  width: 100%;
   padding: 0.75rem 1rem;
   border: 2px solid var(--border-medium);
   border-radius: 0.5rem;
@@ -873,6 +876,7 @@ body {
   font-size: 1rem;
   transition: border-color 0.3s ease;
   background: var(--bg-primary);
+  box-sizing: border-box;
 }
 
 .theme-modern .form-group input:focus,
