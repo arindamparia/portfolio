@@ -1455,3 +1455,265 @@ body {
   /* overflow-x: hidden; REMOVED: Breaks sticky nav on desktop */
   position: relative;
 }
+/* ===================================
+   Joke Button & Popup Styles
+   =================================== */
+
+/* Floating Joke Button */
+.joke-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  z-index: 999;
+  transition: all 0.3s ease;
+}
+
+.joke-button:hover {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  transform: translateY(-2px);
+}
+
+.joke-emoji {
+  font-size: 1.5rem;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.joke-text {
+  white-space: nowrap;
+}
+
+/* Backdrop */
+.joke-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+}
+
+/* Popup Modal */
+.joke-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg-primary);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 1001;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.joke-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.joke-close:hover {
+  background: rgba(102, 126, 234, 0.1);
+  transform: rotate(90deg);
+}
+
+.joke-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.joke-icon {
+  font-size: 2.5rem;
+}
+
+.joke-header h3 {
+  font-size: 1.5rem;
+  margin: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.joke-content {
+  min-height: 150px;
+  margin-bottom: 1.5rem;
+}
+
+.joke-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 150px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(102, 126, 234, 0.2);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.joke-text-container {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.joke-single {
+  margin: 0;
+  padding: 1rem;
+  background: rgba(102, 126, 234, 0.05);
+  border-left: 4px solid #667eea;
+  border-radius: 8px;
+  font-style: italic;
+}
+
+.joke-setup {
+  margin: 0 0 1rem 0;
+  padding: 1rem;
+  background: rgba(102, 126, 234, 0.05);
+  border-left: 4px solid #667eea;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.joke-delivery {
+  margin: 0;
+  padding: 1rem;
+  background: rgba(118, 75, 162, 0.05);
+  border-left: 4px solid #764ba2;
+  border-radius: 8px;
+  font-style: italic;
+}
+
+.joke-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.joke-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.joke-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.joke-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.joke-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.joke-btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 2px solid var(--border-light);
+}
+
+.joke-btn-secondary:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: #667eea;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .joke-button {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.875rem 1.25rem;
+    font-size: 0.9rem;
+  }
+
+  .joke-emoji {
+    font-size: 1.25rem;
+  }
+
+  .joke-popup {
+    padding: 1.5rem;
+    width: 95%;
+  }
+
+  .joke-header h3 {
+    font-size: 1.25rem;
+  }
+
+  .joke-icon {
+    font-size: 2rem;
+  }
+
+  .joke-text-container {
+    font-size: 1rem;
+  }
+
+  .joke-actions {
+    flex-direction: column;
+  }
+
+  .joke-btn {
+    width: 100%;
+  }
+}

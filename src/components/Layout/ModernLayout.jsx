@@ -17,6 +17,7 @@
 import React, { useState, lazy, Suspense } from 'react';
 import Hero from '../Modern/Hero';
 import About from '../Modern/About';
+import JokeButton from '../Shared/JokeButton';
 import { vibrateLight } from '../../utils/vibration';
 
 // Lazy load components that are below the fold (not immediately visible)
@@ -141,6 +142,9 @@ const ModernLayout = () => {
                     <Contact />
                 </Suspense>
             </main>
+
+            {/* Floating Dev Joke Button */}
+            <JokeButton />
         </div>
     );
 };
