@@ -457,35 +457,9 @@ body {
   flex-shrink: 0;
 }
 
-.theme-modern .navbar-clock {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  flex-shrink: 0;
-  z-index: 1001;
-}
-
 .theme-modern .nav-links {
   display: flex;
   gap: 2.5rem;
-  flex-shrink: 1;
-  flex-grow: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  max-width: calc(100% - 180px);
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
-  -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
-}
-
-/* Hide scrollbar for Chrome/Safari/Opera */
-.theme-modern .nav-links::-webkit-scrollbar {
-  display: none;
-}
-
-.theme-modern .nav-links a {
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .theme-modern .nav-links a {
@@ -1284,37 +1258,8 @@ body {
     font-size: 1.5rem;
   }
 
-  /* Mobile: Clock positioned in flex flow (between logo and hamburger) */
-  .theme-modern .navbar-clock {
-    position: relative;
-    right: auto;
-    top: auto;
-    transform: none;
-    font-size: 0.7rem;
-    padding: 0.35rem 0.5rem;
-    min-width: 110px;
-    gap: 0.3rem;
-    margin-left: auto; /* Push to right side, before hamburger */
-    margin-right: 0.5rem; /* Space before hamburger */
-  }
-
   .theme-modern .nav-links {
     display: none; /* Hidden on mobile, replaced by hamburger menu */
-  }
-
-  /* Celestial body (sun/moon) on mobile */
-  .theme-modern .navbar-clock > div:first-child {
-    font-size: 1.2rem;
-  }
-
-  /* Time container on mobile */
-  .theme-modern .navbar-clock > div:nth-child(2) > div:first-child {
-    font-size: 0.85rem;
-  }
-
-  /* Date container on mobile */
-  .theme-modern .navbar-clock > div:nth-child(2) > div:last-child {
-    font-size: 0.6rem;
   }
 
   /* Robust fixed nav for mobile */
@@ -1474,38 +1419,9 @@ body {
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-  /* Tablet Navigation - Clock absolute at extreme right, nav-links scrollable without visible scrollbar */
-  .theme-modern .nav-content {
-    padding-right: 0; /* No padding, clock positioned absolutely */
-  }
-
-  .theme-modern .navbar-clock {
-    position: absolute;
-    right: 0; /* Extreme right corner */
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1001;
-  }
-
   .theme-modern .nav-links {
     display: flex;
     gap: 1.5rem;
-    overflow-x: auto;
-    overflow-y: hidden;
-    max-width: calc(100% - 180px); /* Space for clock */
-    flex-shrink: 1;
-    flex-grow: 0;
-    scrollbar-width: none; /* Hide scrollbar */
-    -ms-overflow-style: none;
-  }
-
-  .theme-modern .nav-links::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for webkit browsers */
-  }
-
-  .theme-modern .nav-links a {
-    white-space: nowrap;
-    flex-shrink: 0;
   }
 
   .theme-modern .skills-container-modern {
