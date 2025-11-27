@@ -447,7 +447,6 @@ body {
   align-items: center;
   gap: 2rem;
   position: relative;
-  padding-right: 160px; /* Space for clock */
 }
 
 .theme-modern .logo {
@@ -464,34 +463,29 @@ body {
   top: 50%;
   transform: translateY(-50%);
   flex-shrink: 0;
+  z-index: 1001;
 }
 
 .theme-modern .nav-links {
   display: flex;
   gap: 2.5rem;
   flex-shrink: 1;
+  flex-grow: 0;
   overflow-x: auto;
   overflow-y: hidden;
-  max-width: calc(100% - 200px);
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-medium) transparent;
+  max-width: calc(100% - 180px);
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
 }
 
+/* Hide scrollbar for Chrome/Safari/Opera */
 .theme-modern .nav-links::-webkit-scrollbar {
-  height: 4px;
+  display: none;
 }
 
-.theme-modern .nav-links::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.theme-modern .nav-links::-webkit-scrollbar-thumb {
-  background: var(--border-medium);
-  border-radius: 2px;
-}
-
-.theme-modern .nav-links::-webkit-scrollbar-thumb:hover {
-  background: var(--border-light);
+.theme-modern .nav-links a {
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .theme-modern .nav-links a {
@@ -1282,20 +1276,26 @@ body {
   }
 
   .theme-modern .nav-content {
-    gap: 1rem;
-    padding-right: 130px; /* Smaller space for clock on mobile */
+    gap: 0.5rem;
+    padding-right: 0; /* No padding on mobile */
   }
 
   .theme-modern .logo {
     font-size: 1.5rem;
   }
 
+  /* Mobile: Clock positioned in flex flow (between logo and hamburger) */
   .theme-modern .navbar-clock {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
     font-size: 0.7rem;
     padding: 0.35rem 0.5rem;
     min-width: 110px;
     gap: 0.3rem;
-    right: 10px; /* Slight padding from edge on mobile */
+    margin-left: auto; /* Push to right side, before hamburger */
+    margin-right: 0.5rem; /* Space before hamburger */
   }
 
   .theme-modern .nav-links {
@@ -1474,16 +1474,17 @@ body {
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-  /* Tablet Navigation - Clock absolute, nav-links scrollable */
+  /* Tablet Navigation - Clock absolute at extreme right, nav-links scrollable without visible scrollbar */
   .theme-modern .nav-content {
-    padding-right: 160px; /* Space for clock */
+    padding-right: 0; /* No padding, clock positioned absolutely */
   }
 
   .theme-modern .navbar-clock {
     position: absolute;
-    right: 10px;
+    right: 0; /* Extreme right corner */
     top: 50%;
     transform: translateY(-50%);
+    z-index: 1001;
   }
 
   .theme-modern .nav-links {
@@ -1491,8 +1492,15 @@ body {
     gap: 1.5rem;
     overflow-x: auto;
     overflow-y: hidden;
-    max-width: calc(100% - 100px);
+    max-width: calc(100% - 180px); /* Space for clock */
     flex-shrink: 1;
+    flex-grow: 0;
+    scrollbar-width: none; /* Hide scrollbar */
+    -ms-overflow-style: none;
+  }
+
+  .theme-modern .nav-links::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for webkit browsers */
   }
 
   .theme-modern .nav-links a {
