@@ -1,0 +1,17 @@
+{
+  "name": "Arindam Paria Portfolio",
+  "short_name": "AP Portfolio",
+  "description": "Software Engineer - Java, Spring Boot, Salesforce Expert",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

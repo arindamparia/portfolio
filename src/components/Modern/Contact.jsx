@@ -671,7 +671,7 @@ const Contact = () => {
                                 {inputIcons.mobile} Mobile * (Indian numbers only)
                                 <AnimatedEye isOpen={!!formData.mobile} inputRef={mobileRef} size="1.5rem" />
                             </label>
-                            <div style={{ position: 'relative' }}>
+                            <div style={{ position: 'relative', width: '100%' }}>
                                 <span style={{
                                     position: 'absolute',
                                     left: '1rem',
@@ -698,12 +698,14 @@ const Contact = () => {
                                     placeholder="10-digit mobile number"
                                     maxLength={10}
                                     style={{
+                                        width: '100%',
                                         paddingLeft: '3.5rem',
                                         borderColor:
                                             errors.mobile && touched.mobile ? '#f5576c' :
                                                 !errors.mobile && touched.mobile && formData.mobile ? '#4ade80' :
                                                     focusedField === 'mobile' ? 'var(--accent-primary)' : undefined,
-                                        transition: 'all 0.3s ease'
+                                        transition: 'all 0.3s ease',
+                                        boxSizing: 'border-box'
                                     }}
                                     animate={{
                                         x: errors.mobile && touched.mobile ? [0, -10, 10, -10, 10, 0] : 0
