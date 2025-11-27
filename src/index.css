@@ -1360,19 +1360,13 @@ body {
     width: 100%;
   }
 
-  /* Theme Toggle - Compact circular button on mobile */
+  /* Theme Toggle - Keep same shape on mobile */
   .theme-toggle {
     bottom: 1rem;
     left: 1rem;
-    width: 50px;
-    height: 50px;
-    padding: 0;
-    font-size: 1.25rem;
-    border-radius: 50%;
+    padding: 10px 18px;
+    font-size: 0.8rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   .theme-toggle:not(:disabled) {
@@ -1824,9 +1818,8 @@ body {
   .theme-toggle {
     bottom: 0.75rem;
     left: 0.75rem;
-    width: 45px;
-    height: 45px;
-    font-size: 1.1rem;
+    padding: 8px 14px;
+    font-size: 0.75rem;
   }
 
   .joke-popup {
