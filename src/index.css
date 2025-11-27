@@ -1253,7 +1253,8 @@ body {
 
   .theme-modern .nav-content {
     gap: 0.5rem;
-    padding-right: 1rem; /* Space on the right */
+    padding-right: 1rem;
+    /* Space on the right */
   }
 
   .theme-modern .logo {
@@ -1261,7 +1262,8 @@ body {
   }
 
   .theme-modern .nav-links {
-    display: none; /* Hidden on mobile, replaced by hamburger menu */
+    display: none;
+    /* Hidden on mobile, replaced by hamburger menu */
   }
 
   /* Robust fixed nav for mobile */
@@ -1290,6 +1292,7 @@ body {
   }
 
   .theme-modern .nav-links {
+    display: flex;
     position: fixed;
     top: 0;
     right: -100%;
