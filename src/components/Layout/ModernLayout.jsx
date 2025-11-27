@@ -81,7 +81,7 @@ const ModernLayout = () => {
             <nav>
                 <div className="container nav-content">
                     {/* Portfolio logo/initials */}
-                    <div className="logo">AP</div>
+                    <a href="#home" className="logo" onClick={handleNavClick} style={{ textDecoration: 'none', cursor: 'pointer' }}>AP</a>
 
                     {/* Hamburger menu button (visible on mobile) */}
                     <button
