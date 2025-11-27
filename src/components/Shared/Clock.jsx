@@ -142,13 +142,13 @@ const Clock = () => {
         return 0.8 + (brightness * 0.4);
     };
 
-    // Format time as HH:MM:SS
+    // Format time as HH:MM:SS AM/PM
     const formatTime = () => {
         return time.toLocaleTimeString('en-US', {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
-            hour12: false
+            hour12: true
         });
     };
 
