@@ -76,6 +76,72 @@ const Clock = () => {
         return 'white';
     };
 
+    // Get celestial body (sun or moon) based on time
+    const getCelestialBody = () => {
+        const hour = time.getHours();
+        // Daytime: 6 AM to 6 PM - show sun
+        if (hour >= 6 && hour < 18) {
+            return '☀️';
+        }
+        // Nighttime: 6 PM to 6 AM - show moon
+        return '🌙';
+    };
+
+    // Get brightness/opacity for celestial body based on time
+    const getCelestialBrightness = () => {
+        const hour = time.getHours();
+        const minute = time.getMinutes();
+        const timeInMinutes = hour * 60 + minute;
+
+        // Daytime brightness (6 AM - 6 PM)
+        if (hour >= 6 && hour < 18) {
+            // Sun brightness follows a parabola peaking at noon
+            const noonInMinutes = 12 * 60; // 12:00 PM
+            const dawnInMinutes = 6 * 60;  // 6:00 AM
+            const duskInMinutes = 18 * 60; // 6:00 PM
+
+            // Calculate distance from noon (peak brightness)
+            const distanceFromNoon = Math.abs(timeInMinutes - noonInMinutes);
+            const maxDistance = noonInMinutes - dawnInMinutes; // 6 hours in minutes
+
+            // Brightness: 1.0 at noon, 0.3 at dawn/dusk
+            const brightness = 1.0 - (distanceFromNoon / maxDistance) * 0.7;
+            return Math.max(0.3, Math.min(1.0, brightness));
+        }
+        // Nighttime brightness (6 PM - 6 AM)
+        else {
+            // Moon brightness follows a parabola peaking at midnight
+            const midnightInMinutes = 0; // 12:00 AM (midnight)
+            const duskInMinutes = 18 * 60; // 6:00 PM
+            const dawnInMinutes = 6 * 60;  // 6:00 AM
+
+            // Normalize time to 0-720 minutes (6 PM to 6 AM)
+            let nightTime = timeInMinutes;
+            if (hour >= 18) {
+                nightTime = timeInMinutes - duskInMinutes; // 0-360 (6 PM to midnight)
+            } else {
+                nightTime = timeInMinutes + (24 * 60 - duskInMinutes); // 360-720 (midnight to 6 AM)
+            }
+
+            const midnightNormalized = 360; // Middle of the night period
+            const maxDistance = 360; // 6 hours in minutes
+
+            // Calculate distance from midnight
+            const distanceFromMidnight = Math.abs(nightTime - midnightNormalized);
+
+            // Brightness: 1.0 at midnight, 0.3 at dusk/dawn
+            const brightness = 1.0 - (distanceFromMidnight / maxDistance) * 0.7;
+            return Math.max(0.3, Math.min(1.0, brightness));
+        }
+    };
+
+    // Get size multiplier for celestial body based on brightness
+    const getCelestialSize = () => {
+        const brightness = getCelestialBrightness();
+        // Size ranges from 0.8 to 1.2 based on brightness
+        return 0.8 + (brightness * 0.4);
+    };
+
     // Format time as HH:MM:SS
     const formatTime = () => {
         return time.toLocaleTimeString('en-US', {
@@ -111,26 +177,48 @@ const Clock = () => {
                 userSelect: 'none',
                 transition: 'background 0.5s ease, color 0.5s ease',
                 display: 'flex',
-                flexDirection: 'column',
-                gap: '0.1rem'
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '0.5rem'
             }}
         >
+            {/* Celestial body (sun/moon) with natural brightness */}
             <div style={{
-                fontSize: '1rem',
-                fontFamily: 'monospace',
-                letterSpacing: '0.5px',
-                textShadow: time.getHours() >= 8 && time.getHours() < 17
-                    ? '0 1px 2px rgba(255, 255, 255, 0.5)'
-                    : '0 1px 2px rgba(0, 0, 0, 0.5)'
+                fontSize: '1.5rem',
+                opacity: getCelestialBrightness(),
+                transform: `scale(${getCelestialSize()})`,
+                transition: 'opacity 0.5s ease, transform 0.5s ease',
+                flexShrink: 0,
+                filter: time.getHours() >= 6 && time.getHours() < 18
+                    ? `drop-shadow(0 0 ${getCelestialBrightness() * 8}px rgba(255, 220, 0, ${getCelestialBrightness() * 0.8}))`
+                    : `drop-shadow(0 0 ${getCelestialBrightness() * 6}px rgba(200, 200, 255, ${getCelestialBrightness() * 0.6}))`
             }}>
-                {formatTime()}
+                {getCelestialBody()}
             </div>
+
+            {/* Time and date */}
             <div style={{
-                fontSize: '0.7rem',
-                opacity: 0.85,
-                fontWeight: '500'
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.1rem'
             }}>
-                {formatDate()}
+                <div style={{
+                    fontSize: '1rem',
+                    fontFamily: 'monospace',
+                    letterSpacing: '0.5px',
+                    textShadow: time.getHours() >= 8 && time.getHours() < 17
+                        ? '0 1px 2px rgba(255, 255, 255, 0.5)'
+                        : '0 1px 2px rgba(0, 0, 0, 0.5)'
+                }}>
+                    {formatTime()}
+                </div>
+                <div style={{
+                    fontSize: '0.7rem',
+                    opacity: 0.85,
+                    fontWeight: '500'
+                }}>
+                    {formatDate()}
+                </div>
             </div>
         </div>
     );

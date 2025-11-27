@@ -1253,15 +1253,22 @@ body {
   .theme-modern .navbar-clock {
     font-size: 0.7rem;
     padding: 0.35rem 0.5rem;
-    min-width: 90px;
-    gap: 0rem;
+    min-width: 110px;
+    gap: 0.3rem;
   }
 
+  /* Celestial body (sun/moon) on mobile */
   .theme-modern .navbar-clock > div:first-child {
+    font-size: 1.2rem;
+  }
+
+  /* Time container on mobile */
+  .theme-modern .navbar-clock > div:nth-child(2) > div:first-child {
     font-size: 0.85rem;
   }
 
-  .theme-modern .navbar-clock > div:last-child {
+  /* Date container on mobile */
+  .theme-modern .navbar-clock > div:nth-child(2) > div:last-child {
     font-size: 0.6rem;
   }
 
