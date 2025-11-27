@@ -17,6 +17,7 @@
 import React, { useState, lazy, Suspense } from 'react';
 import Hero from '../Modern/Hero';
 import About from '../Modern/About';
+import Clock from '../Shared/Clock';
 import { vibrateLight } from '../../utils/vibration';
 
 // Lazy load components that are below the fold (not immediately visible)
@@ -82,6 +83,9 @@ const ModernLayout = () => {
                 <div className="container nav-content">
                     {/* Portfolio logo/initials */}
                     <a href="#home" className="logo" onClick={handleNavClick} style={{ textDecoration: 'none', cursor: 'pointer' }}>AP</a>
+
+                    {/* Clock with dynamic background */}
+                    <Clock />
 
                     {/* Hamburger menu button (visible on mobile) */}
                     <button

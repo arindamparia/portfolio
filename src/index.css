@@ -456,6 +456,10 @@ body {
   flex-shrink: 0;
 }
 
+.theme-modern .navbar-clock {
+  flex-shrink: 0;
+}
+
 .theme-modern .nav-links {
   display: flex;
   gap: 2.5rem;
@@ -1244,6 +1248,12 @@ body {
 
   .theme-modern .logo {
     font-size: 1.5rem;
+  }
+
+  .theme-modern .navbar-clock {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    min-width: 100px;
   }
 
   /* Robust fixed nav for mobile */
