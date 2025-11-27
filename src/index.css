@@ -1560,6 +1560,7 @@ body {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   margin: 0 auto;
   box-sizing: border-box;
+  transform-origin: bottom right;
 }
 
 .joke-close {

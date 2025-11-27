@@ -115,10 +115,33 @@ const JokeButton = () => {
                         {/* Popup Content */}
                         <motion.div
                             className="joke-popup"
-                            initial={{ scale: 0.8, opacity: 0, y: 50 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.8, opacity: 0, y: 50 }}
-                            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            initial={{
+                                scale: 0,
+                                opacity: 0,
+                                x: window.innerWidth > 768 ? '45%' : '40%',
+                                y: window.innerWidth > 768 ? '45%' : '40%'
+                            }}
+                            animate={{
+                                scale: 1,
+                                opacity: 1,
+                                x: 0,
+                                y: 0
+                            }}
+                            exit={{
+                                scale: 0,
+                                opacity: 0,
+                                x: window.innerWidth > 768 ? '45%' : '40%',
+                                y: window.innerWidth > 768 ? '45%' : '40%'
+                            }}
+                            transition={{
+                                type: 'spring',
+                                damping: 20,
+                                stiffness: 300,
+                                opacity: { duration: 0.2 }
+                            }}
+                            style={{
+                                transformOrigin: window.innerWidth > 768 ? 'bottom right' : 'bottom right'
+                            }}
                         >
                             <button className="joke-close" onClick={handleClose} aria-label="Close">
                                 ✕
