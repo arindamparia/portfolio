@@ -10,7 +10,8 @@
     "migrate:optimize": "node scripts/migrate-optimize-field-sizes.js",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "host": "vite --host"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
