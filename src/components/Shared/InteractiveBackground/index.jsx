@@ -111,10 +111,13 @@ const InteractiveBackground = ({
 
     // Scroll-based visibility optimization
     const { scrollY } = useScroll();
-    // Fade out as user scrolls down (0 to 500px)
-    const opacity = useTransform(scrollY, [0, 500], [1, 0]);
+    // Fade out effect removed to keep background visible on mobile
+    // const opacity = useTransform(scrollY, [0, 1000], [1, 0]); 
+    const opacity = 1;
+
     // Disable rendering when fully scrolled away to save resources
-    const display = useTransform(scrollY, (value) => (value > 600 ? 'none' : 'block'));
+    // Increased threshold to ensure it doesn't disappear prematurely on long screens
+    const display = useTransform(scrollY, (value) => (value > 1500 ? 'none' : 'block'));
 
     return (
         <motion.div

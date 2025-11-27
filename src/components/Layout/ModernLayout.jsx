@@ -49,12 +49,31 @@ const ModernLayout = () => {
 
     /**
      * Handle navigation link click
-     * Provides haptic feedback and closes mobile menu
+     * Provides haptic feedback and closes mobile menu with a delay
+     * to allow smooth scrolling to start before the menu disappears
      */
     const handleNavClick = () => {
         vibrateLight();
-        closeMenu();
+        // Delay closing the menu slightly to allow smooth scroll to initiate visually
+        setTimeout(() => {
+            closeMenu();
+        }, 300);
     };
+
+    // Prevent body and html scroll when menu is open
+    React.useEffect(() => {
+        if (isMenuOpen) {
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+            document.documentElement.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+            document.documentElement.style.overflow = 'unset';
+        };
+    }, [isMenuOpen]);
 
     return (
         <div className="modern-app">
@@ -89,7 +108,22 @@ const ModernLayout = () => {
             </nav>
 
             {/* Dark overlay when mobile menu is open (click to close) */}
-            {isMenuOpen && <div className="nav-overlay" onClick={closeMenu}></div>}
+            {isMenuOpen && (
+                <div
+                    className="nav-overlay"
+                    onClick={closeMenu}
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        background: 'rgba(0, 0, 0, 0.5)',
+                        zIndex: 998, // Below nav (1000) but above content
+                        backdropFilter: 'blur(4px)'
+                    }}
+                ></div>
+            )}
 
             {/* Main content area with all sections */}
             <main>
