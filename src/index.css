@@ -1558,6 +1558,8 @@ body {
   overflow-y: auto;
   z-index: 1001;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .joke-close {
@@ -1753,8 +1755,10 @@ body {
 
   .joke-popup {
     padding: 1.25rem;
-    width: 92%;
+    width: calc(100% - 2rem);
+    max-width: 90%;
     max-height: 85vh;
+    border-radius: 16px;
   }
 
   .joke-header {
@@ -1824,7 +1828,10 @@ body {
 
   .joke-popup {
     padding: 1rem;
-    width: 94%;
+    width: calc(100% - 1.5rem);
+    max-width: 94%;
+    max-height: 90vh;
+    border-radius: 14px;
   }
 
   .joke-header h3 {
