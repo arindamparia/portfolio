@@ -1391,6 +1391,11 @@ body {
     width: 100%;
     padding: 0.875rem 2rem;
   }
+
+  /* Fix mobile layout glitch (right padding) - Safe here because nav is fixed */
+  .modern-app {
+    overflow-x: hidden;
+  }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
@@ -1413,9 +1418,10 @@ body {
 }
 
 /* App Wrapper Constraints - Global */
+
 .modern-app {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  /* overflow-x: hidden; REMOVED: Breaks sticky nav on desktop */
   position: relative;
 }
