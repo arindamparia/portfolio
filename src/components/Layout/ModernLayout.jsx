@@ -83,17 +83,6 @@ const ModernLayout = () => {
                     {/* Portfolio logo/initials */}
                     <a href="#home" className="logo" onClick={handleNavClick} style={{ textDecoration: 'none', cursor: 'pointer' }}>AP</a>
 
-                    {/* Hamburger menu button (visible on mobile) */}
-                    <button
-                        className={`hamburger ${isMenuOpen ? 'active' : ''}`}
-                        onClick={toggleMenu}
-                        aria-label="Toggle menu"
-                    >
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-
                     {/* Navigation links (horizontal on desktop, slide-in menu on mobile) */}
                     <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
                         <a href="#home" onClick={handleNavClick}>Home</a>
@@ -104,6 +93,17 @@ const ModernLayout = () => {
                         <a href="#projects" onClick={handleNavClick}>Projects</a>
                         <a href="#contact" onClick={handleNavClick}>Contact</a>
                     </div>
+
+                    {/* Hamburger menu button (visible on mobile) */}
+                    <button
+                        className={`hamburger ${isMenuOpen ? 'active' : ''}`}
+                        onClick={toggleMenu}
+                        aria-label="Toggle menu"
+                    >
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                 </div>
             </nav>
 

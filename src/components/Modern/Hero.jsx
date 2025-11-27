@@ -5,11 +5,21 @@ import { VscChevronDown } from 'react-icons/vsc';
 import { personalInfo, socialLinks, assets } from '../../constants/personalInfo';
 import { vibrateMedium, vibrateLight } from '../../utils/vibration';
 import InteractiveBackground from '../Shared/InteractiveBackground';
+import Clock from '../Shared/Clock';
 
 const Hero = () => {
     return (
         <section id="home" className="hero">
             <InteractiveBackground variant="universe" colorScheme="purple" intensity={0.5} />
+            {/* Clock positioned at top-left corner */}
+            <div style={{
+                position: 'absolute',
+                top: '1.5rem',
+                left: '1.5rem',
+                zIndex: 10
+            }}>
+                <Clock />
+            </div>
             <div className="container">
                 <div className="hero-content">
                     <motion.img
