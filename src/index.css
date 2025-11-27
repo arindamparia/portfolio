@@ -446,6 +446,8 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: 2rem;
+  position: relative;
+  padding-right: 160px; /* Space for clock */
 }
 
 .theme-modern .logo {
@@ -457,13 +459,39 @@ body {
 }
 
 .theme-modern .navbar-clock {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   flex-shrink: 0;
 }
 
 .theme-modern .nav-links {
   display: flex;
   gap: 2.5rem;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: calc(100% - 200px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-medium) transparent;
+}
+
+.theme-modern .nav-links::-webkit-scrollbar {
+  height: 4px;
+}
+
+.theme-modern .nav-links::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.theme-modern .nav-links::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 2px;
+}
+
+.theme-modern .nav-links::-webkit-scrollbar-thumb:hover {
+  background: var(--border-light);
 }
 
 .theme-modern .nav-links a {
@@ -1122,6 +1150,17 @@ body {
   color: #ffffff;
 }
 
+/* Desktop Navigation (1025px and up) - Full nav-links visible */
+@media (min-width: 1025px) {
+  .theme-modern .hamburger {
+    display: none !important;
+  }
+
+  .theme-modern .nav-links {
+    display: flex !important;
+  }
+}
+
 /* Hamburger Menu Button */
 .hamburger {
   display: none;
@@ -1244,6 +1283,7 @@ body {
 
   .theme-modern .nav-content {
     gap: 1rem;
+    padding-right: 130px; /* Smaller space for clock on mobile */
   }
 
   .theme-modern .logo {
@@ -1255,6 +1295,11 @@ body {
     padding: 0.35rem 0.5rem;
     min-width: 110px;
     gap: 0.3rem;
+    right: 10px; /* Slight padding from edge on mobile */
+  }
+
+  .theme-modern .nav-links {
+    display: none; /* Hidden on mobile, replaced by hamburger menu */
   }
 
   /* Celestial body (sun/moon) on mobile */
@@ -1429,6 +1474,32 @@ body {
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
+  /* Tablet Navigation - Clock absolute, nav-links scrollable */
+  .theme-modern .nav-content {
+    padding-right: 160px; /* Space for clock */
+  }
+
+  .theme-modern .navbar-clock {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .theme-modern .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: calc(100% - 100px);
+    flex-shrink: 1;
+  }
+
+  .theme-modern .nav-links a {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
   .theme-modern .skills-container-modern {
     grid-template-columns: repeat(2, 1fr);
   }
