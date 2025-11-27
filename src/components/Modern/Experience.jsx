@@ -28,9 +28,9 @@ const Experience = () => {
                 </motion.h2>
                 <motion.div
                     className="card"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    initial={{ y: 20 }}
+                    whileInView={{ y: 0 }}
+                    viewport={{ once: true, amount: 0.1 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
                     {experienceData.map((exp, index) => (
