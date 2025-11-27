@@ -1141,6 +1141,8 @@ body {
   cursor: pointer;
   padding: 0;
   z-index: 1001;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .hamburger span {
@@ -1251,11 +1253,11 @@ body {
 
   .theme-modern .nav-content {
     gap: 0.5rem;
-    padding-right: 0; /* No padding on mobile */
+    padding-right: 1rem; /* Space on the right */
   }
 
   .theme-modern .logo {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
   }
 
   .theme-modern .nav-links {
