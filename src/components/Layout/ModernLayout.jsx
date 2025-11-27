@@ -84,6 +84,17 @@ const ModernLayout = () => {
                     {/* Portfolio logo/initials */}
                     <a href="#home" className="logo" onClick={handleNavClick} style={{ textDecoration: 'none', cursor: 'pointer' }}>AP</a>
 
+                    {/* Navigation links (horizontal on desktop, slide-in menu on mobile) */}
+                    <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
+                        <a href="#home" onClick={handleNavClick}>Home</a>
+                        <a href="#skills" onClick={handleNavClick}>Skills</a>
+                        <a href="#experience" onClick={handleNavClick}>Experience</a>
+                        <a href="#education" onClick={handleNavClick}>Education</a>
+                        <a href="#certifications" onClick={handleNavClick}>Certifications</a>
+                        <a href="#projects" onClick={handleNavClick}>Projects</a>
+                        <a href="#contact" onClick={handleNavClick}>Contact</a>
+                    </div>
+
                     {/* Clock with dynamic background */}
                     <Clock />
 
@@ -97,17 +108,6 @@ const ModernLayout = () => {
                         <span></span>
                         <span></span>
                     </button>
-
-                    {/* Navigation links (horizontal on desktop, slide-in menu on mobile) */}
-                    <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
-                        <a href="#home" onClick={handleNavClick}>Home</a>
-                        <a href="#skills" onClick={handleNavClick}>Skills</a>
-                        <a href="#experience" onClick={handleNavClick}>Experience</a>
-                        <a href="#education" onClick={handleNavClick}>Education</a>
-                        <a href="#certifications" onClick={handleNavClick}>Certifications</a>
-                        <a href="#projects" onClick={handleNavClick}>Projects</a>
-                        <a href="#contact" onClick={handleNavClick}>Contact</a>
-                    </div>
                 </div>
             </nav>
 
