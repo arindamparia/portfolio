@@ -51,7 +51,7 @@ const Skills = () => {
                             <div className="skills-list">
                                 {skills.map((skill, skillIndex) => (
                                     <motion.div
-                                        key={skillIndex}
+                                        key={skill}
                                         className="skill-tag"
                                         initial={{ scale: 0.9 }}
                                         whileInView={{ scale: 1 }}

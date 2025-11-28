@@ -20,6 +20,17 @@ export default defineConfig({
     }),
   ],
 
+  server: {
+    port: 5173,
+    strictPort: false, // Allow fallback if 5173 is taken
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost',
+      port: 5173,
+      clientPort: 5173,
+    },
+  },
+
   build: {
     // Enable minification
     minify: 'terser',
