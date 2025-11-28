@@ -456,4 +456,4 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
     );
 };
 
-export default AnimatedEye;
+export default React.memo(AnimatedEye);
