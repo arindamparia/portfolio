@@ -6,6 +6,7 @@ import { personalInfo, socialLinks, assets } from '../../constants/personalInfo'
 import { vibrateMedium, vibrateLight } from '../../utils/vibration';
 import InteractiveBackground from '../Shared/InteractiveBackground';
 import Clock from '../Shared/Clock';
+import IndianEvent from '../Shared/IndianEvent';
 
 const Hero = () => {
     return (
@@ -55,6 +56,7 @@ const Hero = () => {
                         </div>
                     </motion.div>
                 </div>
+                <IndianEvent />
                 <motion.div
                     className="section-arrow"
                     initial={{ opacity: 0 }}
@@ -67,7 +69,7 @@ const Hero = () => {
                     </a>
                 </motion.div>
             </div>
-        </section>
+        </section >
     );
 };
 

@@ -6,7 +6,7 @@ import { personalInfo, socialLinks } from '../../constants/personalInfo';
 import { vibrateLight, vibrateError, vibrateSuccess } from '../../utils/vibration';
 import { API_BASE_URL } from '../../utils/api';
 import { validateIndianPhoneNumber } from '../../utils/phoneValidation';
-import { getRandomMessage, getRandomSuccess } from '../../constants/formErrorMessages';
+import { getRandomMessage, getRandomSuccess, getRandomPlaceholder } from '../../constants/formMessages';
 import { FIELD_LIMITS } from '../../utils/contactValidation';
 import ToastContainer from './Toast';
 import AnimatedEye from '../Shared/AnimatedEye';
@@ -46,6 +46,12 @@ const Contact = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [toasts, setToasts] = useState([]);
     const [displayedMessages, setDisplayedMessages] = useState({});
+    const [messagePlaceholder, setMessagePlaceholder] = useState('');
+
+    // Set random placeholder on mount
+    useEffect(() => {
+        setMessagePlaceholder(getRandomPlaceholder());
+    }, []);
 
     // Refs for input fields to track cursor position for animated eyes
     const salutationRef = useRef(null);
@@ -394,9 +400,7 @@ const Contact = () => {
                     <a href={`mailto:${personalInfo.email}`} className="contact-link">
                         <FaEnvelope /> {personalInfo.email}
                     </a>
-                    <a href={`tel:${personalInfo.phone}`} className="contact-link">
-                        📱 {personalInfo.phone}
-                    </a>
+
                 </motion.div>
                 <motion.div
                     className="social-links"
@@ -753,7 +757,7 @@ const Contact = () => {
                             onBlur={handleBlur}
                             onFocus={() => handleFocus('message')}
                             className={errors.message && touched.message ? 'error' : ''}
-                            placeholder="Tell me about your project, timeline, or how I can help."
+                            placeholder={messagePlaceholder}
                             maxLength={100}
                             style={{
                                 borderColor:

@@ -305,6 +305,40 @@ export const getRandomSuccess = (field) => {
  * @param {string} field - The form field
  * @returns {object} - All messages for that field
  */
-export const getFieldMessages = (field) => {
-    return formMessages[field] || {};
+/**
+ * Sarcastic and funny placeholders for the message field
+ * Rotates between "About You" and "Why Connect" themes
+ */
+export const messagePlaceholders = [
+    // Theme: Why connect?
+    "Why do you want to connect? To give me money? 💰 (Just kidding... unless?)",
+    "Is it a bug? A feature? A job offer? A pizza delivery? 🍕",
+    "Spill the tea ☕. Why are we connecting today?",
+    "What brings you to my humble digital abode? 🏰",
+    "I bet you have a great idea. Don't keep it a secret! 🤫",
+    "Are you here to recruit me, or just to say hi? I accept both! 👋",
+    "Tell me why I should reply to you faster than my other emails... 🏎️",
+    "Is this about a project? Or do you just like my website? (Say yes) 😎",
+    "I'm listening... well, reading. Impress me! 🤓",
+    "Got a challenge for me? Bring it on! ⚔️",
+
+    // Theme: About You
+    "Tell me your life story... or just the highlights. 📜",
+    "Share a fun fact about you. If it's good, I might reply faster! ⚡",
+    "Tell me why you're awesome. I need some inspiration today. ✨",
+    "Don't be shy, I don't bite. Much. 🧛‍♂️",
+    "What's your superpower? Mine is coding (and drinking coffee). ☕",
+    "Tell me something I don't know. Surprise me! 🎁",
+    "If you were a coding language, which one would you be and why? 🤔",
+    "Describe yourself in 3 words. Go! 🏁",
+    "What's the coolest thing you've built recently? 🏗️",
+    "Are you a robot? 🤖 If not, say something human."
+];
+
+/**
+ * Get a random message placeholder
+ * @returns {string} - A random placeholder message
+ */
+export const getRandomPlaceholder = () => {
+    return messagePlaceholders[Math.floor(Math.random() * messagePlaceholders.length)];
 };
