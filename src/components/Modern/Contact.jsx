@@ -291,13 +291,42 @@ const Contact = () => {
 
         setIsSubmitting(true);
 
-        const deviceInfo = {
-            userAgent: navigator.userAgent,
-            language: navigator.language,
-            screenResolution: `${window.screen.width}x${window.screen.height}`,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            referrer: document.referrer || 'direct'
+        const consent = localStorage.getItem('privacyConsent');
+
+        const baseData = {
+            ...formData
         };
+
+        // Only attach device info if consent is explicitly granted
+        if (consent === 'granted') {
+            let locationTimezone = null;
+            let locationName = '';
+            try {
+                const cachedLocation = localStorage.getItem('userLocation');
+                if (cachedLocation) {
+                    const parsed = JSON.parse(cachedLocation);
+                    locationTimezone = parsed.timezone;
+                    if (parsed.city && parsed.country_name) {
+                        locationName = ` (${parsed.city}, ${parsed.country_name})`;
+                    }
+                }
+            } catch (e) {
+                console.error('Error reading location for timezone:', e);
+            }
+
+            const finalTimezone = locationTimezone
+                ? `${locationTimezone}${locationName}`
+                : Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+            const deviceInfo = {
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                screenResolution: `${window.screen.width}x${window.screen.height}`,
+                timezone: finalTimezone,
+                referrer: document.referrer || 'direct'
+            };
+            Object.assign(baseData, deviceInfo);
+        }
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/contact`, {
@@ -305,10 +334,7 @@ const Contact = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    ...formData,
-                    ...deviceInfo
-                }),
+                body: JSON.stringify(baseData),
             });
 
             const data = await response.json();

@@ -21,6 +21,8 @@
     width: 100%;
 
     scroll-behavior: smooth;
+    padding-top: 80px;
+    /* Add padding for fixed navbar */
 }
 
 .theme-modern .container {
@@ -202,7 +204,7 @@
 
 /* Modern Navigation */
 .theme-modern nav {
-    position: sticky;
+    position: fixed;
     top: 0;
     width: 100%;
     background: var(--bg-primary);

@@ -16,6 +16,7 @@
 
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import DesktopRequired from './components/Shared/DesktopRequired';
+import PrivacyBanner from './components/Shared/PrivacyBanner';
 
 // Lazy load layouts for better initial load performance
 // These components are code-split and only loaded when needed
@@ -96,6 +97,7 @@ function App() {
   return (
     // Apply theme-specific CSS class based on current view mode
     <div className={viewMode === 'ide' ? 'theme-ide' : 'theme-modern'}>
+      <PrivacyBanner />
       {/* Suspense wrapper for lazy-loaded layouts with loading fallback */}
       <Suspense fallback={
         <div style={{
