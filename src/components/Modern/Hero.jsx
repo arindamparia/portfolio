@@ -36,6 +36,8 @@ const Hero = () => {
                         alt={`${personalInfo.name.full} - ${personalInfo.title}`}
                         className="profile-image"
                         fetchPriority="high"
+                        width="400"
+                        height="400"
                         // Removed loading="lazy" as this is the LCP element
                         // Simplified animation to prevent delaying LCP
                         initial={{ opacity: 1, scale: 1 }}
@@ -55,10 +57,10 @@ const Hero = () => {
                             <a href="#contact" className="btn btn-secondary" onClick={vibrateLight}>Contact</a>
                         </div>
                         <div className="social-icons">
-                            <a href={socialLinks.linkedin.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight}>
+                            <a href={socialLinks.linkedin.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight} aria-label="LinkedIn Profile">
                                 <FaLinkedin />
                             </a>
-                            <a href={socialLinks.github.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight}>
+                            <a href={socialLinks.github.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight} aria-label="GitHub Profile">
                                 <FaGithub />
                             </a>
                         </div>
