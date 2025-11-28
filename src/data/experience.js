@@ -18,13 +18,13 @@ export const experienceData = [
             {
                 "name": "Hire Buddy",
                 "role": "ASDE 1",
-                "focus": "Java, Spring Boot",
-                "details": "Built microservices for candidate management. 95% SonarQube coverage."
+                "focus": "Java, Spring Boot, Spring AI",
+                "details": "Built microservices for candidate management using Spring Boot. Integrated Spring AI for resume parsing. Achieved 95% SonarQube coverage."
             },
             {
                 "name": "LLOYDS Credit System",
-                "focus": "Salesforce, nCino",
-                "details": "Automated commercial credit processes. Optimized Jenkins pipeline (40m -> 15m)."
+                "focus": "nCino, Agentforce, Salesforce",
+                "details": "Automated commercial credit processes using nCino. Explored Agentforce for intelligent automation. Optimized Jenkins pipeline (40m -> 15m)."
             },
             {
                 "name": "Tapestry Buy Team",

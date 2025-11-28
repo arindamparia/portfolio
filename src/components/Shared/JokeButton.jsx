@@ -2,6 +2,19 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { vibrateLight } from '../../utils/vibration';
 
+// Simple Elegant Robot Icon
+const RobotIcon = () => (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2V4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <rect x="4" y="5" width="16" height="14" rx="4" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M8 10V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M16 10V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M9 15H15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M2 10H4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M20 10H22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+);
+
 const JokeButton = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [joke, setJoke] = useState(null);
@@ -61,83 +74,109 @@ const JokeButton = () => {
             </AnimatePresence>
 
             {/* Speech Bubble - Only show when closed */}
-            {!showPopup && (
-                <motion.div
-                    className="joke-speech-bubble"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{
-                        opacity: 1,
-                        y: 0,
-                        scale: [1, 1.05, 1]
-                    }}
-                    exit={{ opacity: 0 }}
-                    transition={{
-                        opacity: { duration: 0.5, delay: 0.5 },
-                        y: { duration: 0.5, delay: 0.5 },
-                        scale: {
-                            duration: 2,
-                            repeat: Infinity,
-                            repeatType: "reverse",
-                            delay: 1
-                        }
-                    }}
-                >
-                    <span className="bubble-text">Tap me for a dev joke!</span>
-                    <div className="bubble-arrow"></div>
-                </motion.div>
-            )}
+            <AnimatePresence>
+                {!showPopup && (
+                    <motion.div
+                        className="joke-speech-bubble"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{
+                            opacity: 1,
+                            y: 0,
+                            scale: [1, 1.05, 1]
+                        }}
+                        exit={{ opacity: 0, y: 5, transition: { duration: 0.2 } }}
+                        transition={{
+                            opacity: { duration: 0.5, delay: 0.5 },
+                            y: { duration: 0.5, delay: 0.5 },
+                            scale: {
+                                duration: 2,
+                                repeat: Infinity,
+                                repeatType: "reverse",
+                                delay: 1
+                            }
+                        }}
+                    >
+                        <span className="bubble-text">Take a quick break?</span>
+                        <div className="bubble-arrow"></div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-            {/* Morphing Button/Popup - Single Element */}
-            <motion.div
-                layout
-                className={showPopup ? "joke-morphing-popup" : "joke-morphing-button"}
-                onClick={!showPopup ? handleButtonClick : undefined}
-                initial={false}
-                animate={{
-                    borderRadius: showPopup ? "20px" : "50%",
-                }}
-                transition={{
-                    layout: {
-                        type: "spring",
-                        stiffness: 400,
-                        damping: 30
-                    },
-                    borderRadius: {
-                        duration: 0.35,
-                        ease: [0.32, 0.72, 0, 1]
-                    }
-                }}
-            >
-                <AnimatePresence mode="wait">
-                    {!showPopup ? (
-                        // Button State
+            {/* Morphing Button/Popup */}
+            <AnimatePresence>
+                {!showPopup ? (
+                    <motion.div
+                        key="button"
+                        layoutId="joke-container"
+                        className="joke-morphing-button"
+                        onClick={handleButtonClick}
+                        initial={{ borderRadius: "20px" }}
+                        animate={{ borderRadius: "20px" }}
+                        exit={{ borderRadius: "24px" }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 30,
+                            mass: 0.2
+                        }}
+                    >
                         <motion.div
-                            key="button"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.15 }}
                             className="joke-button-content"
-                        >
-                            <span className="robot-emoji">🤖</span>
-                        </motion.div>
-                    ) : (
-                        // Popup State
-                        <motion.div
-                            key="popup"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2, delay: 0.15 }}
+                        >
+                            <motion.span
+                                className="robot-emoji"
+                                layoutId="robot-icon"
+                                transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.2 }}
+                            >
+                                <RobotIcon />
+                            </motion.span>
+                        </motion.div>
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        key="popup"
+                        layoutId="joke-container"
+                        className="joke-morphing-popup"
+                        initial={{ borderRadius: "24px" }}
+                        animate={{ borderRadius: "24px" }}
+                        exit={{ borderRadius: "20px" }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 30,
+                            mass: 0.2
+                        }}
+                    >
+                        <motion.div
                             className="joke-popup-content"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0, transition: { duration: 0.1 } }}
+                            transition={{ duration: 0.2, delay: 0.1 }}
                         >
                             <button className="joke-close" onClick={handleClose} aria-label="Close">
                                 ✕
                             </button>
 
                             <div className="joke-header">
-                                <span className="joke-icon">😂</span>
-                                <h3>Developer Humor</h3>
+                                <span className="joke-icon">
+                                    <motion.span
+                                        layoutId="robot-icon"
+                                        transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.2 }}
+                                    >
+                                        <RobotIcon />
+                                    </motion.span>
+                                </span>
+                                <motion.h3
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.2 }}
+                                >
+                                    Developer Pause
+                                </motion.h3>
                             </div>
 
                             <div className="joke-content">
@@ -176,9 +215,9 @@ const JokeButton = () => {
                                 </button>
                             </div>
                         </motion.div>
-                    )}
-                </AnimatePresence>
-            </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </>
     );
 };

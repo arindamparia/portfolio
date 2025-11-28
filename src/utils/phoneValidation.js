@@ -1,4 +1,4 @@
-import { getRandomPhoneError } from '../constants/formErrorMessages.js';
+import { getRandomPhoneError } from '../constants/formMessages.js';
 
 /**
  * Helper to clean phone number by removing whitespace and dashes
