@@ -12,11 +12,12 @@
  * Components are lazy loaded to improve initial page load performance.
  */
 
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState, lazy, Suspense, useEffect } from 'react';
 import Sidebar from '../IDE/Sidebar';
 import Tabs from '../IDE/Tabs';
 import StatusBar from '../IDE/StatusBar';
 import Home from '../IDE/Home';
+import FileSearchModal from '../IDE/FileSearchModal';
 
 // Lazy load tab components since they're conditionally rendered based on activeTab
 // This reduces initial bundle size by only loading components when user navigates to them
@@ -30,6 +31,21 @@ const Contact = lazy(() => import('../IDE/Contact'));
 const IDELayout = () => {
     // Track which tab/file is currently active in the editor
     const [activeTab, setActiveTab] = useState('home');
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+    // Handle keyboard shortcuts
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // Check for Cmd+P (Mac) or Ctrl+P (Windows/Linux)
+            if ((e.metaKey || e.ctrlKey) && e.key === 'p') {
+                e.preventDefault();
+                setIsSearchOpen(true);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     /**
      * Render the appropriate component based on the active tab
@@ -51,7 +67,11 @@ const IDELayout = () => {
     return (
         <div className="app-container">
             {/* Left sidebar with activity bar and file explorer */}
-            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+            <Sidebar
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                onOpenSearch={() => setIsSearchOpen(true)}
+            />
 
             {/* Main editor area */}
             <div className="main-editor">
@@ -68,6 +88,13 @@ const IDELayout = () => {
 
             {/* Bottom status bar (like VS Code) */}
             <StatusBar />
+
+            {/* File Search Modal */}
+            <FileSearchModal
+                isOpen={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+                onSelectFile={setActiveTab}
+            />
         </div>
     );
 };

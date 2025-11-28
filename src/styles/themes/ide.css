@@ -1,0 +1,360 @@
+/* =========================================
+   THEME: IDE (VS Code Style)
+   ========================================= */
+.theme-ide {
+    --bg-primary: var(--ide-bg-primary);
+    --bg-secondary: var(--ide-bg-secondary);
+    --bg-activity-bar: var(--ide-bg-activity-bar);
+    --bg-sidebar: var(--ide-bg-sidebar);
+    --bg-editor: var(--ide-bg-editor);
+    --bg-status-bar: var(--ide-bg-status-bar);
+    --text-primary: var(--ide-text-primary);
+    --text-secondary: var(--ide-text-secondary);
+    --accent-primary: var(--ide-accent-primary);
+    --border-color: var(--ide-border-color);
+    --font-main: 'Space Grotesk', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-code: 'Consolas', 'Courier New', monospace;
+
+    font-family: var(--font-main);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    height: 100vh;
+    width: 100%;
+    display: flex;
+}
+
+.theme-ide .app-container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.theme-ide .activity-bar {
+    width: 50px;
+    background-color: var(--bg-activity-bar);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px;
+}
+
+.theme-ide .sidebar {
+    width: 250px;
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.theme-ide .explorer-title {
+    padding: 10px 20px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: var(--text-secondary);
+}
+
+.theme-ide .file-item {
+    display: flex;
+    align-items: center;
+    padding: 5px 20px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.theme-ide .file-item:hover {
+    background-color: #2a2d2e;
+}
+
+.theme-ide .file-item.active {
+    background-color: #37373d;
+}
+
+.theme-ide .file-icon {
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+.theme-ide .main-editor {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-editor);
+    overflow: hidden;
+}
+
+.theme-ide .tabs-bar {
+    display: flex;
+    background-color: var(--bg-sidebar);
+    height: 35px;
+    overflow-x: auto;
+}
+
+.theme-ide .tab {
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    background-color: #2d2d2d;
+    color: #969696;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-right: 1px solid var(--border-color);
+    min-width: 120px;
+}
+
+.theme-ide .tab.active {
+    background-color: var(--bg-editor);
+    color: #ffffff;
+    border-top: 1px solid var(--accent-primary);
+}
+
+.theme-ide .tab-icon {
+    margin-right: 8px;
+    width: 16px;
+}
+
+.theme-ide .editor-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    font-family: var(--font-code);
+}
+
+.theme-ide .status-bar {
+    height: 22px;
+    background-color: var(--bg-status-bar);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-size: 0.8rem;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 100;
+}
+
+.theme-ide .status-item {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+    gap: 5px;
+}
+
+/* Syntax Highlighting */
+.theme-ide .code-keyword {
+    color: #569cd6;
+}
+
+.theme-ide .code-string {
+    color: #ce9178;
+}
+
+.theme-ide .code-function {
+    color: #dcdcaa;
+}
+
+.theme-ide .code-variable {
+    color: #9cdcfe;
+}
+
+.theme-ide .code-comment {
+    color: #6a9955;
+}
+
+.theme-ide .code-number {
+    color: #b5cea8;
+}
+
+.theme-ide .code-class {
+    color: #4ec9b0;
+}
+
+.line-numbers {
+    color: #858585;
+    margin-right: 20px;
+    text-align: right;
+    user-select: none;
+}
+
+/* =========================================
+   IDE File Search Modal (Command Palette)
+   ========================================= */
+
+.file-search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 20px;
+}
+
+.file-search-container {
+    width: 600px;
+    max-width: 90%;
+    background-color: #252526;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #454545;
+}
+
+.file-search-input-wrapper {
+    padding: 10px;
+    background-color: #252526;
+}
+
+.file-search-input {
+    width: 100%;
+    padding: 8px 12px;
+    background-color: #3c3c3c;
+    border: 1px solid #3c3c3c;
+    color: #cccccc;
+    font-size: 1rem;
+    border-radius: 4px;
+    outline: none;
+    font-family: var(--font-main);
+}
+
+.file-search-input:focus {
+    border-color: #007acc;
+}
+
+.file-search-input::placeholder {
+    color: #858585;
+}
+
+.file-search-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 5px 0;
+    border-top: 1px solid #333;
+}
+
+.file-search-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+}
+
+.file-search-item:hover,
+.file-search-item.selected {
+    background-color: #37373d;
+}
+
+.file-search-icon {
+    margin-right: 12px;
+    color: #cccccc;
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+}
+
+.file-search-details {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.file-search-name {
+    color: #e7e7e7;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.file-search-path {
+    color: #969696;
+    font-size: 0.8rem;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-search-empty {
+    padding: 20px;
+    text-align: center;
+    color: #858585;
+    font-style: italic;
+}
+
+/* =========================================
+   IDE Home Page Buttons
+   ========================================= */
+
+.ide-home-btn {
+    padding: 10px 24px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-family: var(--font-main);
+}
+
+.ide-home-btn.primary {
+    background-color: #007acc;
+    color: white;
+    border: 1px solid #007acc;
+}
+
+.ide-home-btn.primary:hover {
+    background-color: #0062a3;
+    border-color: #0062a3;
+}
+
+.ide-home-btn.secondary {
+    background-color: transparent;
+    color: var(--ide-accent-primary);
+    border: 1px solid var(--ide-accent-primary);
+}
+
+.ide-home-btn.secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile Responsiveness for IDE */
+@media (max-width: 768px) {
+    .theme-ide {
+        flex-direction: column;
+    }
+
+    .theme-ide .app-container {
+        flex-direction: column;
+    }
+
+    .theme-ide .activity-bar {
+        width: 100%;
+        height: 50px;
+        flex-direction: row;
+        padding-top: 0;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .theme-ide .sidebar {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .theme-ide .main-editor {
+        height: calc(100vh - 250px);
+        /* Adjust based on sidebar/activity bar */
+    }
+}

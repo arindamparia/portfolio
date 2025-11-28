@@ -1,0 +1,29 @@
+:root {
+    /* Global Fonts */
+    --font-main: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-code: 'Consolas', 'Courier New', monospace;
+
+    /* IDE Theme Variables */
+    --ide-bg-primary: #1e1e1e;
+    --ide-bg-secondary: #252526;
+    --ide-bg-activity-bar: #333333;
+    --ide-bg-sidebar: #252526;
+    --ide-bg-editor: #1e1e1e;
+    --ide-bg-status-bar: #007acc;
+    --ide-text-primary: #d4d4d4;
+    --ide-text-secondary: #858585;
+    --ide-accent-primary: #007acc;
+    --ide-border-color: #3e3e42;
+
+    /* Modern Theme Variables */
+    --modern-bg-primary: #ffffff;
+    --modern-bg-secondary: #f8f9fa;
+    --modern-bg-card: #ffffff;
+    --modern-text-primary: #000000;
+    --modern-text-secondary: #555555;
+    --modern-text-light: #666666;
+    --modern-accent-primary: #000000;
+    --modern-accent-secondary: #333333;
+    --modern-border-light: #e0e0e0;
+    --modern-border-medium: #d0d0d0;
+}

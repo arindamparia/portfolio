@@ -25,8 +25,8 @@ const Home = ({ setActiveTab }) => {
                 </div>
 
                 <div style={{ marginTop: '3rem', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                    <button className="btn" onClick={() => setActiveTab('projects')}>View Projects</button>
-                    <button className="btn" style={{ background: 'transparent', border: '1px solid var(--accent-primary)' }} onClick={() => setActiveTab('contact')}>Contact Me</button>
+                    <button className="ide-home-btn primary" onClick={() => setActiveTab('projects')}>View Projects</button>
+                    <button className="ide-home-btn secondary" onClick={() => setActiveTab('contact')}>Contact Me</button>
                 </div>
             </motion.div>
         </div>

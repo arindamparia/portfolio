@@ -59,7 +59,7 @@ const DISABLED_PROMPT_STYLE = {
     minWidth: '300px'
 };
 
-const Sidebar = ({ activeTab, setActiveTab }) => {
+const Sidebar = ({ activeTab, setActiveTab, onOpenSearch }) => {
     // Track whether file explorer is expanded or collapsed
     const [isOpen, setIsOpen] = React.useState(true);
 
@@ -91,7 +91,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                 <div className="activity-icon active" style={{ ...ICON_STYLE, borderLeft: '2px solid white', width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <VscFiles size={24} color="white" />
                 </div>
-                <div className="activity-icon" style={ICON_STYLE} onClick={() => handleDisabledClick('Search')}><VscSearch size={24} color="#858585" /></div>
+                <div className="activity-icon" style={ICON_STYLE} onClick={onOpenSearch}><VscSearch size={24} color="#858585" /></div>
                 <div className="activity-icon" style={ICON_STYLE} onClick={() => handleDisabledClick('Source Control')}><VscSourceControl size={24} color="#858585" /></div>
                 <div className="activity-icon" style={ICON_STYLE} onClick={() => handleDisabledClick('Debug')}><VscDebugAlt size={24} color="#858585" /></div>
                 <div className="activity-icon" style={ICON_STYLE} onClick={() => handleDisabledClick('Extensions')}><VscExtensions size={24} color="#858585" /></div>
