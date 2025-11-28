@@ -4,29 +4,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaCheckCircle, FaExclamationCircle, FaTimes, FaInfoCircle } from 'react-icons/fa';
 
 const Toast = ({ message, type = 'success', onClose, duration = 5000 }) => {
-    const [progress, setProgress] = useState(100);
+    // Use ref to store the latest onClose callback to avoid resetting timer on re-renders
+    const onCloseRef = React.useRef(onClose);
+
+    useEffect(() => {
+        onCloseRef.current = onClose;
+    }, [onClose]);
 
     useEffect(() => {
         if (duration) {
-            const startTime = Date.now();
-            const endTime = startTime + duration;
+            const timer = setTimeout(() => {
+                onCloseRef.current();
+            }, duration);
 
-            const timer = setInterval(() => {
-                const now = Date.now();
-                const remaining = Math.max(0, endTime - now);
-                const percentage = (remaining / duration) * 100;
-
-                setProgress(percentage);
-
-                if (remaining === 0) {
-                    clearInterval(timer);
-                    onClose();
-                }
-            }, 10);
-
-            return () => clearInterval(timer);
+            return () => clearTimeout(timer);
         }
-    }, [duration, onClose]);
+    }, [duration]); // Removed onClose from dependencies
 
     const icons = {
         success: <FaCheckCircle size={20} />,
@@ -64,7 +57,7 @@ const Toast = ({ message, type = 'success', onClose, duration = 5000 }) => {
                 position: 'fixed',
                 top: '24px',
                 right: '24px',
-                zIndex: 99999, // Ensure it's above everything
+                zIndex: 99999,
                 pointerEvents: 'auto',
             }}
         >
@@ -164,10 +157,12 @@ const Toast = ({ message, type = 'success', onClose, duration = 5000 }) => {
                         background: 'rgba(0,0,0,0.05)'
                     }}>
                         <motion.div
+                            initial={{ width: '100%' }}
+                            animate={{ width: '0%' }}
+                            transition={{ duration: duration / 1000, ease: 'linear' }}
                             style={{
                                 height: '100%',
                                 background: currentStyle.progressColor,
-                                width: `${progress}%`
                             }}
                         />
                     </div>
@@ -194,4 +189,4 @@ const ToastContainer = ({ toasts, removeToast }) => {
     );
 };
 
-export default ToastContainer;
+export default React.memo(ToastContainer);

@@ -1,57 +1,30 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaEnvelope, FaLinkedin, FaGithub, FaExclamationTriangle, FaCheckCircle, FaUser, FaPhone, FaBuilding, FaCommentDots } from 'react-icons/fa';
+import { FaEnvelope, FaLinkedin, FaGithub, FaExclamationTriangle, FaCheckCircle, FaUser, FaPhone, FaBuilding, FaCommentDots, FaPaperPlane } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
 import { personalInfo, socialLinks } from '../../constants/personalInfo';
-import { vibrateLight, vibrateError, vibrateSuccess } from '../../utils/vibration';
-import { API_BASE_URL } from '../../utils/api';
-import { validateIndianPhoneNumber } from '../../utils/phoneValidation';
-import { getRandomMessage, getRandomSuccess, getRandomPlaceholder } from '../../constants/formMessages';
-import { FIELD_LIMITS } from '../../utils/contactValidation';
+import { vibrateLight } from '../../utils/vibration';
 import ToastContainer from './Toast';
 import AnimatedEye from '../Shared/AnimatedEye';
-
-// Constants
-const EMPTY_FORM_DATA = {
-    salutation: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    company: '',
-    mobile: '',
-    message: ''
-};
-
-const REQUIRED_FIELDS = ['salutation', 'firstName', 'lastName', 'email', 'mobile', 'message'];
+import { useContactForm } from '../../hooks/useContactForm';
 
 const Contact = () => {
-    // Initialize form data from sessionStorage if available
-    const getInitialFormData = () => {
-        try {
-            const savedData = sessionStorage.getItem('contactFormData');
-            if (savedData) {
-                return JSON.parse(savedData);
-            }
-        } catch (error) {
-            console.error('Error loading form data from sessionStorage:', error);
-        }
-        return { ...EMPTY_FORM_DATA };
-    };
-
-    const [formData, setFormData] = useState(getInitialFormData);
-    const [errors, setErrors] = useState({});
-    const [errorTypes, setErrorTypes] = useState({});
-    const [touched, setTouched] = useState({});
-    const [focusedField, setFocusedField] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [toasts, setToasts] = useState([]);
-    const [displayedMessages, setDisplayedMessages] = useState({});
-    const [messagePlaceholder, setMessagePlaceholder] = useState('');
-
-    // Set random placeholder on mount
-    useEffect(() => {
-        setMessagePlaceholder(getRandomPlaceholder());
-    }, []);
+    const {
+        formData,
+        errors,
+        touched,
+        focusedField,
+        isSubmitting,
+        toasts,
+        displayedMessages,
+        messagePlaceholder,
+        handleChange,
+        handleBlur,
+        handleFocus,
+        handleSubmit,
+        removeToast,
+        getCharacterCount
+    } = useContactForm();
 
     // Refs for input fields to track cursor position for animated eyes
     const salutationRef = useRef(null);
@@ -61,299 +34,6 @@ const Contact = () => {
     const companyRef = useRef(null);
     const mobileRef = useRef(null);
     const messageRef = useRef(null);
-
-    // Save form data to sessionStorage whenever it changes
-    useEffect(() => {
-        try {
-            sessionStorage.setItem('contactFormData', JSON.stringify(formData));
-        } catch (error) {
-            console.error('Error saving form data to sessionStorage:', error);
-        }
-    }, [formData]);
-
-    // Helper to get the correct message field name
-    const getMessageFieldName = (fieldName) => {
-        return fieldName === 'mobile' ? 'phone' : fieldName;
-    };
-
-    // Consolidated validation - returns both error type and error message
-    const validateField = (name, value) => {
-
-        switch (name) {
-            case 'salutation':
-                if (!value || value.trim() === '') {
-                    return { errorType: 'required', errorMessage: getRandomMessage('salutation', 'required') };
-                }
-                return { errorType: '', errorMessage: '' };
-
-            case 'firstName':
-            case 'lastName':
-                if (!value.trim()) {
-                    return { errorType: 'required', errorMessage: getRandomMessage(name, 'required') };
-                }
-                if (value.trim().length < 3) {
-                    return { errorType: 'tooShort', errorMessage: getRandomMessage(name, 'tooShort') };
-                }
-                if (!/^[A-Za-z]+$/.test(value)) {
-                    return { errorType: 'invalid', errorMessage: getRandomMessage(name, 'invalid') };
-                }
-                return { errorType: '', errorMessage: '' };
-
-            case 'mobile':
-                if (!value.trim()) {
-                    return { errorType: 'required', errorMessage: getRandomMessage('phone', 'required') };
-                }
-                const validation = validateIndianPhoneNumber(value);
-                if (!validation.isValid) {
-                    // Extract error type from validation error
-                    const errorType = validation.error.includes('required') ? 'required' :
-                        validation.error.includes('character') ? 'invalidCharacters' :
-                            validation.error.includes('10') ? 'lengthError' : 'invalidPrefix';
-                    return { errorType, errorMessage: validation.error };
-                }
-                return { errorType: '', errorMessage: '' };
-
-            case 'email':
-                if (!value.trim()) {
-                    return { errorType: 'required', errorMessage: getRandomMessage('email', 'required') };
-                }
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                    return { errorType: 'invalid', errorMessage: getRandomMessage('email', 'invalid') };
-                }
-                return { errorType: '', errorMessage: '' };
-
-            case 'message':
-                if (!value.trim()) {
-                    return { errorType: 'required', errorMessage: getRandomMessage('message', 'required') };
-                }
-                if (value.trim().length < 10) {
-                    return { errorType: 'tooShort', errorMessage: getRandomMessage('message', 'tooShort') };
-                }
-                return { errorType: '', errorMessage: '' };
-
-            default:
-                return { errorType: '', errorMessage: '' };
-        }
-    };
-
-
-
-    const showToast = (message, type = 'success', duration = 5000) => {
-        const id = Date.now();
-        setToasts(prev => [...prev, { id, message, type, duration }]);
-    };
-
-    const removeToast = (id) => {
-        setToasts(prev => prev.filter(toast => toast.id !== id));
-    };
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-
-        // Apply field-specific character restrictions
-        let processedValue = value;
-        if (name === 'firstName' || name === 'lastName') {
-            processedValue = value.replace(/[^a-zA-Z]/g, '');
-        } else if (name === 'mobile') {
-            processedValue = value.replace(/[^0-9]/g, '');
-        } else if (name !== 'company' && name !== 'message') {
-            processedValue = value.replace(/\s/g, '');
-        }
-
-        // Enforce maximum length limits - prevent typing beyond database limits
-        const maxLength = FIELD_LIMITS[name];
-        if (maxLength && processedValue.length > maxLength) {
-            processedValue = processedValue.substring(0, maxLength);
-        }
-
-        setFormData({
-            ...formData,
-            [name]: processedValue
-        });
-
-        if (touched[name]) {
-            const { errorType, errorMessage } = validateField(name, processedValue);
-            const prevErrorType = errorTypes[name];
-
-            // Only update message when error type changes (not when same type generates different random message)
-            if (prevErrorType !== errorType) {
-                const messageFieldName = getMessageFieldName(name);
-                setDisplayedMessages(prev => ({
-                    ...prev,
-                    [name]: errorMessage || getRandomSuccess(messageFieldName)
-                }));
-
-                setErrorTypes({
-                    ...errorTypes,
-                    [name]: errorType
-                });
-            }
-
-            // Always update error state to reflect current validation
-            if (errors[name] !== errorMessage) {
-                setErrors({
-                    ...errors,
-                    [name]: errorMessage
-                });
-            }
-        }
-    };
-
-    const handleBlur = (e) => {
-        const { name, value } = e.target;
-        const wasAlreadyTouched = touched[name];
-
-        setTouched({
-            ...touched,
-            [name]: true
-        });
-        setFocusedField('');
-
-        const { errorType, errorMessage } = validateField(name, value);
-
-        // Only set the message on FIRST blur (when field wasn't already touched)
-        if (!wasAlreadyTouched) {
-            const messageFieldName = getMessageFieldName(name);
-            setDisplayedMessages(prev => ({
-                ...prev,
-                [name]: errorMessage || getRandomSuccess(messageFieldName)
-            }));
-            setErrorTypes({
-                ...errorTypes,
-                [name]: errorType
-            });
-        }
-
-        // Only update errors if the error value actually changed
-        if (errors[name] !== errorMessage) {
-            setErrors({
-                ...errors,
-                [name]: errorMessage
-            });
-        }
-    };
-
-    const handleFocus = (name) => {
-        setFocusedField(name);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        // Prevent multiple submissions while already processing
-        if (isSubmitting) {
-            return;
-        }
-
-        // Validate all fields
-        const newErrors = {};
-        const newErrorTypes = {};
-        REQUIRED_FIELDS.forEach(field => {
-            const { errorType, errorMessage } = validateField(field, formData[field]);
-            if (errorMessage) {
-                newErrors[field] = errorMessage;
-                newErrorTypes[field] = errorType;
-            }
-        });
-
-        // Mark all required fields as touched
-        const allTouched = REQUIRED_FIELDS.reduce((acc, field) => ({ ...acc, [field]: true }), {});
-        setTouched(allTouched);
-
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-
-            // Update displayed messages and error types based on whether type changed
-            setDisplayedMessages(prev => {
-                const updatedMessages = { ...prev };
-                Object.keys(newErrors).forEach(field => {
-                    const prevErrorType = errorTypes[field];
-                    const currentErrorType = newErrorTypes[field];
-
-                    // Only update message if field doesn't have one OR if error type changed
-                    if (!prev[field] || prevErrorType !== currentErrorType) {
-                        updatedMessages[field] = newErrors[field];
-                    }
-                });
-                return updatedMessages;
-            });
-
-            // Update error types for all fields with errors
-            setErrorTypes(prev => ({
-                ...prev,
-                ...newErrorTypes
-            }));
-
-            vibrateError();
-            showToast(getRandomMessage('form', 'submitError'), 'error');
-            return;
-        }
-
-        setIsSubmitting(true);
-
-        const deviceInfo = {
-            userAgent: navigator.userAgent,
-            language: navigator.language,
-            screenResolution: `${window.screen.width}x${window.screen.height}`,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            referrer: document.referrer || 'direct'
-        };
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/contact`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...formData,
-                    ...deviceInfo
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                vibrateSuccess();
-                showToast(getRandomMessage('form', 'submitSuccess'), 'success', 6000);
-
-                // Clear form data
-                setFormData({ ...EMPTY_FORM_DATA });
-
-                // Clear sessionStorage
-                try {
-                    sessionStorage.removeItem('contactFormData');
-                } catch (error) {
-                    console.error('Error clearing form data from sessionStorage:', error);
-                }
-
-                setTouched({});
-                setErrors({});
-                setErrorTypes({});
-                setDisplayedMessages({});
-            } else {
-                vibrateError();
-                showToast(`Uh oh! ${data.error || 'Something went wrong. Even I make mistakes sometimes! 😅'}`, 'error');
-            }
-        } catch (error) {
-            vibrateError();
-            console.error('Error submitting form:', error);
-            showToast(getRandomMessage('form', 'networkError'), 'error', 7000);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const getCharacterCount = () => {
-        const count = formData.message.length;
-        const min = 10;
-        const max = 100;
-
-        if (count === 0) return { text: "Start typing your epic message! ✍️", color: '#888' };
-        if (count < min) return { text: `${min - count} more characters needed. You're almost there! 💪`, color: '#f5576c' };
-        if (count >= max) return { text: `Whoa! Maximum reached. Keep it concise! 🎯`, color: '#f5576c' };
-        return { text: `${count} characters. Looking good! 👍`, color: '#667eea' };
-    };
 
     const characterInfo = getCharacterCount();
 
@@ -482,7 +162,7 @@ const Contact = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                                 >
-                                    <FaCheckCircle /> {displayedMessages.salutation || getRandomSuccess('salutation')}
+                                    <FaCheckCircle /> {displayedMessages.salutation}
                                 </motion.span>
                             )}
                         </div>
@@ -534,7 +214,7 @@ const Contact = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                                 >
-                                    <FaCheckCircle /> {displayedMessages.firstName || getRandomSuccess('firstName')}
+                                    <FaCheckCircle /> {displayedMessages.firstName}
                                 </motion.span>
                             )}
                         </div>
@@ -589,7 +269,7 @@ const Contact = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                                 >
-                                    <FaCheckCircle /> {displayedMessages.lastName || getRandomSuccess('lastName')}
+                                    <FaCheckCircle /> {displayedMessages.lastName}
                                 </motion.span>
                             )}
                         </div>
@@ -642,7 +322,7 @@ const Contact = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                                 >
-                                    <FaCheckCircle /> {displayedMessages.email || getRandomSuccess('email')}
+                                    <FaCheckCircle /> {displayedMessages.email}
                                 </motion.span>
                             )}
                         </div>
@@ -662,7 +342,7 @@ const Contact = () => {
                                 value={formData.company}
                                 onChange={handleChange}
                                 onFocus={() => handleFocus('company')}
-                                onBlur={() => setFocusedField('')}
+                                onBlur={() => handleFocus('')}
                                 maxLength={80}
                                 style={{
                                     borderColor: focusedField === 'company' ? 'var(--accent-primary)' : undefined,
@@ -737,7 +417,7 @@ const Contact = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
                                 >
-                                    <FaCheckCircle /> {displayedMessages.mobile || getRandomSuccess('phone')}
+                                    <FaCheckCircle /> {displayedMessages.mobile}
                                 </motion.span>
                             )}
                         </div>
@@ -792,52 +472,53 @@ const Contact = () => {
                                 style={{
                                     fontSize: '0.85rem',
                                     color: characterInfo.color,
-                                    marginLeft: 'auto',
                                     fontWeight: '500'
                                 }}
                             >
                                 {characterInfo.text}
                             </motion.span>
                         </div>
-                        {!errors.message && touched.message && formData.message && formData.message.length >= 10 && (
-                            <motion.span
-                                initial={{ opacity: 0, scale: 0 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                style={{ color: '#4ade80', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}
-                            >
-                                <FaCheckCircle /> {displayedMessages.message || getRandomSuccess('message')}
-                            </motion.span>
-                        )}
                     </div>
 
                     <div className="form-submit">
                         <motion.button
                             type="submit"
-                            className="btn"
+                            className="btn btn-elegant"
+                            whileHover="hover"
+                            whileTap="tap"
                             disabled={isSubmitting}
-                            whileHover={{ scale: isSubmitting ? 1 : 1.05 }}
-                            whileTap={{ scale: isSubmitting ? 1 : 0.95 }}
                             style={{
-                                position: 'relative',
-                                overflow: 'hidden',
-                                opacity: isSubmitting ? 0.7 : 1,
+                                opacity: isSubmitting ? 0.8 : 1,
                                 cursor: isSubmitting ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            {isSubmitting ? (
-                                <>
+                            <span style={{ position: 'relative', zIndex: 2 }}>
+                                {isSubmitting ? 'Sending...' : 'Send Message'}
+                            </span>
+                            <AnimatePresence>
+                                {!isSubmitting && (
                                     <motion.span
-                                        animate={{ rotate: 360 }}
-                                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                                        style={{ display: 'inline-block', marginRight: '0.5rem' }}
+                                        key="send-icon"
+                                        style={{ display: 'inline-block', marginLeft: '8px', position: 'relative', zIndex: 2 }}
+                                        initial={{ opacity: 0, scale: 0.5, x: -10 }}
+                                        animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+                                        exit={{
+                                            x: 50,
+                                            y: -50,
+                                            opacity: 0,
+                                            scale: 0.5,
+                                            transition: { duration: 0.4, ease: "backIn" }
+                                        }}
+                                        variants={{
+                                            hover: { x: 4, y: -4, opacity: 1 },
+                                            tap: { x: 0, y: 0 }
+                                        }}
+                                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
                                     >
-                                        ⏳
+                                        <FaPaperPlane size={14} />
                                     </motion.span>
-                                    Sending...
-                                </>
-                            ) : (
-                                'Send Message'
-                            )}
+                                )}
+                            </AnimatePresence>
                         </motion.button>
                     </div>
                 </motion.form>

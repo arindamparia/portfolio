@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Clock = () => {
+const Clock = ({ solarData }) => {
     const [time, setTime] = useState(new Date());
 
     useEffect(() => {
@@ -78,6 +78,15 @@ const Clock = () => {
 
     // Get celestial body (sun or moon) based on time
     const getCelestialBody = () => {
+        if (solarData && solarData.sunrise && solarData.sunset) {
+            const now = time;
+            if (now >= solarData.sunrise && now < solarData.sunset) {
+                return '☀️';
+            }
+            return '🌙';
+        }
+
+        // Fallback
         const hour = time.getHours();
         // Daytime: 6 AM to 6 PM - show sun
         if (hour >= 6 && hour < 18) {
@@ -89,6 +98,41 @@ const Clock = () => {
 
     // Get brightness/opacity for celestial body based on time
     const getCelestialBrightness = () => {
+        if (solarData && solarData.sunrise && solarData.sunset) {
+            const now = time.getTime();
+            const sunrise = solarData.sunrise.getTime();
+            const sunset = solarData.sunset.getTime();
+            const noon = sunrise + (sunset - sunrise) / 2;
+
+            if (now >= sunrise && now < sunset) {
+                // Daytime brightness
+                const maxDistance = sunset - sunrise;
+                const distanceFromNoon = Math.abs(now - noon);
+                const brightness = 1.0 - (distanceFromNoon / (maxDistance / 2)) * 0.7;
+                return Math.max(0.3, Math.min(1.0, brightness));
+            } else {
+                // Nighttime brightness
+                // Estimate midnight as halfway between sunset and next sunrise (approx 12 hours later)
+                // For simplicity, just use a fixed "midnight" relative to sunset
+                const midnight = sunset + (12 * 60 * 60 * 1000) / 2;
+                const maxDistance = 12 * 60 * 60 * 1000; // Approx night length
+
+                let distanceFromMidnight;
+                if (now >= sunset) {
+                    distanceFromMidnight = Math.abs(now - midnight);
+                } else {
+                    // Before sunrise (early morning)
+                    const prevSunset = sunset - 24 * 60 * 60 * 1000;
+                    const prevMidnight = prevSunset + (12 * 60 * 60 * 1000) / 2;
+                    distanceFromMidnight = Math.abs(now - prevMidnight);
+                }
+
+                const brightness = 1.0 - (distanceFromMidnight / (maxDistance / 2)) * 0.7;
+                return Math.max(0.3, Math.min(1.0, brightness));
+            }
+        }
+
+        // Fallback logic
         const hour = time.getHours();
         const minute = time.getMinutes();
         const timeInMinutes = hour * 60 + minute;
@@ -98,7 +142,6 @@ const Clock = () => {
             // Sun brightness follows a parabola peaking at noon
             const noonInMinutes = 12 * 60; // 12:00 PM
             const dawnInMinutes = 6 * 60;  // 6:00 AM
-            const duskInMinutes = 18 * 60; // 6:00 PM
 
             // Calculate distance from noon (peak brightness)
             const distanceFromNoon = Math.abs(timeInMinutes - noonInMinutes);
@@ -111,9 +154,7 @@ const Clock = () => {
         // Nighttime brightness (6 PM - 6 AM)
         else {
             // Moon brightness follows a parabola peaking at midnight
-            const midnightInMinutes = 0; // 12:00 AM (midnight)
             const duskInMinutes = 18 * 60; // 6:00 PM
-            const dawnInMinutes = 6 * 60;  // 6:00 AM
 
             // Normalize time to 0-720 minutes (6 PM to 6 AM)
             let nightTime = timeInMinutes;

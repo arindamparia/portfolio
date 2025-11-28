@@ -29,7 +29,7 @@ const Projects = () => {
                 <div className="projects-grid">
                     {projectsData.map((project, index) => (
                         <motion.div
-                            key={index}
+                            key={project.name}
                             className="project-card"
                             initial={{ y: 20 }}
                             whileInView={{ y: 0 }}

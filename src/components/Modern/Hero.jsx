@@ -7,11 +7,19 @@ import { vibrateMedium, vibrateLight } from '../../utils/vibration';
 import InteractiveBackground from '../Shared/InteractiveBackground';
 import Clock from '../Shared/Clock';
 import IndianEvent from '../Shared/IndianEvent';
+import useSunCycle from '../../hooks/useSunCycle';
 
 const Hero = () => {
+    const { cycle, isDay, solarData } = useSunCycle();
+
     return (
         <section id="home" className="hero">
-            <InteractiveBackground variant="universe" colorScheme="purple" intensity={0.5} />
+            <InteractiveBackground
+                variant="universe"
+                colorScheme={isDay ? "blue" : "purple"}
+                intensity={isDay ? 0.3 : 0.5}
+                cycle={cycle}
+            />
             {/* Clock positioned at top-left corner */}
             <div style={{
                 position: 'absolute',
@@ -19,7 +27,7 @@ const Hero = () => {
                 left: '1.5rem',
                 zIndex: 10
             }}>
-                <Clock />
+                <Clock solarData={solarData} cycle={cycle} />
             </div>
             <div className="container">
                 <div className="hero-content">
