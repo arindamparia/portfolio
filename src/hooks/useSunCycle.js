@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import useTimeSync from './useTimeSync';
+import { TIMING } from '../constants/timing';
 
 const useSunCycle = () => {
     const { getCurrentTime } = useTimeSync();
@@ -249,7 +250,7 @@ const useSunCycle = () => {
         fetchData();
 
         // Refresh every 5 minutes
-        const interval = setInterval(fetchData, 60000 * 5);
+        const interval = setInterval(fetchData, TIMING.SUN_CYCLE_FETCH_INTERVAL);
         return () => clearInterval(interval);
     }, [getCurrentTime]);
 
