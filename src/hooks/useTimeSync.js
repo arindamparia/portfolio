@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const useTimeSync = () => {
     const [offset, setOffset] = useState(0);
@@ -57,9 +57,9 @@ const useTimeSync = () => {
     }, []);
 
     // Helper to get the current synchronized time
-    const getCurrentTime = () => {
+    const getCurrentTime = useCallback(() => {
         return new Date(Date.now() + offset);
-    };
+    }, [offset]);
 
     return { getCurrentTime, offset };
 };
