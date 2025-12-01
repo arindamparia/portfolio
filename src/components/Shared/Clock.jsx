@@ -11,7 +11,7 @@ const Clock = ({ solarData, cycle }) => {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [getCurrentTime]);
+    }, []); // Empty dependency - timer always uses latest getCurrentTime
 
     // Get background color based on API-derived cycle
     const getBackgroundColor = () => {
