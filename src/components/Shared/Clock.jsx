@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import useTimeSync from '../../hooks/useTimeSync';
 
 const Clock = ({ solarData, cycle }) => {
-    const [time, setTime] = useState(new Date());
+    const { getCurrentTime } = useTimeSync();
+    const [time, setTime] = useState(getCurrentTime());
 
     useEffect(() => {
         const timer = setInterval(() => {
-            setTime(new Date());
+            setTime(getCurrentTime());
         }, 1000);
 
         return () => clearInterval(timer);
-    }, []);
+    }, [getCurrentTime]);
 
     // Get background color based on API-derived cycle
     const getBackgroundColor = () => {

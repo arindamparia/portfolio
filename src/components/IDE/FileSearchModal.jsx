@@ -1,32 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { VscFile } from 'react-icons/vsc';
 import { ideFiles } from '../../constants/ideFiles';
 
-const FileSearchModal = ({ isOpen, onClose, onSelectFile }) => {
+const FileSearchContent = ({ onClose, onSelectFile }) => {
     const [query, setQuery] = useState('');
-    const [results, setResults] = useState(ideFiles);
-    const [selectedIndex, setSelectedIndex] = useState(0);
-    const inputRef = useRef(null);
-    const listRef = useRef(null);
+    // Derived results instead of state to avoid useEffect updates
+    const results = useMemo(() => {
+        if (!query) return ideFiles;
 
-    // Focus input when modal opens
-    useEffect(() => {
-        if (isOpen && inputRef.current) {
-            inputRef.current.focus();
-            setQuery('');
-            setResults(ideFiles);
-            setSelectedIndex(0);
-        }
-    }, [isOpen]);
-
-    // Fuzzy search logic
-    useEffect(() => {
-        if (!query) {
-            setResults(ideFiles);
-            return;
-        }
-
-        const filtered = ideFiles.filter(file => {
+        return ideFiles.filter(file => {
             const fileName = file.name.toLowerCase();
             const search = query.toLowerCase();
 
@@ -40,16 +22,22 @@ const FileSearchModal = ({ isOpen, onClose, onSelectFile }) => {
             }
             return false;
         });
-
-        setResults(filtered);
-        setSelectedIndex(0);
     }, [query]);
+
+    const [selectedIndex, setSelectedIndex] = useState(0);
+    const inputRef = useRef(null);
+    const listRef = useRef(null);
+
+    // Focus input when modal opens (mounts)
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, []);
 
     // Keyboard navigation
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (!isOpen) return;
-
             switch (e.key) {
                 case 'ArrowDown':
                     e.preventDefault();
@@ -75,7 +63,7 @@ const FileSearchModal = ({ isOpen, onClose, onSelectFile }) => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, results, selectedIndex, onSelectFile, onClose]);
+    }, [results, selectedIndex, onSelectFile, onClose]);
 
     // Scroll selected item into view
     useEffect(() => {
@@ -85,8 +73,6 @@ const FileSearchModal = ({ isOpen, onClose, onSelectFile }) => {
             });
         }
     }, [selectedIndex]);
-
-    if (!isOpen) return null;
 
     return (
         <div className="file-search-overlay" onClick={onClose}>
@@ -98,7 +84,10 @@ const FileSearchModal = ({ isOpen, onClose, onSelectFile }) => {
                         className="file-search-input"
                         placeholder="Search files by name"
                         value={query}
-                        onChange={e => setQuery(e.target.value)}
+                        onChange={e => {
+                            setQuery(e.target.value);
+                            setSelectedIndex(0);
+                        }}
                     />
                 </div>
                 <div className="file-search-list" ref={listRef}>
@@ -130,6 +119,11 @@ const FileSearchModal = ({ isOpen, onClose, onSelectFile }) => {
             </div>
         </div>
     );
+};
+
+const FileSearchModal = ({ isOpen, onClose, onSelectFile }) => {
+    if (!isOpen) return null;
+    return <FileSearchContent onClose={onClose} onSelectFile={onSelectFile} />;
 };
 
 export default FileSearchModal;

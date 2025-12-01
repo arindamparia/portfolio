@@ -31,7 +31,7 @@ const JokeButton = () => {
             } else {
                 setJoke({ setup: data.setup, delivery: data.delivery, type: 'twopart' });
             }
-        } catch (error) {
+        } catch {
             setJoke({
                 text: "Why do programmers prefer dark mode? Because light attracts bugs! 🐛",
                 type: 'single'
