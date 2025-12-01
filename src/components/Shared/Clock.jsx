@@ -14,14 +14,33 @@ const Clock = ({ solarData, cycle }) => {
     // Get background color based on API-derived cycle
     const getBackgroundColor = () => {
         switch (cycle) {
+            case 'pre-dawn':
+                return 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'; // Very dark
+            case 'blue-hour-morning':
+                return 'linear-gradient(135deg, #000428 0%, #004e92 100%)'; // Deep Midnight Blue
             case 'dawn':
                 return 'linear-gradient(135deg, #4a1a4a 0%, #7c3a61 100%)'; // Dusky Purple/Pink
             case 'day':
-                return 'linear-gradient(135deg, #ffd93d 0%, #6bcfff 100%)'; // Bright Blue/Yellow
+            case 'early-morning':
+                return 'linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%)'; // Warm orange/pink
+            case 'morning':
+                return 'linear-gradient(135deg, #ffd93d 0%, #6bcfff 100%)'; // Bright yellow/light blue
+            case 'late-morning':
+                return 'linear-gradient(135deg, #fff89a 0%, #a8edea 100%)'; // Very bright
+            case 'noon':
+                return 'linear-gradient(135deg, #fff9e6 0%, #e0f7fa 100%)'; // Brightest point
+            case 'early-afternoon':
+                return 'linear-gradient(135deg, #ffe5b4 0%, #b3e5fc 100%)'; // Still very bright
+            case 'afternoon':
+                return 'linear-gradient(135deg, #ffd89b 0%, #80deea 100%)'; // Warm, bright
+            case 'late-afternoon':
+                return 'linear-gradient(135deg, #ff9a56 0%, #ff6b9d 100%)'; // Golden Hour
             case 'dusk':
-                return 'linear-gradient(135deg, #fa709a 0%, #7c4dff 100%)'; // Orange/Purple
+                return 'linear-gradient(135deg, #fa709a 0%, #7c4dff 100%)'; // Deep orange/purple
             case 'blue-hour':
                 return 'linear-gradient(135deg, #000428 0%, #004e92 100%)'; // Deep Midnight Blue
+            case 'early-night':
+                return 'linear-gradient(135deg, #667eea 0%, #4a5568 100%)'; // Deep blue
             case 'night':
             default:
                 return 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'; // Dark Blue
@@ -30,7 +49,8 @@ const Clock = ({ solarData, cycle }) => {
 
     // Get text color based on cycle
     const getTextColor = () => {
-        return cycle === 'day' ? '#1a1a1a' : 'white';
+        const darkTextCycles = ['early-morning', 'morning', 'late-morning', 'noon', 'early-afternoon', 'afternoon', 'late-afternoon'];
+        return darkTextCycles.includes(cycle) ? '#1a1a1a' : 'white';
     };
 
     // Get celestial body (sun or moon) based on time
