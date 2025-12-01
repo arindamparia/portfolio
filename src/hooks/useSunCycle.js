@@ -1,8 +1,23 @@
 import { useState, useEffect } from 'react';
+import useTimeSync from './useTimeSync';
 
 const useSunCycle = () => {
-    const [cycle, setCycle] = useState('day'); // 'dawn', 'day', 'dusk', 'night'
-    const [isDay, setIsDay] = useState(true);
+    const { getCurrentTime } = useTimeSync();
+    const [cycle, setCycle] = useState(() => {
+        try {
+            return localStorage.getItem('lastCycle') || 'day';
+        } catch {
+            return 'day';
+        }
+    });
+    const [isDay, setIsDay] = useState(() => {
+        try {
+            const stored = localStorage.getItem('lastIsDay');
+            return stored === null ? true : stored === 'true';
+        } catch {
+            return true;
+        }
+    });
     const [loading, setLoading] = useState(true);
     const [solarData, setSolarData] = useState(null);
 
@@ -95,7 +110,7 @@ const useSunCycle = () => {
                 const { sunrise, sunset, civil_twilight_begin, civil_twilight_end, nautical_twilight_begin, nautical_twilight_end, solar_noon } = sunData.results;
 
                 // Convert UTC strings to local Date objects
-                const now = new Date();
+                const now = getCurrentTime();
                 const sunriseTime = new Date(sunrise);
                 const sunsetTime = new Date(sunset);
                 const dawnTime = new Date(civil_twilight_begin);
@@ -205,6 +220,8 @@ const useSunCycle = () => {
 
                 setCycle(currentCycle);
                 setIsDay(isDaytime);
+                localStorage.setItem('lastCycle', currentCycle);
+                localStorage.setItem('lastIsDay', isDaytime);
 
                 console.log(`🔄 Current Cycle: ${currentCycle.toUpperCase()} (Daytime: ${isDaytime})`);
 
@@ -212,13 +229,17 @@ const useSunCycle = () => {
                 console.error('Error fetching sun cycle:', error);
 
                 // Fallback to simple hour-based logic
-                const hour = new Date().getHours();
+                const hour = getCurrentTime().getHours();
                 if (hour >= 6 && hour < 18) {
                     setCycle('day');
                     setIsDay(true);
+                    localStorage.setItem('lastCycle', 'day');
+                    localStorage.setItem('lastIsDay', 'true');
                 } else {
                     setCycle('night');
                     setIsDay(false);
+                    localStorage.setItem('lastCycle', 'night');
+                    localStorage.setItem('lastIsDay', 'false');
                 }
             } finally {
                 setLoading(false);
@@ -230,7 +251,7 @@ const useSunCycle = () => {
         // Refresh every 5 minutes
         const interval = setInterval(fetchData, 60000 * 5);
         return () => clearInterval(interval);
-    }, []);
+    }, [getCurrentTime]);
 
     return { cycle, isDay, loading, solarData };
 };
