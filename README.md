@@ -1,16 +1,51 @@
-# React + Vite
+# Portfolio Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Modern portfolio with React + Vite, dual themes, interactive backgrounds, and PostgreSQL database.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 18 + Vite
+- Neon PostgreSQL
+- Netlify Functions
+- Framer Motion
+- Cloudinary CDN
 
-## React Compiler
+## Quick Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+cp .env.example .env  # Add DATABASE_URL
+npm run init-db       # Initialize database
+npm run dev           # Start frontend (localhost:5173)
+npm run server        # Start API (localhost:3001)
+```
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Dual themes (Modern/IDE)
+- Interactive backgrounds
+- Contact form with database
+- Real-time clock
+- SEO optimized
+- Fully responsive
+
+## Documentation
+
+- [DATABASE_SETUP.md](./DATABASE_SETUP.md) - Database & API
+- [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md) - Deployment
+- [CORS-SECURITY.md](./CORS-SECURITY.md) - CORS config
+- [CLOUDINARY_SETUP.md](./CLOUDINARY_SETUP.md) - Image hosting
+- [GOOGLE_SEARCH_CONSOLE_GUIDE.md](./GOOGLE_SEARCH_CONSOLE_GUIDE.md) - SEO
+
+## Environment Variables
+
+```env
+DATABASE_URL=postgresql://...
+ALLOWED_ORIGINS=http://localhost:5173
+```
+
+## Configuration Files
+
+- `src/constants/` - All constants (timing, thresholds)
+- `src/data/` - Projects, skills, experience
+- `src/constants/personalInfo.js` - Personal details
