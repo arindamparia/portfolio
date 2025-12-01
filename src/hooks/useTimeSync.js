@@ -1,35 +1,50 @@
 import { useState, useEffect, useCallback } from 'react';
+import { TIMING } from '../constants/timing';
+import { isLocalhost } from '../utils/environment';
 
+/**
+ * Fetches server time from production server's Date header
+ */
+const fetchServerTime = async () => {
+    const response = await fetch(`${window.location.origin}/api/time.json?t=${Date.now()}`, {
+        cache: 'no-store'
+    });
+    const dateHeader = response.headers.get('date');
+    return dateHeader ? new Date(dateHeader).getTime() : null;
+};
+
+/**
+ * Calculates time offset between server and device
+ */
+const calculateOffset = (serverTime, deviceTime) => {
+    const offset = serverTime - deviceTime;
+
+    // Only apply offset if difference exceeds threshold
+    if (Math.abs(offset) >= TIMING.TIME_SYNC_THRESHOLD) {
+        console.log(`⏱️ Time corrected: Device was ${Math.round(offset / 1000)}s off`);
+        return offset;
+    }
+    return 0;
+};
+
+/**
+ * Custom hook for time synchronization with server
+ * Syncs device time with server time to ensure accurate time display
+ */
 const useTimeSync = () => {
     const [offset, setOffset] = useState(0);
 
     useEffect(() => {
         const syncTime = async () => {
-            // On localhost, use device time (no sync needed)
-            if (window.location.hostname === 'localhost' || window.location.hostname.startsWith('127.')) {
-                return;
-            }
+            // Skip sync on localhost
+            if (isLocalhost()) return;
 
-            // Production: Fetch server time from Date header
             try {
-                const response = await fetch(`${window.location.origin}/api/time.json?t=${Date.now()}`, {
-                    cache: 'no-store'
-                });
-                const dateHeader = response.headers.get('date');
-
-                if (dateHeader) {
-                    const serverTime = new Date(dateHeader).getTime();
+                const serverTime = await fetchServerTime();
+                if (serverTime) {
                     const deviceTime = Date.now();
-                    let newOffset = serverTime - deviceTime;
-
-                    // Only apply offset if difference is more than 1 minute
-                    const THRESHOLD = 60 * 1000;
-                    if (Math.abs(newOffset) >= THRESHOLD) {
-                        setOffset(newOffset);
-                        console.log(`⏱️ Time corrected: Device was ${Math.round(newOffset / 1000)}s off`);
-                    } else {
-                        setOffset(0);
-                    }
+                    const newOffset = calculateOffset(serverTime, deviceTime);
+                    setOffset(newOffset);
                 }
             } catch (error) {
                 // Silent fail - use device time
@@ -39,13 +54,13 @@ const useTimeSync = () => {
         // Initial sync
         syncTime();
 
-        // Sync every 30 seconds
-        const interval = setInterval(syncTime, 30 * 1000);
+        // Periodic sync
+        const interval = setInterval(syncTime, TIMING.TIME_SYNC_INTERVAL);
 
         return () => clearInterval(interval);
     }, []);
 
-    // Helper to get the current synchronized time
+    // Get current time with offset applied
     const getCurrentTime = useCallback(() => {
         return new Date(Date.now() + offset);
     }, [offset]);
