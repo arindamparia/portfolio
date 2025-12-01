@@ -1,15 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getEventsForDate, getRandomFact } from '../../data/indianDates';
 import { FaCalendarDay, FaLightbulb, FaHistory, FaRocket, FaTrophy, FaFlag, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const IndianEvent = () => {
-    const [eventsList, setEventsList] = useState([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isEvent, setIsEvent] = useState(false);
-    const [displayData, setDisplayData] = useState(null);
-
-    useEffect(() => {
+    const { eventsList, isEvent, fact } = useMemo(() => {
         const today = new Date();
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
@@ -18,21 +13,15 @@ const IndianEvent = () => {
         const events = getEventsForDate(dateString);
 
         if (events && events.length > 0) {
-            setEventsList(events);
-            setCurrentIndex(0);
-            setDisplayData(events[0]);
-            setIsEvent(true);
+            return { eventsList: events, isEvent: true, fact: null };
         } else {
-            setDisplayData(getRandomFact());
-            setIsEvent(false);
+            return { eventsList: [], isEvent: false, fact: getRandomFact() };
         }
     }, []);
 
-    useEffect(() => {
-        if (isEvent && eventsList.length > 0) {
-            setDisplayData(eventsList[currentIndex]);
-        }
-    }, [currentIndex, isEvent, eventsList]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const displayData = isEvent ? eventsList[currentIndex] : fact;
 
     const handleNext = () => {
         setCurrentIndex((prev) => (prev + 1) % eventsList.length);
