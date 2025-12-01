@@ -68,22 +68,27 @@ const useTimeSync = () => {
 
                 if (serverTime) {
                     const deviceTime = Date.now();
-                    const newOffset = serverTime - deviceTime;
+                    let newOffset = serverTime - deviceTime;
 
                     // Log the time difference for debugging
                     console.log(`⏱️ Server time: ${new Date(serverTime).toLocaleTimeString()}`);
                     console.log(`⏱️ Device time: ${new Date(deviceTime).toLocaleTimeString()}`);
                     console.log(`⏱️ Difference: ${Math.round(newOffset / 1000)}s`);
 
-                    // Always set the offset to show accurate server time
+                    // Only apply offset if difference is more than 1 minute
+                    const THRESHOLD = 60 * 1000; // 1 minute in milliseconds
+                    if (Math.abs(newOffset) < THRESHOLD) {
+                        console.log('✅ Device time is accurate (within 1 minute). Using device time.');
+                        newOffset = 0;
+                    } else {
+                        console.log(`⚠️ Device time is off by ${Math.round(newOffset / 1000)}s. Adjusting to server time.`);
+                    }
+
+                    // Set the offset
                     setOffset(newOffset);
                     localStorage.setItem('timeOffset', newOffset.toString());
                     localStorage.setItem('timeOffsetTimestamp', Date.now().toString());
                     failureCountRef.current = 0; // Reset failure count on success
-
-                    if (Math.abs(newOffset) > 5000) { // More than 5 seconds off
-                        console.log(`⚠️ Device time is off by ${Math.round(newOffset / 1000)}s`);
-                    }
                 } else {
                     // If all sources fail, increment failure count
                     failureCountRef.current += 1;
