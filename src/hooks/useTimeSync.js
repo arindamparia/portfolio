@@ -7,25 +7,7 @@ const useTimeSync = () => {
 
     useEffect(() => {
         const fetchServerTimeWithFallback = async () => {
-            // Source 1: GitHub API (most reliable, doesn't need IP-based location)
-            try {
-                const response = await fetch('https://api.github.com', {
-                    method: 'HEAD',
-                    cache: 'no-store'
-                });
-                const dateHeader = response.headers.get('date');
-                if (dateHeader) {
-                    const time = new Date(dateHeader).getTime();
-                    if (!isNaN(time)) {
-                        console.log('✅ Using time from: GitHub API');
-                        return time;
-                    }
-                }
-            } catch (error) {
-                console.log('❌ GitHub API failed:', error.message);
-            }
-
-            // Source 2: Cloudflare's time API
+            // Source 1: Cloudflare (very reliable, global CDN)
             try {
                 const response = await fetch('https://cloudflare.com/cdn-cgi/trace', {
                     cache: 'no-store'
@@ -42,22 +24,44 @@ const useTimeSync = () => {
                 console.log('❌ Cloudflare failed:', error.message);
             }
 
-            // Source 3: WorldTimeAPI (timezone-aware)
+            // Source 2: timeapi.io (dedicated time API)
             try {
-                const response = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC', {
+                const response = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=UTC', {
                     cache: 'no-store'
                 });
                 const data = await response.json();
-                if (data.unixtime) {
-                    const time = data.unixtime * 1000; // Convert to milliseconds
-                    console.log('✅ Using time from: WorldTimeAPI');
-                    return time;
+                if (data.dateTime) {
+                    const time = new Date(data.dateTime).getTime();
+                    if (!isNaN(time)) {
+                        console.log('✅ Using time from: TimeAPI.io');
+                        return time;
+                    }
                 }
             } catch (error) {
-                console.log('❌ WorldTimeAPI failed:', error.message);
+                console.log('❌ TimeAPI.io failed:', error.message);
             }
 
-            console.warn('⚠️ All external time sources failed. Not using local server.');
+            // Source 3: Use deployed server's Date header (not localhost)
+            try {
+                if (window.location.hostname !== 'localhost' && !window.location.hostname.startsWith('127.')) {
+                    const response = await fetch(window.location.origin, {
+                        method: 'HEAD',
+                        cache: 'no-store'
+                    });
+                    const dateHeader = response.headers.get('date');
+                    if (dateHeader) {
+                        const time = new Date(dateHeader).getTime();
+                        if (!isNaN(time)) {
+                            console.log('✅ Using time from: Deployed Server');
+                            return time;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log('❌ Server time failed:', error.message);
+            }
+
+            console.warn('⚠️ All time sources failed. Using device time.');
             return null;
         };
 
