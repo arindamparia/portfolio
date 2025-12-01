@@ -17,11 +17,12 @@ const useTimeSync = () => {
                 if (dateHeader) {
                     const time = new Date(dateHeader).getTime();
                     if (!isNaN(time)) {
+                        console.log('✅ Using time from: GitHub API');
                         return time;
                     }
                 }
             } catch (error) {
-                // Silent fail, try next source
+                console.log('❌ GitHub API failed:', error.message);
             }
 
             // Source 2: Cloudflare's time API
@@ -33,30 +34,30 @@ const useTimeSync = () => {
                 if (dateHeader) {
                     const time = new Date(dateHeader).getTime();
                     if (!isNaN(time)) {
+                        console.log('✅ Using time from: Cloudflare');
                         return time;
                     }
                 }
             } catch (error) {
-                // Silent fail, try next source
+                console.log('❌ Cloudflare failed:', error.message);
             }
 
-            // Source 3: Own server's Date header
+            // Source 3: WorldTimeAPI (timezone-aware)
             try {
-                const response = await fetch(window.location.origin, {
-                    method: 'HEAD',
+                const response = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC', {
                     cache: 'no-store'
                 });
-                const dateHeader = response.headers.get('date');
-                if (dateHeader) {
-                    const time = new Date(dateHeader).getTime();
-                    if (!isNaN(time)) {
-                        return time;
-                    }
+                const data = await response.json();
+                if (data.unixtime) {
+                    const time = data.unixtime * 1000; // Convert to milliseconds
+                    console.log('✅ Using time from: WorldTimeAPI');
+                    return time;
                 }
             } catch (error) {
-                // Silent fail
+                console.log('❌ WorldTimeAPI failed:', error.message);
             }
 
+            console.warn('⚠️ All external time sources failed. Not using local server.');
             return null;
         };
 
