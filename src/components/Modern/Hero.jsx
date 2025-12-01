@@ -12,11 +12,28 @@ import useSunCycle from '../../hooks/useSunCycle';
 const Hero = () => {
     const { cycle, isDay, solarData } = useSunCycle();
 
+    // Determine color scheme based on cycle
+    const getHeroColorScheme = () => {
+        switch (cycle) {
+            case 'dawn':
+                return 'pink';
+            case 'day':
+                return 'blue';
+            case 'dusk':
+                return 'orange';
+            case 'blue-hour':
+                return 'teal';
+            case 'night':
+            default:
+                return 'purple';
+        }
+    };
+
     return (
         <section id="home" className="hero">
             <InteractiveBackground
                 variant="universe"
-                colorScheme={isDay ? "blue" : "purple"}
+                colorScheme={getHeroColorScheme()}
                 intensity={isDay ? 0.3 : 0.5}
                 cycle={cycle}
             />

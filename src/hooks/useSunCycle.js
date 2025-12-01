@@ -90,7 +90,7 @@ const useSunCycle = () => {
                     localStorage.setItem('solarDataLocation', locationKey);
                 }
 
-                const { sunrise, sunset, civil_twilight_begin, civil_twilight_end } = sunData.results;
+                const { sunrise, sunset, civil_twilight_begin, civil_twilight_end, nautical_twilight_begin, nautical_twilight_end } = sunData.results;
 
                 // Convert UTC strings to local Date objects
                 const now = new Date();
@@ -98,6 +98,8 @@ const useSunCycle = () => {
                 const sunsetTime = new Date(sunset);
                 const dawnTime = new Date(civil_twilight_begin);
                 const duskTime = new Date(civil_twilight_end);
+                const blueHourMorning = new Date(nautical_twilight_begin);
+                const blueHourEvening = new Date(nautical_twilight_end);
 
                 setSolarData({ sunrise: sunriseTime, sunset: sunsetTime });
 
@@ -107,14 +109,19 @@ const useSunCycle = () => {
                     sunrise: sunriseTime.toLocaleTimeString(),
                     sunset: sunsetTime.toLocaleTimeString(),
                     dawn: dawnTime.toLocaleTimeString(),
-                    dusk: duskTime.toLocaleTimeString()
+                    dusk: duskTime.toLocaleTimeString(),
+                    blueHourMorning: blueHourMorning.toLocaleTimeString(),
+                    blueHourEvening: blueHourEvening.toLocaleTimeString()
                 });
 
                 // 4. Determine Cycle
                 let currentCycle = 'night';
                 let isDaytime = false;
 
-                if (now >= dawnTime && now < sunriseTime) {
+                if (now >= blueHourMorning && now < dawnTime) {
+                    currentCycle = 'blue-hour';
+                    isDaytime = false;
+                } else if (now >= dawnTime && now < sunriseTime) {
                     currentCycle = 'dawn';
                     isDaytime = true;
                 } else if (now >= sunriseTime && now < sunsetTime) {
@@ -122,6 +129,9 @@ const useSunCycle = () => {
                     isDaytime = true;
                 } else if (now >= sunsetTime && now < duskTime) {
                     currentCycle = 'dusk';
+                    isDaytime = false;
+                } else if (now >= duskTime && now < blueHourEvening) {
+                    currentCycle = 'blue-hour';
                     isDaytime = false;
                 } else {
                     currentCycle = 'night';
