@@ -62,38 +62,28 @@ const useTimeSync = () => {
 
         const syncTime = async () => {
             try {
-                // 1. Check Cache
-                const cachedOffset = localStorage.getItem('timeOffset');
-                const cachedTimestamp = localStorage.getItem('timeOffsetTimestamp');
-                const CACHE_DURATION = 30 * 1000; // 30 seconds
-
-                if (cachedOffset && cachedTimestamp && (Date.now() - parseInt(cachedTimestamp) < CACHE_DURATION)) {
-                    setOffset(parseInt(cachedOffset));
-                    // Schedule next sync
-                    scheduleNextSync();
-                    return;
-                }
-
-                // 2. Try multiple sources with fallback
+                // Fetch server time
+                console.log('🔄 Syncing time with server...');
                 const serverTime = await fetchServerTimeWithFallback();
 
                 if (serverTime) {
                     const deviceTime = Date.now();
-                    let newOffset = serverTime - deviceTime;
+                    const newOffset = serverTime - deviceTime;
 
-                    // Only apply offset if difference is significant (> 1 minute)
-                    const THRESHOLD = 60 * 1000;
-                    if (Math.abs(newOffset) < THRESHOLD) {
-                        newOffset = 0;
-                    } else {
-                        console.log(`⏱️ Time adjusted: Device time off by ${Math.round(newOffset / 1000)}s`);
-                    }
+                    // Log the time difference for debugging
+                    console.log(`⏱️ Server time: ${new Date(serverTime).toLocaleTimeString()}`);
+                    console.log(`⏱️ Device time: ${new Date(deviceTime).toLocaleTimeString()}`);
+                    console.log(`⏱️ Difference: ${Math.round(newOffset / 1000)}s`);
 
-                    // 3. Update State and Cache
+                    // Always set the offset to show accurate server time
                     setOffset(newOffset);
                     localStorage.setItem('timeOffset', newOffset.toString());
                     localStorage.setItem('timeOffsetTimestamp', Date.now().toString());
                     failureCountRef.current = 0; // Reset failure count on success
+
+                    if (Math.abs(newOffset) > 5000) { // More than 5 seconds off
+                        console.log(`⚠️ Device time is off by ${Math.round(newOffset / 1000)}s`);
+                    }
                 } else {
                     // If all sources fail, increment failure count
                     failureCountRef.current += 1;
