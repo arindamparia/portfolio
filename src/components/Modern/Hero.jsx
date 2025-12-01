@@ -16,13 +16,23 @@ const Hero = () => {
     const getHeroColorScheme = () => {
         switch (cycle) {
             case 'dawn':
+            case 'early-morning':
                 return 'pink';
             case 'day':
+            case 'morning':
+            case 'late-morning':
+            case 'noon':
+            case 'early-afternoon':
                 return 'blue';
+            case 'afternoon':
+            case 'late-afternoon':
             case 'dusk':
                 return 'orange';
             case 'blue-hour':
+            case 'blue-hour-morning':
                 return 'teal';
+            case 'pre-dawn':
+            case 'early-night':
             case 'night':
             default:
                 return 'purple';
