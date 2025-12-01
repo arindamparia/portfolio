@@ -13,17 +13,18 @@ const useTimeSync = () => {
                 return Date.now(); // Use device time on localhost
             }
 
-            // Source 1: Production server (most reliable for your deployed site)
+            // Production: Use server's Date header from any asset
             try {
-                const response = await fetch(window.location.origin + '/favicon.ico', {
-                    method: 'HEAD',
+                // Fetch a small asset with cache-busting
+                const response = await fetch(`${window.location.origin}/api/time.json?t=${Date.now()}`, {
+                    method: 'GET',
                     cache: 'no-store'
                 });
                 const dateHeader = response.headers.get('date');
                 if (dateHeader) {
                     const time = new Date(dateHeader).getTime();
                     if (!isNaN(time)) {
-                        console.log('✅ Using time from: Production Server');
+                        console.log('✅ Using time from: Production Server (Date header)');
                         return time;
                     }
                 }
@@ -31,22 +32,7 @@ const useTimeSync = () => {
                 console.log('❌ Production server failed:', error.message);
             }
 
-            // Source 2: World Time API
-            try {
-                const response = await fetch('https://worldtimeapi.org/api/ip', {
-                    cache: 'no-store'
-                });
-                const data = await response.json();
-                if (data.unixtime) {
-                    const time = data.unixtime * 1000;
-                    console.log('✅ Using time from: WorldTimeAPI');
-                    return time;
-                }
-            } catch (error) {
-                console.log('❌ WorldTimeAPI failed:', error.message);
-            }
-
-            console.warn('⚠️ All time sources failed. Using device time.');
+            console.warn('⚠️ Could not fetch server time. Using device time.');
             return null;
         };
 
