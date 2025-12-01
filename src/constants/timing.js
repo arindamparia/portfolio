@@ -4,10 +4,8 @@
  */
 
 export const TIMING = {
-    // Clock and time sync
+    // Clock updates
     CLOCK_UPDATE_INTERVAL: 1000, // 1 second
-    TIME_SYNC_INTERVAL: 30 * 1000, // 30 seconds
-    TIME_SYNC_THRESHOLD: 60 * 1000, // 1 minute
 
     // Sun cycle updates
     SUN_CYCLE_UPDATE_INTERVAL: 60 * 1000, // 1 minute

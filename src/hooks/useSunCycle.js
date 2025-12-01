@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
-import useTimeSync from './useTimeSync';
 import { TIMING } from '../constants/timing';
 
 const useSunCycle = () => {
-    const { getCurrentTime } = useTimeSync();
     const [cycle, setCycle] = useState(() => {
         try {
             return localStorage.getItem('lastCycle') || 'day';
@@ -111,7 +109,7 @@ const useSunCycle = () => {
                 const { sunrise, sunset, civil_twilight_begin, civil_twilight_end, nautical_twilight_begin, nautical_twilight_end, solar_noon } = sunData.results;
 
                 // Convert UTC strings to local Date objects
-                const now = getCurrentTime();
+                const now = new Date();
                 const sunriseTime = new Date(sunrise);
                 const sunsetTime = new Date(sunset);
                 const dawnTime = new Date(civil_twilight_begin);
@@ -230,7 +228,7 @@ const useSunCycle = () => {
                 console.error('Error fetching sun cycle:', error);
 
                 // Fallback to simple hour-based logic
-                const hour = getCurrentTime().getHours();
+                const hour = new Date().getHours();
                 if (hour >= 6 && hour < 18) {
                     setCycle('day');
                     setIsDay(true);
@@ -252,7 +250,7 @@ const useSunCycle = () => {
         // Refresh every 5 minutes
         const interval = setInterval(fetchData, TIMING.SUN_CYCLE_FETCH_INTERVAL);
         return () => clearInterval(interval);
-    }, [getCurrentTime]);
+    }, []);
 
     return { cycle, isDay, loading, solarData };
 };
