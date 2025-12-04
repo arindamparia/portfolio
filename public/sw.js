@@ -1,4 +1,4 @@
-const CACHE_NAME = 'portfolio-v1';
+const CACHE_NAME = 'portfolio-v2';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
@@ -32,18 +32,36 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Fetch event - Cache First for assets, Network First for everything else
+// Fetch event - Network First for HTML, Cache First for assets
 self.addEventListener('fetch', (event) => {
     // Skip cross-origin requests
     if (!event.request.url.startsWith(self.location.origin)) {
         return;
     }
 
-    // Skip non-GET requests (like HEAD, POST, etc.)
+    // Skip non-GET requests
     if (event.request.method !== 'GET') {
         return;
     }
 
+    // Network First strategy for HTML navigation requests
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request)
+                .then((response) => {
+                    return caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, response.clone());
+                        return response;
+                    });
+                })
+                .catch(() => {
+                    return caches.match(event.request);
+                })
+        );
+        return;
+    }
+
+    // Cache First strategy for static assets (JS, CSS, Images, Fonts)
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
             if (cachedResponse) {
@@ -56,9 +74,7 @@ self.addEventListener('fetch', (event) => {
                     return response;
                 }
 
-                // Clone the response because it's a stream and can only be consumed once
                 const responseToCache = response.clone();
-
                 caches.open(CACHE_NAME).then((cache) => {
                     cache.put(event.request, responseToCache);
                 });
