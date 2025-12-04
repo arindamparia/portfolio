@@ -34,7 +34,7 @@ export const socialLinks = {
 };
 
 export const assets = {
-    profileImage: 'https://res.cloudinary.com/dnju7wfma/image/upload/c_fill,w_400,h_400,q_auto,f_auto/v2/1709320939738_1_gkcoyp',
-    aboutImage: 'https://res.cloudinary.com/dnju7wfma/image/upload/c_fill,w_300,h_400,q_auto,f_auto/v2/1763793854312_unvf7m',
+    profileImage: 'https://res.cloudinary.com/dnju7wfma/image/upload/c_fill,w_800,h_800,q_auto:best,f_auto/v3/1709320939738_1_gkcoyp',
+    aboutImage: 'https://res.cloudinary.com/dnju7wfma/image/upload/c_fill,w_600,h_800,q_auto:best,f_auto/v3/1763793854312_unvf7m',
     cvPath: '/cv.pdf'
 };
