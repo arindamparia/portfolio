@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "server": "node server.js",
-    "init-db": "node scripts/init-db.js",
-    "migrate:optimize": "node scripts/migrate-optimize-field-sizes.js",
+    "server": "bun server.js",
+    "init-db": "bun scripts/init-db.js",
+    "migrate:optimize": "bun scripts/migrate-optimize-field-sizes.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
