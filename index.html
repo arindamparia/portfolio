@@ -66,42 +66,108 @@
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
-    {
+{
       "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Arindam Paria",
-      "jobTitle": "Software Engineer",
-      "url": "https://arindamparia.in/",
-      "image": "https://res.cloudinary.com/dnju7wfma/image/upload/og-image_e0mipd",
-      "sameAs": [
-        "https://github.com/arindamparia",
-        "https://www.linkedin.com/in/arindam-paria-557170191/",
-        "https://leetcode.com/u/ARINDAM9064/"
-      ],
-      "email": "arindamparia321@gmail.com",
-      "telephone": "+91 9064175719",
-      "description": "Passionate Software Engineer specializing in Java, Spring Boot, Spring AI, and Algorithms. Expert in nCino, Agentforce, and building scalable enterprise applications.",
-      "knowsAbout": [
-        "Java", 
-        "Spring Boot", 
-        "Spring AI", 
-        "React", 
-        "JavaScript", 
-        "nCino", 
-        "Agentforce", 
-        "Salesforce Commerce Cloud",
-        "Microservices",
-        "Data Structures",
-        "Algorithms"
-      ],
-      "alumniOf": {
-        "@type": "EducationalOrganization",
-        "name": "National Institute of Technology Durgapur"
-      },
-      "worksFor": {
-        "@type": "Organization",
-        "name": "Publicis Sapient"
-      }
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://arindamparia.in/#person",
+          "name": "Arindam Paria",
+          "jobTitle": "Software Engineer",
+          "url": "https://arindamparia.in/",
+          "image": "https://res.cloudinary.com/dnju7wfma/image/upload/og-image_e0mipd",
+          "sameAs": [
+            "https://github.com/arindamparia",
+            "https://www.linkedin.com/in/arindam-paria-557170191/",
+            "https://leetcode.com/u/ARINDAM9064/"
+          ],
+          "email": "arindamparia321@gmail.com",
+          "description": "Passionate Software Engineer specializing in Java, Spring Boot, Spring AI, and Algorithms. Expert in nCino, Agentforce, and building scalable enterprise applications.",
+          "knowsAbout": [
+            "Java", 
+            "Spring Boot", 
+            "Spring AI", 
+            "React", 
+            "JavaScript", 
+            "nCino", 
+            "Agentforce", 
+            "Salesforce Commerce Cloud",
+            "Microservices",
+            "Data Structures",
+            "Algorithms"
+          ],
+          "alumniOf": {
+            "@type": "EducationalOrganization",
+            "name": "National Institute of Technology Durgapur"
+          },
+          "worksFor": {
+            "@type": "Organization",
+            "name": "Publicis Sapient"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://arindamparia.in/#website",
+          "url": "https://arindamparia.in/",
+          "name": "Arindam Paria Portfolio",
+          "description": "Portfolio of Arindam Paria, a Software Engineer specializing in Java, Spring Boot, and AI.",
+          "publisher": {
+            "@id": "https://arindamparia.in/#person"
+          },
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://arindamparia.in/#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://arindamparia.in/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Skills",
+              "item": "https://arindamparia.in/#skills"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Experience",
+              "item": "https://arindamparia.in/#experience"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "name": "Projects",
+              "item": "https://arindamparia.in/#projects"
+            },
+            {
+              "@type": "ListItem",
+              "position": 5,
+              "name": "Contact",
+              "item": "https://arindamparia.in/#contact"
+            }
+          ]
+        },
+        {
+          "@type": "ItemList",
+          "name": "Technical Skills",
+          "description": "A comprehensive list of technical skills and technologies mastered by Arindam Paria.",
+          "itemListElement": [
+            "Java", "C++", "JavaScript", "C",
+            "Spring Boot", "Spring AI", "Spring Security", "Java Microservices", "Java Reactive", "Node.js",
+            "nCino", "Agentforce", "Salesforce Sales Cloud", "Salesforce Commerce Cloud",
+            "React", "HTML/CSS", "Tailwind",
+            "MySQL", "PostgreSQL", "MongoDB",
+            "AWS", "Docker", "Jenkins",
+            "Data Structures", "Algorithms", "OOPs", "System Design",
+            "GIT", "Junit & Mockito", "Postman"
+          ]
+        }
+      ]
     }
     </script>
 </head>
