@@ -30,6 +30,10 @@ export const socialLinks = {
         url: 'https://leetcode.com/u/ARINDAM9064/',
         username: 'ARINDAM9064',
         label: 'LeetCode'
+    },
+    tracemydsa: {
+        url: import.meta.env.VITE_DSA_TRACKER_URL || 'https://tracemydsa.netlify.app',
+        label: 'TraceMyDSA'
     }
 };
 

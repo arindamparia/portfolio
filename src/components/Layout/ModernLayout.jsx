@@ -27,6 +27,7 @@ const Projects = lazy(() => import('../Modern/Projects'));
 const Experience = lazy(() => import('../Modern/Experience'));
 const Education = lazy(() => import('../Modern/Education'));
 const Certifications = lazy(() => import('../Modern/Certifications'));
+const DsaBanner = lazy(() => import('../Modern/DsaBanner'));
 const Contact = lazy(() => import('../Modern/Contact'));
 
 const ModernLayout = () => {
@@ -138,6 +139,7 @@ const ModernLayout = () => {
                     <Experience />
                     <Education />
                     <Certifications />
+                    <DsaBanner />
                     <Projects />
                     <Contact />
                 </Suspense>

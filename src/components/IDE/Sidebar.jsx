@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { VscFiles, VscSearch, VscSourceControl, VscDebugAlt, VscExtensions, VscAccount, VscSettingsGear, VscChevronRight, VscChevronDown } from 'react-icons/vsc';
-import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaProjectDiagram } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
 import { ideFiles } from '../../constants/ideFiles.jsx';
 import { socialLinks } from '../../constants/personalInfo.js';
@@ -105,6 +105,9 @@ const Sidebar = ({ activeTab, setActiveTab, onOpenSearch }) => {
                     </a>
                     <a href={socialLinks.leetcode.url} target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ ...ICON_STYLE, display: 'flex', justifyContent: 'center', color: '#858585' }} aria-label={socialLinks.leetcode.label}>
                         <SiLeetcode size={24} />
+                    </a>
+                    <a href={socialLinks.tracemydsa.url} target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ ...ICON_STYLE, display: 'flex', justifyContent: 'center', color: '#858585' }} aria-label={socialLinks.tracemydsa.label}>
+                        <FaProjectDiagram size={24} />
                     </a>
                 </div>
 

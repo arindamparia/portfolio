@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaEnvelope, FaLinkedin, FaGithub, FaExclamationTriangle, FaCheckCircle, FaUser, FaPhone, FaBuilding, FaCommentDots, FaPaperPlane } from 'react-icons/fa';
+import { FaEnvelope, FaLinkedin, FaGithub, FaExclamationTriangle, FaCheckCircle, FaUser, FaPhone, FaBuilding, FaCommentDots, FaPaperPlane, FaProjectDiagram } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
 import { personalInfo, socialLinks } from '../../constants/personalInfo';
 import { vibrateLight } from '../../utils/vibration';
@@ -98,6 +98,9 @@ const Contact = () => {
                     </a>
                     <a href={socialLinks.leetcode.url} target="_blank" rel="noopener noreferrer" className="social-link-button" onClick={vibrateLight}>
                         <SiLeetcode /> {socialLinks.leetcode.label}
+                    </a>
+                    <a href={socialLinks.tracemydsa.url} target="_blank" rel="noopener noreferrer" className="social-link-button" onClick={vibrateLight}>
+                        <FaProjectDiagram /> {socialLinks.tracemydsa.label}
                     </a>
                 </motion.div>
 
