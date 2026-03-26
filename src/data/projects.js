@@ -11,6 +11,15 @@
 
 export const projectsData = [
     {
+        name: 'AlgoTracker',
+        description: 'A full-stack AI-first DSA preparation tool — track LeetCode problems, mock interviews, spaced repetition, and AI code feedback.',
+        tech: ['Vanilla JS', 'Motion One', 'Netlify Serverless', 'Neon PostgreSQL', 'Clerk Auth', 'Claude API'],
+        type: 'Web App',
+        live: 'https://algotracker.xyz',
+        github: 'https://github.com/arindamparia/algotracker',
+        featured: true
+    },
+    {
         name: 'Blogify',
         description: 'Platform for college students to post interview experiences.',
         tech: ['HTML', 'CSS', 'JavaScript', 'Node.js', 'MongoDB'],

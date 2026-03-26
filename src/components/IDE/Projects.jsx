@@ -13,7 +13,12 @@ const Projects = () => {
                 <div style={{ color: '#6a9955', marginBottom: '1rem' }}>// My Projects Collection</div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem' }}>
                     {projectsData.map((project, index) => (
-                        <div key={index} style={{ background: '#2d2d2d', borderRadius: '8px', overflow: 'hidden', border: '1px solid #3e3e42' }}>
+                        <div key={index} style={{ background: '#2d2d2d', borderRadius: '8px', overflow: 'hidden', border: project.featured ? '1px solid #569cd6' : '1px solid #3e3e42', position: 'relative' }}>
+                            {project.featured && (
+                                <div style={{ position: 'absolute', top: '0', right: '0', background: '#569cd6', color: '#fff', fontSize: '0.6rem', padding: '0.1rem 0.5rem', borderBottomLeftRadius: '4px', fontWeight: 'bold', zIndex: 10 }}>
+                                    FEATURED
+                                </div>
+                            )}
                             <div style={{ background: '#3e3e42', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <span style={{ fontWeight: 'bold', color: '#e8e8e8' }}>{project.name}</span>
                                 <span style={{ fontSize: '0.8rem', color: '#858585' }}>{project.type}</span>
@@ -28,7 +33,13 @@ const Projects = () => {
                                             <span key={i} style={{ color: '#ce9178' }}>"{t}"{i < project.tech.length - 1 ? ', ' : ''}</span>
                                         ))}
                                     </div>
-                                    <p>]</p>
+                                    <p>]{project.live || project.github ? ',' : ''}</p>
+                                    {project.live && (
+                                        <p><span style={{ color: '#9cdcfe' }}>live_demo</span>: <a href={project.live} target="_blank" rel="noopener noreferrer" style={{ color: '#ce9178', textDecoration: 'underline' }}>"{project.live}"</a>{project.github ? ',' : ''}</p>
+                                    )}
+                                    {project.github && (
+                                        <p><span style={{ color: '#9cdcfe' }}>github</span>: <a href={project.github} target="_blank" rel="noopener noreferrer" style={{ color: '#ce9178', textDecoration: 'underline' }}>"{project.github}"</a></p>
+                                    )}
                                 </div>
                                 <p>{'};'}</p>
                             </div>
