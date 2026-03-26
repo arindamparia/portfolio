@@ -20,11 +20,11 @@ const DsaBanner = () => {
                     <div className="dsa-banner-content">
                         <h3 className="dsa-banner-title">Want to practice DSA?</h3>
                         <p className="dsa-banner-text">
-                            Track, optimize, and master your Data Structures & Algorithms journey with TraceMyDSA.
+                            Track, optimize, and master your Data Structures & Algorithms journey with AlgoTracker.
                         </p>
                     </div>
                     <motion.a
-                        href={socialLinks.tracemydsa.url}
+                        href={socialLinks.algotracker.url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="dsa-banner-btn"

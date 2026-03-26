@@ -31,9 +31,9 @@ export const socialLinks = {
         username: 'ARINDAM9064',
         label: 'LeetCode'
     },
-    tracemydsa: {
-        url: import.meta.env.VITE_DSA_TRACKER_URL || 'https://tracemydsa.netlify.app',
-        label: 'TraceMyDSA'
+    algotracker: {
+        url: import.meta.env.VITE_DSA_TRACKER_URL || 'https://algotracker.xyz',
+        label: 'AlgoTracker'
     }
 };
 

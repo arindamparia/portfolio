@@ -106,7 +106,7 @@ const Sidebar = ({ activeTab, setActiveTab, onOpenSearch }) => {
                     <a href={socialLinks.leetcode.url} target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ ...ICON_STYLE, display: 'flex', justifyContent: 'center', color: '#858585' }} aria-label={socialLinks.leetcode.label}>
                         <SiLeetcode size={24} />
                     </a>
-                    <a href={socialLinks.tracemydsa.url} target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ ...ICON_STYLE, display: 'flex', justifyContent: 'center', color: '#858585' }} aria-label={socialLinks.tracemydsa.label}>
+                    <a href={socialLinks.algotracker.url} target="_blank" rel="noopener noreferrer" className="activity-icon social-icon" style={{ ...ICON_STYLE, display: 'flex', justifyContent: 'center', color: '#858585' }} aria-label={socialLinks.algotracker.label}>
                         <FaProjectDiagram size={24} />
                     </a>
                 </div>

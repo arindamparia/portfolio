@@ -617,6 +617,11 @@
         width: 100%;
         padding: 1.5rem;
     }
+    
+    .theme-modern .project-card.featured .tech-stack,
+    .theme-modern .project-card.featured .project-buttons {
+        justify-content: center !important;
+    }
 }
 
 .theme-modern .project-card.featured:hover {

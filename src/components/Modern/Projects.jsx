@@ -36,11 +36,11 @@ const Projects = () => {
                             viewport={{ once: true, amount: 0.1 }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
                         >
-                            <img src={project.featured ? "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800" : "https://via.placeholder.com/350x250"} alt={`${project.name} - ${project.description}`} className="project-image" loading="lazy" />
+                            <img src={project.image || "https://via.placeholder.com/350x250"} alt={`${project.name} - ${project.description}`} className="project-image" loading="lazy" />
                             <div className="project-info">
                                 <h3>{project.name}</h3>
                                 <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>{project.description}</p>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                                <div className="tech-stack" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem', justifyContent: project.featured ? 'flex-start' : 'center' }}>
                                     {project.tech.map((t, i) => (
                                         <span key={i} style={{ fontSize: '0.8rem', background: 'rgba(56, 189, 248, 0.1)', padding: '0.3rem 0.6rem', borderRadius: '20px', color: 'var(--accent-primary)', fontWeight: '500' }}>{t}</span>
                                     ))}

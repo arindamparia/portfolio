@@ -12,11 +12,12 @@
 export const projectsData = [
     {
         name: 'AlgoTracker',
-        description: 'A full-stack AI-first DSA preparation tool — track LeetCode problems, mock interviews, spaced repetition, and AI code feedback.',
-        tech: ['Vanilla JS', 'Motion One', 'Netlify Serverless', 'Neon PostgreSQL', 'Clerk Auth', 'Claude API'],
+        description: 'A full-stack AI-first DSA preparation tool — track LeetCode problems, mock interviews, spaced repetition, focus sounds, and AI code feedback.',
+        tech: ['Vanilla JS', 'Motion One', 'Netlify Serverless', 'Neon PostgreSQL', 'Clerk Auth', 'OpenAI API'],
         type: 'Web App',
         live: 'https://algotracker.xyz',
         github: 'https://github.com/arindamparia/algotracker',
+        image: 'https://res.cloudinary.com/dnju7wfma/image/upload/v1774505861/Screenshot_2026-03-26_at_11.43.01_AM_dfumq6.png',
         featured: true
     },
     {

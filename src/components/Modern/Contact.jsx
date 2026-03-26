@@ -99,8 +99,8 @@ const Contact = () => {
                     <a href={socialLinks.leetcode.url} target="_blank" rel="noopener noreferrer" className="social-link-button" onClick={vibrateLight}>
                         <SiLeetcode /> {socialLinks.leetcode.label}
                     </a>
-                    <a href={socialLinks.tracemydsa.url} target="_blank" rel="noopener noreferrer" className="social-link-button" onClick={vibrateLight}>
-                        <FaProjectDiagram /> {socialLinks.tracemydsa.label}
+                    <a href={socialLinks.algotracker.url} target="_blank" rel="noopener noreferrer" className="social-link-button" onClick={vibrateLight}>
+                        <FaProjectDiagram /> {socialLinks.algotracker.label}
                     </a>
                 </motion.div>
 
