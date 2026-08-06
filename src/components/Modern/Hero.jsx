@@ -5,12 +5,15 @@ import { VscChevronDown } from 'react-icons/vsc';
 import { personalInfo, socialLinks, assets } from '../../constants/personalInfo';
 import { vibrateMedium, vibrateLight } from '../../utils/vibration';
 import InteractiveBackground from '../Shared/InteractiveBackground';
+import MatrixBackground from '../Shared/MatrixBackground';
 import Clock from '../Shared/Clock';
 import IndianEvent from '../Shared/IndianEvent';
 import useSunCycle from '../../hooks/useSunCycle';
+import { useViewMode } from '../../hooks/useViewMode';
 
 const Hero = () => {
     const { cycle, isDay, solarData } = useSunCycle();
+    const { viewMode } = useViewMode();
 
     // Determine color scheme based on cycle
     const getHeroColorScheme = () => {
@@ -41,12 +44,16 @@ const Hero = () => {
 
     return (
         <section id="home" className="hero">
-            <InteractiveBackground
-                variant="universe"
-                colorScheme={getHeroColorScheme()}
-                intensity={isDay ? 0.3 : 0.5}
-                cycle={cycle}
-            />
+            {viewMode === 'hacker' ? (
+                <MatrixBackground />
+            ) : (
+                <InteractiveBackground
+                    variant="universe"
+                    colorScheme={getHeroColorScheme()}
+                    intensity={isDay ? 0.3 : 0.5}
+                    cycle={cycle}
+                />
+            )}
             {/* Clock positioned at top-left corner */}
             <div style={{
                 position: 'absolute',
@@ -66,9 +73,9 @@ const Hero = () => {
                         width="400"
                         height="400"
                         // Removed loading="lazy" as this is the LCP element
-                        // Simplified animation to prevent delaying LCP
                         initial={{ opacity: 1, scale: 1 }}
-                        animate={{ opacity: 1, scale: 1 }}
+                        animate={{ opacity: 1, scale: 1, y: [0, -15, 0] }}
+                        transition={{ y: { repeat: Infinity, duration: 5, ease: "easeInOut" } }}
                     />
                     <motion.div
                         className="hero-text"
@@ -76,20 +83,62 @@ const Hero = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
                     >
-                        <p className="greeting">{personalInfo.greeting}</p>
+                        <p className="greeting">{viewMode === 'hacker' ? '> ' : ''}{personalInfo.greeting}</p>
                         <h1>{personalInfo.name.first}</h1>
-                        <h2>{personalInfo.title}</h2>
+                        <h2>
+                            {personalInfo.title}
+                            {viewMode === 'hacker' && (
+                                <motion.span
+                                    animate={{ opacity: [0, 1, 0] }}
+                                    transition={{ repeat: Infinity, duration: 1 }}
+                                    style={{ color: 'var(--modern-accent-primary)' }}
+                                >_</motion.span>
+                            )}
+                        </h2>
                         <div className="hero-buttons">
-                            <a href={assets.cvPath} className="btn" download onClick={vibrateLight}>Download CV</a>
-                            <a href="#contact" className="btn btn-secondary" onClick={vibrateLight}>Contact</a>
+                            <motion.a 
+                                href={assets.cvPath} 
+                                className="btn" 
+                                download 
+                                onClick={vibrateLight}
+                                whileHover={{ scale: 1.05, boxShadow: "0px 0px 15px rgba(255,255,255,0.5)" }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                Download CV
+                            </motion.a>
+                            <motion.a 
+                                href="#contact" 
+                                className="btn btn-secondary" 
+                                onClick={vibrateLight}
+                                whileHover={{ scale: 1.05, boxShadow: "0px 0px 15px rgba(255,255,255,0.3)" }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                Contact
+                            </motion.a>
                         </div>
                         <div className="social-icons">
-                            <a href={socialLinks.linkedin.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight} aria-label="LinkedIn Profile">
+                            <motion.a 
+                                href={socialLinks.linkedin.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                onClick={vibrateLight} 
+                                aria-label="LinkedIn Profile"
+                                whileHover={{ scale: 1.2, color: "#0077b5" }}
+                                whileTap={{ scale: 0.9 }}
+                            >
                                 <FaLinkedin />
-                            </a>
-                            <a href={socialLinks.github.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight} aria-label="GitHub Profile">
+                            </motion.a>
+                            <motion.a 
+                                href={socialLinks.github.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                onClick={vibrateLight} 
+                                aria-label="GitHub Profile"
+                                whileHover={{ scale: 1.2, color: "#6cc644" }}
+                                whileTap={{ scale: 0.9 }}
+                            >
                                 <FaGithub />
-                            </a>
+                            </motion.a>
                         </div>
                     </motion.div>
                 </div>

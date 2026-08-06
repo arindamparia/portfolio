@@ -12,6 +12,7 @@ import './styles/reset.css';
 import './styles/typography.css';
 import './styles/components.css';
 import './styles/themes/modern.css';
+import './styles/themes/hacker.css';
 import './styles/themes/ide.css';
 import App from './App.jsx'
 

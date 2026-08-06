@@ -18,6 +18,12 @@ export const educationData = [
         details: "Computer Science and Engineering\nCGPA: 7.79"
     },
     {
+        degree: "Joint Entrance Examination (JEE Main)",
+        institution: "National Testing Agency",
+        year: "2019",
+        details: "Percentile: 98.8384\nAll India General Rank: 13,372"
+    },
+    {
         degree: "12th Standard",
         institution: "WBCHSE",
         year: "2019",
