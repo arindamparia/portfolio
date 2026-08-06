@@ -50,7 +50,7 @@ const TypewriterBlock = ({ lines, onComplete }) => {
     );
 };
 
-const HackerLayout = () => {
+const HackerLayout = ({ changeTheme }) => {
     const [booting, setBooting] = useState(true);
     const [bootLineIndex, setBootLineIndex] = useState(0);
     const [history, setHistory] = useState([]);
@@ -103,7 +103,9 @@ const HackerLayout = () => {
     };
 
     const executeCommand = (cmd) => {
-        const command = cmd.toLowerCase();
+        const parts = cmd.toLowerCase().split(' ');
+        const command = parts[0];
+        const arg = parts[1];
         let output = [];
 
         switch (command) {
@@ -115,8 +117,10 @@ const HackerLayout = () => {
                     '  education       - View academic background & JEE Rank',
                     '  skills          - List technical skills',
                     '  projects        - View recent projects',
+                    '  theme [name]    - Switch UI layout (modern, ide)',
                     '  clear           - Clear terminal output',
-                    '  sudo            - ???'
+                    '  sudo            - ???',
+                    '  exit            - Return to modern theme'
                 ];
                 break;
             case 'clear':
@@ -174,6 +178,21 @@ const HackerLayout = () => {
                     'arindam is not in the sudoers file.',
                     'This incident will be reported.'
                 ];
+                break;
+            case 'theme':
+                if (arg === 'modern' || arg === 'ide') {
+                    output = [`Switching to ${arg} mode...`];
+                    setTimeout(() => changeTheme(arg), 1500);
+                } else {
+                    output = [
+                        'Usage: theme [name]',
+                        'Available themes: modern, ide'
+                    ];
+                }
+                break;
+            case 'exit':
+                output = ['Terminating session... returning to modern UI.'];
+                setTimeout(() => changeTheme('modern'), 1500);
                 break;
             case './fetch_profile.sh':
                 output = [
@@ -257,7 +276,7 @@ const HackerLayout = () => {
             {!booting && !isTyping && (
                 <div className="quick-commands">
                     <span className="muted">Quick exec: </span>
-                    {['whoami', 'education', 'skills', 'projects', 'clear'].map(cmd => (
+                    {['whoami', 'education', 'skills', 'projects', 'clear', 'exit'].map(cmd => (
                         <button key={cmd} onClick={() => {
                             setHistory(prev => [...prev, { type: 'input', text: `arindam@portfolio:~$ ${cmd}` }]);
                             executeCommand(cmd);

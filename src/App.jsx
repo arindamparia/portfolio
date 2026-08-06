@@ -95,14 +95,15 @@ function App() {
         {viewMode === 'ide' ? (
           isDesktop ? <IDELayout /> : <DesktopRequired onSwitchToModern={() => changeViewMode('modern')} />
         ) : viewMode === 'hacker' ? (
-          <HackerLayout />
+          <HackerLayout changeTheme={changeViewMode} />
         ) : (
           <ModernLayout />
         )}
       </Suspense>
 
-      {/* Floating Theme Switcher Menu (Top Right) */}
-      <div ref={settingsRef} className="theme-switcher-container" style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 10000, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
+      {/* Floating Theme Switcher Menu (Top Right) - Hidden in Hacker Mode */}
+      {viewMode !== 'hacker' && (
+        <div ref={settingsRef} className="theme-switcher-container" style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 10000, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
         <button
           onClick={() => setShowSettings(!showSettings)}
           title="Theme Settings"
