@@ -115,8 +115,9 @@ export const createStars = ({ count, palette, uniforms }) => {
  * thin filaments, masked to a diagonal band like the Milky Way.
  * Channels: r = cloud density, g = colour mix, b = filament brightness.
  */
-const bakeNebula = (renderer) => {
-    const target = new RenderTarget(1024, 512, { type: HalfFloatType, minFilter: LinearFilter, magFilter: LinearFilter, depthBuffer: false });
+const bakeNebula = (renderer, small) => {
+    // Soft clouds don't need detail: phones bake a quarter of the pixels
+    const target = new RenderTarget(small ? 512 : 1024, small ? 256 : 512, { type: HalfFloatType, minFilter: LinearFilter, magFilter: LinearFilter, depthBuffer: false });
     const seed = float(Math.random() * 100);
 
     const coords = uv();
@@ -151,8 +152,8 @@ const bakeNebula = (renderer) => {
 /**
  * Large plane far behind the stars showing the baked nebula, tinted with the time-of-day colours.
  */
-export const createNebula = ({ renderer, palette, uniforms }) => {
-    const target = bakeNebula(renderer);
+export const createNebula = ({ renderer, palette, uniforms, small = false }) => {
+    const target = bakeNebula(renderer, small);
     const sample = texture(target.texture, uv());
 
     const material = new MeshBasicNodeMaterial({

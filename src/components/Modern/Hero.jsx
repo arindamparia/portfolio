@@ -1,19 +1,18 @@
-import React, { useEffect, useRef } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
 import { personalInfo, socialLinks, assets } from '../../constants/personalInfo';
 import { experienceData } from '../../data/experience';
 import { vibrateLight } from '../../utils/vibration';
-import { liftCurtain } from '../../utils/curtain';
+import { liftCurtain, waitForFonts } from '../../utils/curtain';
 import Clock from '../Shared/Clock';
-import IndianEvent from '../Shared/IndianEvent';
 import TypedLines from './TypedLines';
 import { useSkyDemo } from '../../sky/react/useSkyDemo';
 import { useSky } from '../../sky/react/SkyContext';
 
 const loadHeroName = () => import('../../sky/demos/heroName');
+// Not part of the first paint (and it uses Framer Motion), so it loads afterwards into reserved space
+const IndianEvent = lazy(() => import('../Shared/IndianEvent'));
 
-// Lift the curtain at the latest after this, even if the sky is slow
-const CURTAIN_MAX_MS = 3500;
 
 const PITCH = [
     { text: personalInfo.pitch, className: 'hero-pitch', speed: 42, pause: 250 },
@@ -22,24 +21,16 @@ const PITCH = [
 
 const Hero = () => {
     const current = experienceData[0];
-    const { animate, cycle, solarData, status, reducedMotion } = useSky();
+    const { animate, cycle, solarData, reducedMotion } = useSky();
     const { ref: nameRef, state: nameState, call: nameCall } = useSkyDemo(loadHeroName, { eager: true });
-    const starlit = nameState && nameState.phase !== 'idle';
-    const lifted = useRef(false);
+    // The text name shows first; it fades out only once the stars are taking over the letters
+    const starlit = nameState && (nameState.phase === 'forming' || nameState.phase === 'formed');
 
-    // Show the page once the fonts are in and the stars are in their starting places
-    // (or straight away when there's no star intro to wait for)
-    const heroReady = starlit || status === 'fallback' || reducedMotion;
+    // Show the page as soon as the fonts are applied. The 3D sky and the star name arrive
+    // when the GPU is ready, without holding up the first paint
     useEffect(() => {
-        const lift = () => {
-            if (lifted.current) return;
-            lifted.current = true;
-            liftCurtain();
-        };
-        const timer = setTimeout(lift, CURTAIN_MAX_MS);
-        if (heroReady) (document.fonts?.ready ?? Promise.resolve()).then(lift);
-        return () => clearTimeout(timer);
-    }, [heroReady]);
+        waitForFonts().then(liftCurtain);
+    }, []);
 
     return (
         <section id="home" className="hero">
@@ -99,7 +90,9 @@ const Hero = () => {
             </div>
 
             <div className="hero-fact">
-                <IndianEvent blended />
+                <Suspense fallback={null}>
+                    <IndianEvent blended />
+                </Suspense>
             </div>
         </section>
     );

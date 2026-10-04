@@ -15,19 +15,22 @@
  */
 
 import React, { lazy, Suspense, useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
 import { FaCog } from 'react-icons/fa';
 import DesktopRequired from './components/Shared/DesktopRequired';
+import ModernLayout from './components/Layout/ModernLayout';
 import PrivacyBanner from './components/Shared/PrivacyBanner';
-import CustomCursor from './components/Shared/CustomCursor';
 import { useViewMode } from './hooks/useViewMode';
 import { liftCurtain } from './utils/curtain';
 
 // Lazy load layouts for better initial load performance
-// These components are code-split and only loaded when needed
+// IDE and hacker views are code-split; the Modern view is the default, so it ships with the app
 const IDELayout = lazy(() => import('./components/Layout/IDELayout'));
-const ModernLayout = lazy(() => import('./components/Layout/ModernLayout'));
+
 const HackerLayout = lazy(() => import('./components/Layout/HackerLayout'));
+
+// Not needed for the first paint: loaded afterwards so Framer Motion stays off the critical path
+const CustomCursor = lazy(() => import('./components/Shared/CustomCursor'));
+const ScrollProgress = lazy(() => import('./components/Shared/ScrollProgress'));
 
 function App() {
   const { viewMode, changeViewMode, isDesktop } = useViewMode();
@@ -53,13 +56,6 @@ function App() {
     if (viewMode !== 'modern') liftCurtain();
   }, [viewMode]);
 
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
-
   // Determine the base classes for the layout
   const getThemeClass = () => {
     if (viewMode === 'ide') return 'theme-ide';
@@ -71,22 +67,10 @@ function App() {
     // Apply theme-specific CSS class based on current view mode
     <div className={getThemeClass()}>
       {/* Scroll progress bar and custom cursor belong to the IDE/hacker looks; the Modern view keeps the native cursor */}
-      {viewMode !== 'modern' && (
-        <motion.div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '4px',
-            background: 'linear-gradient(90deg, var(--modern-accent-primary, #38bdf8), var(--modern-accent-secondary, #818cf8))',
-            transformOrigin: '0%',
-            scaleX,
-            zIndex: 10000
-          }}
-        />
-      )}
-      {viewMode !== 'modern' && <CustomCursor />}
+      <Suspense fallback={null}>
+        {viewMode !== 'modern' && <ScrollProgress />}
+        {viewMode !== 'modern' && <CustomCursor />}
+      </Suspense>
       <PrivacyBanner />
       {/* Suspense wrapper for lazy-loaded layouts with loading fallback */}
       <Suspense fallback={
@@ -135,13 +119,10 @@ function App() {
           <FaCog size={20} />
         </button>
 
-        <AnimatePresence>
-          {showSettings && (
-            <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
+            <div
+              className={`theme-menu ${showSettings ? 'is-open' : ''}`}
+              aria-hidden={!showSettings}
+              inert={!showSettings}
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -180,9 +161,7 @@ function App() {
                   💻 IDE
                 </button>
               )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
       </div>
       )}
     </div>

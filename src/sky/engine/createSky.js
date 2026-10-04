@@ -258,7 +258,7 @@ export const createSky = ({ container, colors, isSmall, lowPower, reducedMotion 
         if (disposed) return;
         initialized = true;
         await yieldToMain();
-        nebula = createNebula({ renderer, palette, uniforms });
+        nebula = createNebula({ renderer, palette, uniforms, small: isSmall || lowPower });
         scene.add(nebula.mesh);
         resize();
         await yieldToMain();

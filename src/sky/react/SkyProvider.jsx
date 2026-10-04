@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useMotionValue } from 'framer-motion';
-import UniverseParticlesBackground from '../../components/Shared/InteractiveBackground/UniverseParticlesBackground';
+import React, { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useSunCycle from '../../hooks/useSunCycle';
 import { SCHEMES, schemeForCycle } from '../palette';
 import { SkyContext } from './SkyContext';
 
 const PAUSE_KEY = 'skyPaused';
+
+// DOM-based sky for devices without WebGPU or WebGL 2 (uses Framer Motion, so it loads only when needed)
+const StillSky = lazy(() => import('./StillSky'));
 
 const READY_TIMEOUT_MS = 8000;
 
@@ -157,17 +158,15 @@ const SkyProvider = ({ children }) => {
     return (
         <SkyContext.Provider value={value}>
             <div ref={containerRef} className={`sky ${status === 'loading' ? '' : 'is-visible'}`} aria-hidden="true">
-                {status === 'fallback' && <StillSky colors={colors} />}
+                {status === 'fallback' && (
+                    <Suspense fallback={null}>
+                        <StillSky colors={colors} />
+                    </Suspense>
+                )}
             </div>
             {children}
         </SkyContext.Provider>
     );
-};
-
-// DOM-based sky for devices without WebGPU or WebGL 2
-const StillSky = ({ colors }) => {
-    const centre = useMotionValue(0.5);
-    return <UniverseParticlesBackground mouseX={centre} mouseY={centre} colors={colors} intensity={0.3} />;
 };
 
 export default SkyProvider;

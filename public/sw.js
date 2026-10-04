@@ -8,8 +8,9 @@ const ASSETS_TO_CACHE = [
     '/favicon.svg'
 ];
 
-// Only these are safe to serve cache-first: Vite's hashed build files never change content
-const IMMUTABLE = /^\/assets\//;
+// Safe to serve cache-first: Vite's hashed build files never change, and the self-hosted fonts
+// only change with a new CACHE_NAME
+const IMMUTABLE = /^\/(assets|fonts)\//;
 
 // Dev-server URLs must always come from the network
 const isDevRequest = (url) => url.pathname.startsWith('/src/')

@@ -88,7 +88,13 @@ html:has(.theme-modern) body {
 
 .sky {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* Sized to the largest viewport (address bar hidden), so the sky doesn't resize and the
+       nebula doesn't jump when a mobile browser shows or hides its address bar */
+    height: 100vh;
+    height: 100lvh;
     z-index: 0;
     pointer-events: none;
     opacity: 0;
@@ -489,6 +495,8 @@ html:has(.theme-modern) body {
 .theme-modern .hero-fact {
     width: 100%;
     max-width: calc(46ch + 2 * var(--gutter));
+    /* Space is reserved so the fact loading in later never shifts the hero */
+    min-height: 5.5rem;
     margin: 3rem auto 0;
     padding: 0 var(--gutter);
     box-sizing: border-box;
@@ -1173,7 +1181,8 @@ html:has(.theme-modern) body {
 /* ---------- Hero: star-drawn name ---------- */
 
 .theme-modern .hero-name {
-    transition: color 450ms var(--ease-out);
+    /* The text dissolves as the stars arrive and take over the letters */
+    transition: color 1.4s var(--ease-in-out);
 }
 
 /* The stars draw the name; the real text stays for screen readers, search and selection */

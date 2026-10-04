@@ -12,7 +12,6 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
 import Hero from '../Modern/Hero';
 import About from '../Modern/About';
-import JokeButton from '../Shared/JokeButton';
 import SkyProvider from '../../sky/react/SkyProvider';
 import { vibrateLight } from '../../utils/vibration';
 
@@ -23,6 +22,20 @@ const Projects = lazy(() => import('../Modern/Projects'));
 const Background = lazy(() => import('../Modern/Background'));
 const Contact = lazy(() => import('../Modern/Contact'));
 const Footer = lazy(() => import('../Modern/Footer'));
+const JokeButton = lazy(() => import('../Shared/JokeButton'));
+
+// Render the rest of the page once the hero has painted (immediately if the URL points at a section)
+const useAfterFirstPaint = () => {
+    const [ready, setReady] = useState(() => window.location.hash.length > 1);
+    useEffect(() => {
+        if (ready) return undefined;
+        const id = window.requestIdleCallback
+            ? window.requestIdleCallback(() => setReady(true), { timeout: 700 })
+            : setTimeout(() => setReady(true), 200);
+        return () => (window.cancelIdleCallback ? window.cancelIdleCallback(id) : clearTimeout(id));
+    }, [ready]);
+    return ready;
+};
 
 const NAV_ITEMS = [
     { id: 'skills', label: 'Skills' },
@@ -64,6 +77,7 @@ const useActiveSection = () => {
 const ModernLayout = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const active = useActiveSection();
+    const showRest = useAfterFirstPaint();
 
     const toggleMenu = () => {
         vibrateLight();
@@ -131,20 +145,25 @@ const ModernLayout = () => {
                 <main>
                     <Hero />
                     <About />
-                    <Suspense fallback={<div style={{ minHeight: '60vh' }} />}>
-                        <Skills />
-                        <Experience />
-                        <Projects />
-                        <Background />
-                        <Contact />
-                    </Suspense>
+                    {showRest ? (
+                        <Suspense fallback={<div style={{ minHeight: '60vh' }} />}>
+                            <Skills />
+                            <Experience />
+                            <Projects />
+                            <Background />
+                            <Contact />
+                        </Suspense>
+                    ) : (
+                        <div style={{ minHeight: '60vh' }} />
+                    )}
                 </main>
 
-                <Suspense fallback={null}>
-                    <Footer />
-                </Suspense>
-
-                <JokeButton />
+                {showRest && (
+                    <Suspense fallback={null}>
+                        <Footer />
+                        <JokeButton />
+                    </Suspense>
+                )}
             </div>
         </SkyProvider>
     );

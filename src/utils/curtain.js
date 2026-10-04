@@ -22,6 +22,15 @@ export const liftCurtain = () => {
     window.dispatchEvent(new Event(LIFTED_EVENT));
 };
 
+// Resolves when the web fonts are actually applied (or after `timeout`), so the page never
+// appears in fallback fonts and then visibly changes
+const FONTS = ['400 1em "Libre Caslon Display"', '400 1em "IBM Plex Sans"', '500 1em "IBM Plex Sans"'];
+
+export const waitForFonts = (timeout = 1500) => Promise.race([
+    Promise.all(FONTS.map((font) => document.fonts?.load(font).catch(() => null))),
+    new Promise((resolve) => setTimeout(resolve, timeout)),
+]);
+
 export const waitForCurtain = () => (lifted
     ? Promise.resolve()
     : new Promise((resolve) => window.addEventListener(LIFTED_EVENT, () => resolve(), { once: true })));
