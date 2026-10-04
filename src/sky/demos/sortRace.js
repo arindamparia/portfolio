@@ -159,6 +159,7 @@ const createSortRace = async ({ sky, element, onState, animate, lanes: laneKeys,
     const longest = () => Math.max(...lanes.map((lane) => lane.ops.length));
 
     const stepper = createStepper({
+        sky,
         total: 0,
         interval: 1 / OPS_PER_SECOND,
         apply(tick) {
@@ -167,8 +168,11 @@ const createSortRace = async ({ sky, element, onState, animate, lanes: laneKeys,
             });
         },
         reset() {
+            // Every run sorts new numbers
+            values = makeDataset(dataset, n);
             finishOrder = [];
             lanes.forEach(resetLane);
+            stepper.setTotal(longest());
             readBoxes();
             placeAll();
         },
@@ -245,9 +249,9 @@ const createSortRace = async ({ sky, element, onState, animate, lanes: laneKeys,
             stepper.step();
             sky.requestRender();
         },
+        // Visitor-started playback runs even when autoplay is off (paused sky, reduced motion)
         replay: () => {
-            if (animating) stepper.replay();
-            else stepper.restart();
+            stepper.replay();
             sky.requestRender();
         },
         setSpeed: (speed) => stepper.setSpeed(speed),
@@ -256,8 +260,7 @@ const createSortRace = async ({ sky, element, onState, animate, lanes: laneKeys,
             dataset = kind;
             values = makeDataset(kind, n);
             rebuild();
-            if (animating) stepper.replay();
-            else stepper.complete();
+            stepper.replay();
             sky.requestRender();
         },
         setAnimate(value) {
@@ -265,6 +268,7 @@ const createSortRace = async ({ sky, element, onState, animate, lanes: laneKeys,
             if (!value && stepper.state.playing) stepper.complete();
         },
         dispose() {
+            stepper.dispose();
             stopWatching();
         },
     };

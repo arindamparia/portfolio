@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { experienceData } from '../../data/experience';
 import { educationData } from '../../data/education';
 import { buildCareerGraph } from '../../sky/algorithms/careerGraph';
@@ -6,7 +6,9 @@ import { careerMilestones, slug } from '../../data/careerMilestones';
 import { useSky } from '../../sky/react/SkyContext';
 import { useSkyDemo } from '../../sky/react/useSkyDemo';
 import { DemoCaption, DemoControls, DemoStage } from '../../sky/react/DemoUI';
+import { labelAnchor } from '../../sky/react/labelAnchor';
 import { useSideSpace } from '../../sky/react/useSideSpace';
+import { randomSeed } from '../../sky/algorithms/random';
 
 const loadCareerPath = () => import('../../sky/demos/careerPath');
 
@@ -67,8 +69,11 @@ const Experience = () => {
     const { status } = useSky();
     const degree = educationData[0];
     const milestones = useMemo(() => careerMilestones(), []);
-    const graph = useMemo(() => buildCareerGraph(milestones), [milestones]);
-    const { ref, state, call, failed } = useSkyDemo(loadCareerPath, { graph });
+    // A new random star field on every visit; Shuffle draws another and plays it
+    const [layout, setLayout] = useState(() => ({ seed: randomSeed(), byVisitor: false }));
+    const graph = useMemo(() => buildCareerGraph(milestones, { seed: layout.seed }), [milestones, layout]);
+    const { ref, state, call, failed } = useSkyDemo(loadCareerPath, { graph, rebuildKey: layout.seed, playOnStart: layout.byVisitor });
+    const shuffle = () => setLayout({ seed: randomSeed(), byVisitor: true });
     const sideSpace = useSideSpace();
     const live = status !== 'fallback' && !failed && sideSpace;
     const reached = state?.reached ?? [];
@@ -112,14 +117,14 @@ const Experience = () => {
                                     <span
                                         key={m.id}
                                         className={`stage-label ${reached.includes(m.id) ? 'stage-label-selected' : ''}`}
-                                        style={{ left: m.x, top: m.y + 14 }}
+                                        style={{ left: m.x, top: m.y + 14, ...labelAnchor(m.nx) }}
                                     >
                                         {m.label}
                                     </span>
                                 ))}
                             </DemoStage>
                             <DemoCaption>{caption(state, milestones)}</DemoCaption>
-                            <DemoControls state={state} call={call} label="Dijkstra's algorithm" />
+                            <DemoControls state={state} call={call} label="Dijkstra's algorithm" onShuffle={shuffle} />
                         </div>
                     )}
                 </div>

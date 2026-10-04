@@ -20,3 +20,6 @@ export const shuffle = (array, random = Math.random) => {
     }
     return array;
 };
+
+/** A fresh seed for a new random layout */
+export const randomSeed = () => Math.floor(Math.random() * 2 ** 31);

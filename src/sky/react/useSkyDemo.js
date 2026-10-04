@@ -10,8 +10,9 @@ import { useSky } from './SkyContext';
  *
  * Demos are only built once their element comes within `rootMargin` of the viewport, so the
  * page doesn't pay for every demo up front. Pass `eager: true` for above-the-fold demos.
+ * Changing `rebuildKey` rebuilds the demo (e.g. a new random layout).
  */
-export const useSkyDemo = (load, { eager = false, rootMargin = '50% 0px', ...options } = {}) => {
+export const useSkyDemo = (load, { eager = false, rootMargin = '50% 0px', rebuildKey, ...options } = {}) => {
     const ref = useRef(null);
     const controls = useRef(null);
     const { sky, animate } = useSky();
@@ -85,7 +86,7 @@ export const useSkyDemo = (load, { eager = false, rootMargin = '50% 0px', ...opt
         };
         // The demo is built once per sky; `load` is a stable module import
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sky, near]);
+    }, [sky, near, rebuildKey]);
 
     // Invoke a demo control (play, pause, step, replay, ...) from an event handler
     const call = useCallback((method, ...args) => controls.current?.[method]?.(...args), []);

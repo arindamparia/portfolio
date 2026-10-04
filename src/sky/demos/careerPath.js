@@ -16,7 +16,7 @@ import { watchVisibility } from './visibility';
 const PAD = 24;
 const STEP_SECONDS = 0.045;
 
-const createCareerPath = async ({ sky, element, onState, animate, graph }) => {
+const createCareerPath = async ({ sky, element, onState, animate, graph, playOnStart = false }) => {
     const { nodes, edges } = graph;
     const milestoneCount = nodes.filter((node) => node.milestone).length;
 
@@ -68,6 +68,7 @@ const createCareerPath = async ({ sky, element, onState, animate, graph }) => {
     const totalSteps = () => result.steps.length + result.pathEdges.length;
 
     const stepper = createStepper({
+        sky,
         total: totalSteps(),
         interval: STEP_SECONDS,
         apply(i) {
@@ -120,6 +121,7 @@ const createCareerPath = async ({ sky, element, onState, animate, graph }) => {
             milestones: nodes.slice(0, milestoneCount).map((node, i) => ({
                 id: node.id,
                 label: node.label,
+                nx: node.x,
                 x: points[i * 2],
                 y: points[i * 2 + 1],
             })),
@@ -129,8 +131,9 @@ const createCareerPath = async ({ sky, element, onState, animate, graph }) => {
     stage.sync();
     layout();
 
+    // Autoplay, or play straight away when the visitor asked for a new layout
     const stopWatching = watchVisibility(element, () => {
-        if (animating) stepper.play();
+        if (animating || playOnStart) stepper.play();
         else stepper.complete();
         sky.requestRender();
     });
@@ -158,9 +161,9 @@ const createCareerPath = async ({ sky, element, onState, animate, graph }) => {
             stepper.step();
             sky.requestRender();
         },
+        // Visitor-started playback runs even when autoplay is off (paused sky, reduced motion)
         replay: () => {
-            if (animating) stepper.replay();
-            else stepper.restart();
+            stepper.replay();
             sky.requestRender();
         },
         setSpeed: (speed) => stepper.setSpeed(speed),
@@ -171,8 +174,8 @@ const createCareerPath = async ({ sky, element, onState, animate, graph }) => {
             target = index;
             result = dijkstra(nodes.length, edges, 0, target);
             stepper.setTotal(totalSteps());
-            if (animating) stepper.replay();
-            else stepper.complete();
+            // The visitor asked for this route, so trace it even when autoplay is off
+            stepper.replay();
             sky.requestRender();
         },
         setAnimate(value) {
@@ -180,6 +183,7 @@ const createCareerPath = async ({ sky, element, onState, animate, graph }) => {
             if (!value && stepper.state.playing) stepper.complete();
         },
         dispose() {
+            stepper.dispose();
             stopWatching();
         },
     };

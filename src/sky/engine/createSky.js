@@ -245,8 +245,12 @@ export const createSky = ({ container, colors, isSmall, lowPower, reducedMotion 
         render();
     };
 
+    // Demos the visitor started themselves keep the loop running even when the sky is paused
+    // or motion is reduced: those settings stop things moving on their own, not on request
+    let holds = 0;
+
     const updateLoop = () => {
-        const shouldRun = initialized && !paused && !reducedMotion && !disposed;
+        const shouldRun = initialized && !disposed && ((!paused && !reducedMotion) || holds > 0);
         if (shouldRun === running) return;
         running = shouldRun;
         renderer.setAnimationLoop(shouldRun ? tick : null)?.catch?.(() => {});
@@ -318,6 +322,18 @@ export const createSky = ({ container, colors, isSmall, lowPower, reducedMotion 
             if (!running) renderOnce();
         },
         isAnimating: () => running,
+        /** Keep the loop running while a visitor-started demo plays; call the returned function to let go */
+        holdAnimation: () => {
+            holds += 1;
+            updateLoop();
+            let released = false;
+            return () => {
+                if (released) return;
+                released = true;
+                holds -= 1;
+                updateLoop();
+            };
+        },
         dispose: () => {
             disposed = true;
             // setAnimationLoop initialises the renderer if it isn't yet, so only call it once initialised

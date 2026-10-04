@@ -19,7 +19,7 @@ import { watchVisibility } from './visibility';
 const PAD = 28;
 const STEP_SECONDS = 0.07;
 
-const createSkillsMst = async ({ sky, element, onState, animate, graph }) => {
+const createSkillsMst = async ({ sky, element, onState, animate, graph, playOnStart = false }) => {
     const { nodes, edges } = graph;
     const { steps, weight } = kruskal(nodes.length, edges);
     const treeNeighbours = nodes.map(() => []);
@@ -100,6 +100,7 @@ const createSkillsMst = async ({ sky, element, onState, animate, graph }) => {
     let lastShown = -1;
 
     const stepper = createStepper({
+        sky,
         total: steps.length,
         interval: STEP_SECONDS,
         apply(i) {
@@ -152,6 +153,7 @@ const createSkillsMst = async ({ sky, element, onState, animate, graph }) => {
             weight,
             selected: selected === -1 ? null : {
                 name: nodes[selected].name,
+                nx: nodes[selected].x,
                 usedIn: nodes[selected].usedIn,
                 neighbours: treeNeighbours[selected].map((j) => nodes[j].name),
                 x: points[selected * 2],
@@ -190,8 +192,9 @@ const createSkillsMst = async ({ sky, element, onState, animate, graph }) => {
     refreshNodes();
 
     // Start when the stage is mostly in view; without motion, show the finished tree
+    // Autoplay, or play straight away when the visitor asked for a new layout
     const stopWatching = watchVisibility(element, () => {
-        if (animating) stepper.play();
+        if (animating || playOnStart) stepper.play();
         else stepper.complete();
         sky.requestRender();
     });
@@ -218,9 +221,9 @@ const createSkillsMst = async ({ sky, element, onState, animate, graph }) => {
             stepper.step();
             sky.requestRender();
         },
+        // Visitor-started playback runs even when autoplay is off (paused sky, reduced motion)
         replay: () => {
-            if (animating) stepper.replay();
-            else stepper.restart();
+            stepper.replay();
             sky.requestRender();
         },
         setSpeed: (speed) => stepper.setSpeed(speed),
@@ -230,6 +233,7 @@ const createSkillsMst = async ({ sky, element, onState, animate, graph }) => {
             if (!value && stepper.state.playing) stepper.complete();
         },
         dispose() {
+            stepper.dispose();
             stopWatching();
             element.removeEventListener('click', onPointerDown);
         },

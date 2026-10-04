@@ -312,3 +312,45 @@ describe('career milestones', async () => {
         ]);
     });
 });
+
+describe('random layouts', async () => {
+    const { buildCareerGraph } = await import('./careerGraph');
+    const { buildSkillGraph, workSources } = await import('./skillGraph');
+    const { careerMilestones } = await import('../../data/careerMilestones');
+    const { skillsData } = await import('../../data/skills');
+    const { experienceData } = await import('../../data/experience');
+    const { projectsData } = await import('../../data/projects');
+    const seeds = Array.from({ length: 40 }, (_, i) => 1000 + i * 7717);
+
+    it('every career layout routes through the milestones in order, for every target', () => {
+        const milestones = careerMilestones();
+        for (const seed of seeds) {
+            const { nodes, edges } = buildCareerGraph(milestones, { seed });
+            for (let target = 1; target < milestones.length; target++) {
+                const passed = dijkstra(nodes.length, edges, 0, target).path.filter((i) => i < milestones.length);
+                expect(passed, `seed ${seed} target ${target}`).toEqual(Array.from({ length: target + 1 }, (_, i) => i));
+            }
+        }
+    });
+
+    it('every skill layout is connected and stays inside the stage', () => {
+        const sources = workSources(experienceData, projectsData);
+        for (const seed of seeds) {
+            const { nodes, edges } = buildSkillGraph(skillsData, sources, { seed });
+            expect(kruskal(nodes.length, edges).tree.length).toBe(nodes.length - 1);
+            nodes.forEach((n) => {
+                expect(n.x).toBeGreaterThan(0);
+                expect(n.x).toBeLessThan(1);
+                expect(n.y).toBeGreaterThan(0);
+                expect(n.y).toBeLessThan(1);
+            });
+        }
+    });
+
+    it('different seeds draw different skies', () => {
+        const sources = workSources(experienceData, projectsData);
+        const a = buildSkillGraph(skillsData, sources, { seed: 1 }).nodes[0];
+        const b = buildSkillGraph(skillsData, sources, { seed: 2 }).nodes[0];
+        expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeGreaterThan(0.01);
+    });
+});

@@ -7,15 +7,29 @@
  */
 export const SPEEDS = [1, 2, 4];
 
-export const createStepper = ({ total, interval, apply, reset, finish, onChange }) => {
+export const createStepper = ({ total, interval, apply, reset, finish, onChange, sky }) => {
     let index = 0;
     let playing = false;
     let speed = 1;
     let clock = 0;
     let count = total;
+    let release = null;
 
     const state = () => ({ index, total: count, playing, speed, done: index >= count });
-    const changed = () => onChange?.(state());
+
+    // While playing, keep the sky's animation loop awake (it may be paused or in reduced motion)
+    const syncHold = () => {
+        if (playing && !release && sky) release = sky.holdAnimation();
+        if (!playing && release) {
+            release();
+            release = null;
+        }
+    };
+
+    const changed = () => {
+        syncHold();
+        onChange?.(state());
+    };
 
     const advance = () => {
         if (index >= count) return false;
@@ -85,6 +99,10 @@ export const createStepper = ({ total, interval, apply, reset, finish, onChange 
         setSpeed(next) {
             speed = next;
             changed();
+        },
+        dispose() {
+            playing = false;
+            syncHold();
         },
         /** Call every frame; returns true if any step was drawn */
         update(delta) {

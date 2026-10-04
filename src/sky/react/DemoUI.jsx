@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSky } from './SkyContext';
 import { SPEEDS } from '../demos/stepper';
 
 /**
@@ -20,33 +19,34 @@ export const DemoCaption = ({ children }) => (
     </p>
 );
 
-export const DemoControls = ({ state, call, label }) => {
-    const { animate } = useSky();
+export const DemoControls = ({ state, call, label, onShuffle }) => {
     if (!state) return null;
 
     const nextSpeed = SPEEDS[(SPEEDS.indexOf(state.speed) + 1) % SPEEDS.length];
 
+    // Always available: "Pause the sky" and reduced motion only stop demos from playing on their own
     return (
         <div className="demo-controls" role="group" aria-label={`${label} controls`}>
-            {animate && (
-                <button type="button" className="demo-button" onClick={() => call('toggle')} aria-pressed={state.playing}>
-                    {state.playing ? 'Pause' : state.done ? 'Play again' : 'Play'}
-                </button>
-            )}
+            <button type="button" className="demo-button" onClick={() => call('toggle')} aria-pressed={state.playing}>
+                {state.playing ? 'Pause' : state.done ? 'Play again' : 'Play'}
+            </button>
             <button type="button" className="demo-button" onClick={() => call('step')}>
                 Step
             </button>
             <button type="button" className="demo-button" onClick={() => call('replay')}>
-                {animate ? 'Replay' : 'Start over'}
+                Replay
             </button>
-            {animate && (
-                <button
-                    type="button"
-                    className="demo-button"
-                    onClick={() => call('setSpeed', nextSpeed)}
-                    aria-label={`${state.speed}× speed, change to ${nextSpeed}×`}
-                >
-                    {state.speed}×
+            <button
+                type="button"
+                className="demo-button"
+                onClick={() => call('setSpeed', nextSpeed)}
+                aria-label={`${state.speed}× speed, change to ${nextSpeed}×`}
+            >
+                {state.speed}×
+            </button>
+            {onShuffle && (
+                <button type="button" className="demo-button" onClick={onShuffle}>
+                    Shuffle
                 </button>
             )}
         </div>

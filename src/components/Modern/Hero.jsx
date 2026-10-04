@@ -21,7 +21,7 @@ const PITCH = [
 
 const Hero = () => {
     const current = experienceData[0];
-    const { animate, cycle, solarData, reducedMotion } = useSky();
+    const { cycle, solarData, reducedMotion } = useSky();
     const { ref: nameRef, state: nameState, call: nameCall } = useSkyDemo(loadHeroName, { eager: true });
     // The text name shows first; it fades out only once the stars are taking over the letters
     const starlit = nameState && (nameState.phase === 'forming' || nameState.phase === 'formed');
@@ -79,11 +79,9 @@ const Hero = () => {
                         <p className="hero-note">
                             My name above is drawn by {nameState.stars.toLocaleString('en-IN')} stars, each matched to a
                             spot in the letters by sorting both sets from left to right.
-                            {animate && (
-                                <button type="button" className="text-button" onClick={() => nameCall('replay')}>
-                                    Replay
-                                </button>
-                            )}
+                            <button type="button" className="text-button" onClick={() => nameCall('replay')}>
+                                Replay
+                            </button>
                         </p>
                     )}
                 </div>

@@ -1,5 +1,6 @@
 import { createUnionFind } from './kruskal';
 import { seededRandom } from './random';
+import { dijkstra } from './dijkstra';
 
 /**
  * A field of stars with career milestones placed along it, for Dijkstra to route through.
@@ -11,17 +12,21 @@ import { seededRandom } from './random';
  *
  * Coordinates are normalised to 0..1 so the stage can scale them.
  */
-export const buildCareerGraph = (milestones, { seed = 11, waypoints = 38, neighbours = 4 } = {}) => {
+const buildCandidate = (milestones, { seed, waypoints, neighbours }) => {
     const random = seededRandom(seed);
     const count = milestones.length;
+    // A gentle random curve from bottom-left to top-right: its sway, phase and the spacing of
+    // the milestones along it change with every seed
+    const sway = 0.04 + random() * 0.08;
+    const phase = random() * Math.PI * 2;
     const nodes = milestones.map((milestone, i) => {
         const t = count === 1 ? 0.5 : i / (count - 1);
-        // A gentle S-curve from bottom-left to top-right
+        const jitter = i === 0 || i === count - 1 ? 0 : (random() - 0.5) * 0.08;
         return {
             ...milestone,
             milestone: true,
-            x: 0.1 + t * 0.8,
-            y: 0.88 - t * 0.76 + Math.sin(t * Math.PI * 2) * 0.06,
+            x: 0.1 + (t + jitter) * 0.8,
+            y: 0.88 - t * 0.76 + Math.sin(t * Math.PI * 2 + phase) * sway,
         };
     });
 
@@ -67,4 +72,24 @@ export const buildCareerGraph = (milestones, { seed = 11, waypoints = 38, neighb
     }
 
     return { nodes, edges: [...edgeMap.values()] };
+};
+
+// Every shortest route from the first milestone to a later one passes the milestones in order
+const routesInOrder = ({ nodes, edges }, count) => {
+    for (let target = 1; target < count; target++) {
+        const { path } = dijkstra(nodes.length, edges, 0, target);
+        const passed = path.filter((i) => i < count);
+        if (passed.length !== target + 1 || passed.some((m, k) => m !== k)) return false;
+    }
+    return true;
+};
+
+export const buildCareerGraph = (milestones, { seed = 11, waypoints = 38, neighbours = 4 } = {}) => {
+    // Random layouts occasionally route past a milestone; try the next seed until every route
+    // reads as a career path
+    for (let attempt = 0; attempt < 60; attempt++) {
+        const graph = buildCandidate(milestones, { seed: seed + attempt * 7919, waypoints, neighbours });
+        if (routesInOrder(graph, milestones.length)) return graph;
+    }
+    return buildCandidate(milestones, { seed, waypoints, neighbours });
 };

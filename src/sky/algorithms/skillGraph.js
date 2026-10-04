@@ -1,5 +1,5 @@
 import { createUnionFind } from './kruskal';
-import { seededRandom } from './random';
+import { seededRandom, shuffle } from './random';
 
 /**
  * Builds the graph the skills constellation runs Kruskal's algorithm on.
@@ -63,14 +63,23 @@ export const buildSkillGraph = (skillsData, sources, { seed = 7, neighbours = 4 
     const categories = Object.keys(skillsData);
     const nodes = [];
 
+    // Every seed draws a different sky: clusters in a shuffled order around a ring with a random
+    // starting angle, each cluster nudged off the ring and turned by its own random amount
+    const slots = shuffle(categories.map((_, i) => i), random);
+    const start = random() * Math.PI * 2;
+    const ring = { x: 0.3 + random() * 0.06, y: 0.32 + random() * 0.06 };
+
     categories.forEach((category, c) => {
-        const angle = (c / categories.length) * Math.PI * 2 - Math.PI / 2 + 0.3;
-        const cx = 0.5 + Math.cos(angle) * 0.34;
-        const cy = 0.5 + Math.sin(angle) * 0.36;
+        // Small nudges only: neighbouring clusters are 2π/9 apart, so this keeps them from crowding
+        const angle = (slots[c] / categories.length) * Math.PI * 2 + start + (random() - 0.5) * 0.14;
+        const reach = 0.93 + random() * 0.1;
+        const cx = 0.5 + Math.cos(angle) * ring.x * reach;
+        const cy = 0.5 + Math.sin(angle) * ring.y * reach;
+        const twist = random() * Math.PI * 2;
         skillsData[category].forEach((name, j) => {
             // Golden-angle spiral inside the cluster, with a little jitter
             const r = 0.035 + 0.026 * Math.sqrt(j);
-            const theta = j * 2.399963 + random() * 0.6;
+            const theta = twist + j * 2.399963 + random() * 0.6;
             nodes.push({
                 name,
                 category,

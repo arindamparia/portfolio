@@ -69,11 +69,18 @@ const createHeroName = async ({ sky, element, onState, animate }) => {
     let phase = 'idle';
     let animating = animate;
     let disposed = false;
+    // Keeps the sky's loop awake for a visitor-started replay while autoplay is off
+    let release = null;
+    const letGo = () => {
+        release?.();
+        release = null;
+    };
 
     const emit = () => onState?.({ phase, stars: count });
 
     const finish = () => {
         actors.settle();
+        letGo();
         phase = 'formed';
         markSeen();
         emit();
@@ -166,11 +173,12 @@ const createHeroName = async ({ sky, element, onState, animate }) => {
             if (!value) skip();
         },
         replay() {
-            if (!animating) return;
+            if (!animating && !release) release = sky.holdAnimation();
             form({ fly: true });
         },
         dispose() {
             disposed = true;
+            letGo();
             clearTimeout(resizeTimer);
             resizeObserver.disconnect();
             window.removeEventListener('pointerdown', skip);

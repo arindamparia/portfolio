@@ -6,7 +6,9 @@ import { buildSkillGraph, workSources } from '../../sky/algorithms/skillGraph';
 import { useSky } from '../../sky/react/SkyContext';
 import { useSkyDemo } from '../../sky/react/useSkyDemo';
 import { DemoCaption, DemoControls, DemoStage } from '../../sky/react/DemoUI';
+import { labelAnchor } from '../../sky/react/labelAnchor';
 import { useSideSpace } from '../../sky/react/useSideSpace';
+import { randomSeed } from '../../sky/algorithms/random';
 
 const loadSkillsMst = () => import('../../sky/demos/skillsMst');
 
@@ -24,9 +26,15 @@ const caption = (state) => {
 
 const Skills = () => {
     const { status } = useSky();
-    const graph = useMemo(() => buildSkillGraph(skillsData, workSources(experienceData, projectsData)), []);
-    const { ref, state, call, failed } = useSkyDemo(loadSkillsMst, { graph });
+    // A new random sky on every visit; Shuffle draws another and plays it
+    const [layout, setLayout] = useState(() => ({ seed: randomSeed(), byVisitor: false }));
+    const graph = useMemo(() => buildSkillGraph(skillsData, workSources(experienceData, projectsData), { seed: layout.seed }), [layout]);
+    const { ref, state, call, failed } = useSkyDemo(loadSkillsMst, { graph, rebuildKey: layout.seed, playOnStart: layout.byVisitor });
     const [picked, setPicked] = useState(null);
+    const shuffle = () => {
+        setPicked(null);
+        setLayout({ seed: randomSeed(), byVisitor: true });
+    };
     const sideSpace = useSideSpace();
     const showStage = status !== 'fallback' && !failed && sideSpace;
 
@@ -90,20 +98,20 @@ const Skills = () => {
                                     <span
                                         key={category}
                                         className="stage-label"
-                                        style={{ left: `calc(28px + ${x} * (100% - 56px))`, top: `calc(28px + ${y} * (100% - 56px) - 1.4rem)` }}
+                                        style={{ left: `calc(28px + ${x} * (100% - 56px))`, top: `calc(28px + ${y} * (100% - 56px) - 1.5rem)`, ...labelAnchor(x) }}
                                     >
                                         {skillCategoryNames[category]}
                                     </span>
                                 ))}
                                 {selected && (
-                                    <span className="stage-label stage-label-selected" style={{ left: selected.x, top: selected.y + 12 }}>
+                                    <span className="stage-label stage-label-selected" style={{ left: selected.x, top: selected.y + 12, ...labelAnchor(selected.nx) }}>
                                         {selected.name}
                                     </span>
                                 )}
                             </DemoStage>
                         )}
                         {showStage && <DemoCaption>{caption(state)}</DemoCaption>}
-                        {showStage && <DemoControls state={state} call={call} label="Kruskal's algorithm" />}
+                        {showStage && <DemoControls state={state} call={call} label="Kruskal's algorithm" onShuffle={shuffle} />}
                         {usage && (
                             <p className="skill-usage" aria-live="polite">
                                 <strong>{usage.name}</strong>

@@ -102,7 +102,8 @@ const createRankSearch = async ({ sky, element, onState, animate, total, target 
             else scatterStar(i);
         }
         for (let i = 0; i < n; i++) states[i] = i === 0 ? STATE.active : STATE.idle;
-        if (animating) {
+        // Glide while playing (autoplay or visitor-started); jump when stepping without motion
+        if (animating || stepper.state.playing) {
             actors.setStates(states);
             actors.setSizes(sizes);
             actors.settle();
@@ -117,6 +118,7 @@ const createRankSearch = async ({ sky, element, onState, animate, total, target 
     const ticks = steps.length * 2 - 1;
 
     const stepper = createStepper({
+        sky,
         total: ticks,
         interval: STEP_SECONDS,
         apply(t) {
@@ -187,9 +189,9 @@ const createRankSearch = async ({ sky, element, onState, animate, total, target 
             stepper.step();
             sky.requestRender();
         },
+        // Visitor-started playback runs even when autoplay is off (paused sky, reduced motion)
         replay: () => {
-            if (animating) stepper.replay();
-            else stepper.restart();
+            stepper.replay();
             sky.requestRender();
         },
         setSpeed: (speed) => stepper.setSpeed(speed),
@@ -198,6 +200,7 @@ const createRankSearch = async ({ sky, element, onState, animate, total, target 
             if (!value && stepper.state.playing) stepper.complete();
         },
         dispose() {
+            stepper.dispose();
             stopWatching();
         },
     };

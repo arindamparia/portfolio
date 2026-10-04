@@ -1236,22 +1236,25 @@ html:has(.theme-modern) body {
     transform: translateX(-50%);
     white-space: nowrap;
     pointer-events: none;
-    font-family: var(--font-display);
-    font-size: 0.95rem;
-    color: var(--dust);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.01em;
+    color: #b4bcdc;
+    /* A soft dark halo keeps labels readable where they cross lines or bright stars */
+    text-shadow: 0 0 6px var(--sky), 0 0 2px var(--sky);
 }
 
 .theme-modern .stage-label-selected {
     color: var(--signal);
-    font-family: var(--font-body);
     font-weight: 600;
-    font-size: 0.85rem;
 }
 
 .theme-modern .demo-caption {
     margin: 1rem 0 0.75rem;
     min-height: 3.2em;
-    color: var(--dust);
+    font-weight: 450;
+    color: #a3abcb;
     font-size: var(--step--1);
     max-width: 60ch;
 }

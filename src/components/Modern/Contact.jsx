@@ -11,7 +11,9 @@ import { buildCareerGraph } from '../../sky/algorithms/careerGraph';
 import { useSky } from '../../sky/react/SkyContext';
 import { useSkyDemo } from '../../sky/react/useSkyDemo';
 import { DemoCaption, DemoStage } from '../../sky/react/DemoUI';
+import { labelAnchor } from '../../sky/react/labelAnchor';
 import { useSideSpace } from '../../sky/react/useSideSpace';
+import { randomSeed } from '../../sky/algorithms/random';
 
 const loadContactRoute = () => import('../../sky/demos/contactRoute');
 
@@ -50,7 +52,7 @@ const Contact = () => {
     const sideSpace = useSideSpace();
     const routeGraph = useMemo(() => buildCareerGraph(
         [{ id: 'you', label: 'You' }, { id: 'me', label: personalInfo.name.first }],
-        { seed: 23, waypoints: 24, neighbours: 3 }
+        { seed: randomSeed(), waypoints: 24, neighbours: 3 }
     ), []);
     const { ref: routeRef, state: routeState, call: sendPacket, failed: routeFailed } = useSkyDemo(loadContactRoute, { graph: routeGraph });
     const routeLive = status !== 'fallback' && !routeFailed && sideSpace;
@@ -551,6 +553,7 @@ const Contact = () => {
                                     style={{
                                         left: `calc(${ROUTE_PAD}px + ${node.x} * (100% - ${ROUTE_PAD * 2}px))`,
                                         top: `calc(${ROUTE_PAD}px + ${node.y} * (100% - ${ROUTE_PAD * 2}px) + 14px)`,
+                                        ...labelAnchor(node.x),
                                     }}
                                 >
                                     {node.label}
