@@ -1,12 +1,32 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaEnvelope, FaLinkedin, FaGithub, FaExclamationTriangle, FaCheckCircle, FaUser, FaPhone, FaBuilding, FaCommentDots, FaPaperPlane } from 'react-icons/fa';
+import { FaEnvelope, FaLinkedin, FaGithub, FaExclamationTriangle, FaCheckCircle, FaUser, FaPhone, FaBuilding, FaCommentDots, FaPaperPlane, FaProjectDiagram } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
 import { personalInfo, socialLinks } from '../../constants/personalInfo';
 import { vibrateLight } from '../../utils/vibration';
 import ToastContainer from './Toast';
 import AnimatedEye from '../Shared/AnimatedEye';
 import { useContactForm } from '../../hooks/useContactForm';
+import { buildCareerGraph } from '../../sky/algorithms/careerGraph';
+import { useSky } from '../../sky/react/SkyContext';
+import { useSkyDemo } from '../../sky/react/useSkyDemo';
+import { DemoCaption, DemoStage } from '../../sky/react/DemoUI';
+import { labelAnchor } from '../../sky/react/labelAnchor';
+import { useSideSpace } from '../../sky/react/useSideSpace';
+import { randomSeed } from '../../sky/algorithms/random';
+
+const loadContactRoute = () => import('../../sky/demos/contactRoute');
+
+const ROUTE_PAD = 22;
+
+const routeCaption = (state) => {
+    if (!state || state.phase === 'idle') {
+        return 'When you send a message, Dijkstra\'s algorithm routes it through this network of stars to me.';
+    }
+    if (state.phase === 'sending') return `Sending: hop ${state.hop} of ${state.hops} on the shortest route.`;
+    if (state.phase === 'delivered') return `Delivered. Your message took the shortest route, ${state.hops} hops.`;
+    return `Not delivered. Try again, or email ${personalInfo.email} directly.`;
+};
 
 const Contact = () => {
     const {
@@ -15,6 +35,7 @@ const Contact = () => {
         touched,
         focusedField,
         isSubmitting,
+        lastResult,
         toasts,
         displayedMessages,
         messagePlaceholder,
@@ -25,6 +46,20 @@ const Contact = () => {
         removeToast,
         getCharacterCount
     } = useContactForm();
+
+    // The routing animation follows the real outcome of each send
+    const { status } = useSky();
+    const sideSpace = useSideSpace();
+    const routeGraph = useMemo(() => buildCareerGraph(
+        [{ id: 'you', label: 'You' }, { id: 'me', label: personalInfo.name.first }],
+        { seed: randomSeed(), waypoints: 24, neighbours: 3 }
+    ), []);
+    const { ref: routeRef, state: routeState, call: sendPacket, failed: routeFailed } = useSkyDemo(loadContactRoute, { graph: routeGraph });
+    const routeLive = status !== 'fallback' && !routeFailed && sideSpace;
+
+    useEffect(() => {
+        if (lastResult) sendPacket('send', lastResult.status);
+    }, [lastResult, sendPacket]);
 
     // Refs for input fields to track cursor position for animated eyes
     const salutationRef = useRef(null);
@@ -47,69 +82,49 @@ const Contact = () => {
     };
 
     return (
-        <section id="contact" style={{ paddingBottom: '4rem' }}>
+        <section id="contact">
             <ToastContainer toasts={toasts} removeToast={removeToast} />
 
             <div className="container">
-                <motion.p
-                    className="section-subtitle"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
-                >
-                    Get in Touch
-                </motion.p>
-                <motion.h2
-                    className="section-title"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                >
-                    Contact Me
-                </motion.h2>
+                <h2 className="chart-title">Contact</h2>
+                <p className="chart-intro">Write to me about a role, a project, or anything you saw on this page.</p>
 
-                <motion.div
-                    className="contact-info"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                    <a href={`mailto:${personalInfo.email}`} className="contact-link">
-                        <FaEnvelope /> {personalInfo.email}
-                    </a>
+                <div className="chart-grid">
+                <div>
 
-                </motion.div>
-                <motion.div
-                    className="social-links"
-                    style={{ marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                >
-                    <a href={socialLinks.github.url} target="_blank" rel="noopener noreferrer" className="social-link-button" onClick={vibrateLight}>
-                        <FaGithub /> {socialLinks.github.label}
+                <div className="contact-direct">
+                    <a href={`mailto:${personalInfo.email}`} className="contact-email" onClick={vibrateLight}>
+                        {personalInfo.email}
                     </a>
-                    <a href={socialLinks.linkedin.url} target="_blank" rel="noopener noreferrer" className="social-link-button" onClick={vibrateLight}>
-                        <FaLinkedin /> {socialLinks.linkedin.label}
-                    </a>
-                    <a href={socialLinks.leetcode.url} target="_blank" rel="noopener noreferrer" className="social-link-button" onClick={vibrateLight}>
-                        <SiLeetcode /> {socialLinks.leetcode.label}
-                    </a>
-                </motion.div>
+                </div>
 
-                <motion.form
+                <ul className="contact-socials">
+                    <li>
+                        <a href={socialLinks.github.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight}>
+                            <FaGithub aria-hidden="true" /> {socialLinks.github.label}
+                        </a>
+                    </li>
+                    <li>
+                        <a href={socialLinks.linkedin.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight}>
+                            <FaLinkedin aria-hidden="true" /> {socialLinks.linkedin.label}
+                        </a>
+                    </li>
+                    <li>
+                        <a href={socialLinks.leetcode.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight}>
+                            <SiLeetcode aria-hidden="true" /> {socialLinks.leetcode.label}
+                        </a>
+                    </li>
+                    <li>
+                        <a href={socialLinks.algotracker.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight}>
+                            <FaProjectDiagram aria-hidden="true" /> {socialLinks.algotracker.label}
+                        </a>
+                    </li>
+                </ul>
+
+                <form
                     className="contact-form"
                     onSubmit={handleSubmit}
                     noValidate
-                    style={{ marginTop: '3rem' }}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
                 >
                     <div className="form-row">
                         <div className="form-group">
@@ -130,7 +145,7 @@ const Contact = () => {
                                         errors.salutation && touched.salutation ? '#f5576c' :
                                             !errors.salutation && touched.salutation && formData.salutation ? '#4ade80' :
                                                 focusedField === 'salutation' ? 'var(--accent-primary)' : undefined,
-                                    transition: 'all 0.3s ease'
+                                    transition: 'border-color 150ms ease'
                                 }}
                                 animate={{
                                     x: errors.salutation && touched.salutation ? [0, -10, 10, -10, 10, 0] : 0
@@ -187,7 +202,7 @@ const Contact = () => {
                                         errors.firstName && touched.firstName ? '#f5576c' :
                                             !errors.firstName && touched.firstName && formData.firstName ? '#4ade80' :
                                                 focusedField === 'firstName' ? 'var(--accent-primary)' : undefined,
-                                    transition: 'all 0.3s ease'
+                                    transition: 'border-color 150ms ease'
                                 }}
                                 animate={{
                                     x: errors.firstName && touched.firstName ? [0, -10, 10, -10, 10, 0] : 0
@@ -242,7 +257,7 @@ const Contact = () => {
                                         errors.lastName && touched.lastName ? '#f5576c' :
                                             !errors.lastName && touched.lastName && formData.lastName ? '#4ade80' :
                                                 focusedField === 'lastName' ? 'var(--accent-primary)' : undefined,
-                                    transition: 'all 0.3s ease'
+                                    transition: 'border-color 150ms ease'
                                 }}
                                 animate={{
                                     x: errors.lastName && touched.lastName ? [0, -10, 10, -10, 10, 0] : 0
@@ -295,7 +310,7 @@ const Contact = () => {
                                         errors.email && touched.email ? '#f5576c' :
                                             !errors.email && touched.email && formData.email ? '#4ade80' :
                                                 focusedField === 'email' ? 'var(--accent-primary)' : undefined,
-                                    transition: 'all 0.3s ease'
+                                    transition: 'border-color 150ms ease'
                                 }}
                                 animate={{
                                     x: errors.email && touched.email ? [0, -10, 10, -10, 10, 0] : 0
@@ -346,7 +361,7 @@ const Contact = () => {
                                 maxLength={80}
                                 style={{
                                     borderColor: focusedField === 'company' ? 'var(--accent-primary)' : undefined,
-                                    transition: 'all 0.3s ease'
+                                    transition: 'border-color 150ms ease'
                                 }}
                             />
                         </div>
@@ -388,7 +403,7 @@ const Contact = () => {
                                             errors.mobile && touched.mobile ? '#f5576c' :
                                                 !errors.mobile && touched.mobile && formData.mobile ? '#4ade80' :
                                                     focusedField === 'mobile' ? 'var(--accent-primary)' : undefined,
-                                        transition: 'all 0.3s ease',
+                                        transition: 'border-color 150ms ease',
                                         boxSizing: 'border-box'
                                     }}
                                     animate={{
@@ -444,7 +459,7 @@ const Contact = () => {
                                     errors.message && touched.message ? '#f5576c' :
                                         !errors.message && touched.message && formData.message ? '#4ade80' :
                                             focusedField === 'message' ? 'var(--accent-primary)' : undefined,
-                                transition: 'all 0.3s ease'
+                                transition: 'border-color 150ms ease'
                             }}
                             animate={{
                                 x: errors.message && touched.message ? [0, -10, 10, -10, 10, 0] : 0
@@ -483,7 +498,7 @@ const Contact = () => {
                     <div className="form-submit">
                         <motion.button
                             type="submit"
-                            className="btn btn-elegant"
+                            className="btn btn-primary"
                             whileHover="hover"
                             whileTap="tap"
                             disabled={isSubmitting}
@@ -521,7 +536,39 @@ const Contact = () => {
                             </AnimatePresence>
                         </motion.button>
                     </div>
-                </motion.form>
+                </form>
+                </div>
+
+                {routeLive && (
+                    <div className="chart-stage-col">
+                        <DemoStage
+                            ref={routeRef}
+                            className="route-stage"
+                            label="A network of stars that your message travels through, along the shortest route found by Dijkstra's algorithm"
+                        >
+                            {routeGraph.nodes.slice(0, 2).map((node) => (
+                                <span
+                                    key={node.id}
+                                    className={`stage-label ${routeState?.phase === 'delivered' && node.id === 'me' ? 'stage-label-selected' : ''}`}
+                                    style={{
+                                        left: `calc(${ROUTE_PAD}px + ${node.x} * (100% - ${ROUTE_PAD * 2}px))`,
+                                        top: `calc(${ROUTE_PAD}px + ${node.y} * (100% - ${ROUTE_PAD * 2}px) + 14px)`,
+                                        ...labelAnchor(node.x),
+                                    }}
+                                >
+                                    {node.label}
+                                </span>
+                            ))}
+                        </DemoStage>
+                        <DemoCaption>{routeCaption(routeState)}</DemoCaption>
+                        {routeState && routeState.phase !== 'sending' && (
+                            <button type="button" className="demo-button" onClick={() => sendPacket('send', 'success')}>
+                                Preview the route
+                            </button>
+                        )}
+                    </div>
+                )}
+                </div>
             </div>
         </section>
     );

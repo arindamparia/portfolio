@@ -1,0 +1,1488 @@
+/* =========================================
+   THEME: MODERN — "One night sky"
+   One fixed WebGPU sky behind the page; content sits directly on it.
+   Tokens follow the design plan: sky, starlight, dust, hairline, time accent, signal gold.
+   ========================================= */
+
+html:has(.theme-modern),
+html:has(.theme-modern) body {
+    background: #020308;
+}
+
+.theme-modern {
+    --sky: #020308;
+    --starlight: #e8ecf8;
+    --dust: #8c95b8;
+    --hairline: #273052;
+    --signal: #f2c46d;
+    --danger: #ff8a8a;
+    --success: #7ee2a8;
+    /* --accent / --accent-strong are set from the visitor's time of day (SkyProvider) */
+    --accent-fallback: #c084fc;
+
+    --font-display: 'Libre Caslon Display', 'Libre Caslon Text', Georgia, serif;
+    --font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+    /* Type scale: 1.25 ratio from a 17px base */
+    --step--1: 0.85rem;
+    --step-0: 1.0625rem;
+    --step-1: 1.328rem;
+    --step-2: 1.66rem;
+    --step-3: 2.075rem;
+    --step-4: 2.594rem;
+    --step-5: 3.242rem;
+
+    --gutter: clamp(1.25rem, 4vw, 3rem);
+    --nav-height: 72px;
+
+    /* Legacy names still read by shared components (Contact form, toasts) */
+    --text-primary: var(--starlight);
+    --text-secondary: var(--dust);
+    --accent-primary: var(--accent, var(--accent-fallback));
+    --bg-card: rgba(232, 236, 248, 0.04);
+    --border-medium: rgba(232, 236, 248, 0.18);
+
+    position: relative;
+    min-height: 100vh;
+    padding-top: 0;
+    background: transparent;
+    color: var(--starlight);
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+}
+
+@media (max-width: 768px) {
+    .theme-modern {
+        /* 1.2 ratio on phones */
+        --step-1: 1.25rem;
+        --step-2: 1.5rem;
+        --step-3: 1.8rem;
+        --step-4: 2.16rem;
+        --step-5: 2.6rem;
+        --nav-height: 60px;
+    }
+}
+
+.theme-modern ::selection {
+    background: var(--accent, var(--accent-fallback));
+    color: var(--sky);
+}
+
+.theme-modern a {
+    color: inherit;
+}
+
+.theme-modern :focus-visible {
+    outline: 2px solid var(--accent, var(--accent-fallback));
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* ---------- The sky ---------- */
+
+.sky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* Sized to the largest viewport (address bar hidden), so the sky doesn't resize and the
+       nebula doesn't jump when a mobile browser shows or hides its address bar */
+    height: 100vh;
+    height: 100lvh;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1.2s var(--ease-out);
+}
+
+.sky.is-visible {
+    opacity: 1;
+}
+
+.sky canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.modern-app {
+    position: relative;
+}
+
+.modern-app main,
+.modern-app footer {
+    position: relative;
+    z-index: 1;
+}
+
+.theme-modern .container {
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+    box-sizing: border-box;
+}
+
+/* ---------- Navigation ---------- */
+
+.theme-modern nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 1000;
+    height: var(--nav-height);
+    background: rgba(2, 3, 8, 0.62);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(39, 48, 82, 0.6);
+}
+
+.theme-modern .nav-content {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.theme-modern .logo {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--starlight);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+}
+
+.theme-modern .nav-links {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 2.4vw, 2.25rem);
+    /* Keep clear of the fixed theme switcher in the top-right corner */
+    margin-right: 3.5rem;
+}
+
+.theme-modern .nav-links a {
+    color: var(--dust);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    transition: color 150ms ease;
+}
+
+.theme-modern .nav-links a[aria-current='true'] {
+    color: var(--starlight);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .theme-modern .nav-links a:hover {
+        color: var(--starlight);
+    }
+}
+
+.theme-modern .hamburger {
+    display: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    position: relative;
+    z-index: 1001;
+}
+
+.theme-modern .hamburger span {
+    position: absolute;
+    left: 11px;
+    width: 22px;
+    height: 1.5px;
+    background: var(--starlight);
+    transition: transform 200ms var(--ease-out), opacity 150ms ease;
+}
+
+.theme-modern .hamburger span:nth-child(1) { top: 15px; }
+.theme-modern .hamburger span:nth-child(2) { top: 21px; }
+.theme-modern .hamburger span:nth-child(3) { top: 27px; }
+
+.theme-modern .hamburger.active span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.theme-modern .hamburger.active span:nth-child(2) { opacity: 0; }
+.theme-modern .hamburger.active span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+@media (max-width: 1024px) {
+    .theme-modern .hamburger {
+        display: block;
+    }
+
+    .theme-modern .nav-links {
+        position: fixed;
+        inset: var(--nav-height) 0 auto 0;
+        margin: 0;
+        padding: 1.5rem var(--gutter) 2rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+        background: rgba(2, 3, 8, 0.96);
+        border-bottom: 1px solid var(--hairline);
+        opacity: 0;
+        transform: translateY(-8px);
+        visibility: hidden;
+        transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out), visibility 0s linear 200ms;
+    }
+
+    .theme-modern .nav-links.active {
+        opacity: 1;
+        transform: translateY(0);
+        visibility: visible;
+        transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out), visibility 0s;
+    }
+
+    .theme-modern .nav-links a {
+        width: 100%;
+        font-size: var(--step-1);
+        font-family: var(--font-display);
+        color: var(--starlight);
+        padding: 0.6rem 0;
+    }
+}
+
+.nav-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 998;
+    background: rgba(2, 3, 8, 0.5);
+}
+
+/* ---------- Sections ("charts") ---------- */
+
+.theme-modern section {
+    position: relative;
+    /* Sections sit 4–7rem apart: enough to separate them without empty screens of sky */
+    padding: clamp(2rem, 5vh, 3.5rem) 0;
+    scroll-margin-top: var(--nav-height);
+}
+
+.theme-modern .chart-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--step-5);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin: 0 0 1rem;
+    color: var(--starlight);
+}
+
+.theme-modern .chart-intro {
+    max-width: 56ch;
+    margin: 0 0 2rem;
+    color: var(--dust);
+    font-size: var(--step-1);
+    line-height: 1.5;
+}
+
+.theme-modern p {
+    max-width: 68ch;
+}
+
+/* Text column + demo stage, side by side on wide screens, stacked on phones (stage first) */
+.theme-modern .chart-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+}
+
+.theme-modern .chart-grid > .chart-stage-col {
+    position: sticky;
+    top: calc(var(--nav-height) + 1.5rem);
+}
+
+@media (max-width: 1023px) {
+    .theme-modern .chart-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .theme-modern .chart-grid > .chart-stage-col {
+        position: relative;
+        top: 0;
+        order: -1;
+    }
+}
+
+/* ---------- Buttons ---------- */
+
+.theme-modern .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0 1.25rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font: 500 0.98rem/1 var(--font-body);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 160ms var(--ease-out);
+}
+
+.theme-modern .btn:active {
+    transform: scale(0.97);
+}
+
+.theme-modern .btn-primary {
+    background: var(--starlight);
+    color: var(--sky);
+}
+
+.theme-modern .btn-ghost {
+    background: transparent;
+    color: var(--starlight);
+    border-color: rgba(232, 236, 248, 0.28);
+}
+
+.theme-modern .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .theme-modern .btn-primary:hover {
+        background: #ffffff;
+    }
+
+    .theme-modern .btn-ghost:hover {
+        border-color: var(--starlight);
+    }
+}
+
+.theme-modern .icon-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    color: var(--dust);
+    font-size: 1.35rem;
+    transition: color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .theme-modern .icon-link:hover {
+        color: var(--starlight);
+    }
+}
+
+.theme-modern .text-link {
+    color: var(--starlight);
+    text-decoration: underline;
+    text-decoration-color: var(--accent, var(--accent-fallback));
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+}
+
+/* ---------- Hero ---------- */
+
+.theme-modern .hero {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding: calc(var(--nav-height) + 2rem) 0 4rem;
+}
+
+.theme-modern .hero-name {
+    /* Only as wide as the letters, so nothing else in the hero can sit on top of it unnoticed */
+    width: fit-content;
+    max-width: 100%;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(3.1rem, 9vw, 7.25rem);
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+    margin: 0 0 1.5rem;
+    color: var(--starlight);
+}
+
+.theme-modern .hero-pitch {
+    font-size: var(--step-3);
+    line-height: 1.25;
+    max-width: 22ch;
+    margin: 0 0 0.75rem;
+    color: var(--starlight);
+}
+
+.theme-modern .hero-aside {
+    font-size: var(--step-1);
+    line-height: 1.5;
+    max-width: 48ch;
+    margin: 0 0 1.5rem;
+    color: var(--dust);
+}
+
+/* Typed lines: an invisible copy reserves the final size, the typed copy sits on top of it */
+.theme-modern .typed-line {
+    position: relative;
+}
+
+.theme-modern .typed-ghost {
+    visibility: hidden;
+}
+
+.theme-modern .typed-live {
+    position: absolute;
+    inset: 0;
+}
+
+.theme-modern .typed-caret {
+    display: inline-block;
+    width: 2px;
+    height: 0.95em;
+    margin-left: 2px;
+    vertical-align: -0.1em;
+    background: var(--accent, var(--accent-fallback));
+    animation: caret-blink 0.9s step-end infinite;
+}
+
+@keyframes caret-blink {
+    50% { opacity: 0; }
+}
+
+.theme-modern .hero-footnotes {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 2.5rem;
+}
+
+.theme-modern .hero-role {
+    color: var(--dust);
+    margin: 0 0 2.25rem;
+}
+
+.theme-modern .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+}
+
+.theme-modern .hero {
+    position: relative;
+    /* Vertical stack: clock, content (centred in the remaining space), "Did you know?" */
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.theme-modern .hero > .container {
+    margin-block: auto;
+}
+
+/* Small screens: clock and fact take their own space in the stack */
+.theme-modern .hero-clock {
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto 2rem;
+    padding: 0 var(--gutter);
+    box-sizing: border-box;
+}
+
+.theme-modern .hero-fact {
+    width: 100%;
+    max-width: calc(46ch + 2 * var(--gutter));
+    /* Space is reserved so the fact loading in later never shifts the hero */
+    min-height: 5.5rem;
+    margin: 3rem auto 0;
+    padding: 0 var(--gutter);
+    box-sizing: border-box;
+}
+
+/* Wide desktops: clock in the top-right corner */
+@media (min-width: 1024px) {
+    .theme-modern .hero-clock {
+        position: absolute;
+        top: calc(var(--nav-height) + 1.25rem);
+        right: var(--gutter);
+        width: auto;
+        margin: 0;
+        padding: 0;
+        z-index: 2;
+    }
+}
+
+/* Wide and tall enough: "Did you know?" pinned bottom-centre, out of the content's way */
+@media (min-width: 1024px) and (min-height: 761px) {
+    .theme-modern .hero-fact {
+        position: absolute;
+        left: 50%;
+        bottom: 2rem;
+        transform: translateX(-50%);
+        margin: 0;
+    }
+}
+
+/* ---------- About ---------- */
+
+.theme-modern .about-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+}
+
+/* Photos play a supporting role: small, tinted to the sky, captioned like an author photo */
+.theme-modern .about-figures {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 3.5rem 0 0;
+}
+
+.theme-modern .about-figure {
+    margin: 0;
+}
+
+.theme-modern .about-figure:nth-child(2) {
+    margin-top: 2.5rem;
+}
+
+.theme-modern .about-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* Slightly shorter than the 4:5 source, anchored to the top, so the camera watermark at the bottom is cropped out */
+    aspect-ratio: 4 / 4.5;
+    object-fit: cover;
+    object-position: top;
+    border-radius: 4px;
+    border: 1px solid var(--hairline);
+    /* Muted to sit quietly in the night sky; full colour when someone shows interest */
+    filter: grayscale(0.85) brightness(0.82) contrast(1.05);
+    transition: filter 300ms var(--ease-out);
+}
+
+.theme-modern .about-figure figcaption {
+    margin-top: 0.6rem;
+    color: var(--dust);
+    font-size: var(--step--1);
+    line-height: 1.45;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .theme-modern .about-figure:hover img {
+        filter: none;
+    }
+}
+
+.theme-modern .about-lead {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: 1.25;
+    max-width: 26ch;
+    margin: 0 0 2.25rem;
+    color: var(--starlight);
+}
+
+/* Four short points the eye can scan: label, then one or two lines */
+.theme-modern .about-points {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem 2.5rem;
+}
+
+.theme-modern .about-points h3 {
+    margin: 0 0 0.4rem;
+    font-size: var(--step-0);
+    font-weight: 600;
+    color: var(--accent, var(--accent-fallback));
+}
+
+.theme-modern .about-points p {
+    margin: 0;
+    color: var(--dust);
+    line-height: 1.55;
+}
+
+.theme-modern .about-points strong {
+    color: var(--starlight);
+    font-weight: 500;
+}
+
+.theme-modern .about-sky-note {
+    margin: 1.5rem 0 0;
+    color: var(--dust);
+    font-size: var(--step--1);
+}
+
+@media (max-width: 640px) {
+    .theme-modern .about-points {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.4rem;
+    }
+}
+
+.theme-modern .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.25rem 2rem;
+    margin: 2rem 0 0;
+    padding: 1.5rem 0 0;
+    border-top: 1px solid var(--hairline);
+}
+
+.theme-modern .facts dt {
+    color: var(--dust);
+    font-size: var(--step--1);
+    margin-bottom: 0.2rem;
+}
+
+.theme-modern .facts dd {
+    margin: 0;
+    font-size: var(--step-1);
+    color: var(--starlight);
+}
+
+@media (max-width: 860px) {
+    .theme-modern .about-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    /* Phones: two small captioned photos under the story */
+    .theme-modern .about-figures {
+        margin-top: 2.5rem;
+        max-width: 420px;
+    }
+
+    .theme-modern .about-figure img {
+        filter: grayscale(0.6) brightness(0.88);
+    }
+}
+
+/* ---------- Skills ---------- */
+
+/* Skill groups in boxes: a full-width grid, or two columns beside the constellation */
+.theme-modern .skill-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 1rem;
+    margin: 0;
+}
+
+.theme-modern .skill-groups.is-beside {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.theme-modern .skill-group {
+    padding: 1rem 1.1rem 1.15rem;
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    background: rgba(2, 3, 8, 0.55);
+}
+
+.theme-modern .skill-group dt {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--starlight);
+    margin-bottom: 0.75rem;
+}
+
+.theme-modern .skill-group dd {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.theme-modern .skill-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 0.7rem;
+    border: 1px solid var(--hairline);
+    border-radius: 6px;
+    background: rgba(2, 3, 8, 0.4);
+    color: var(--starlight);
+    font: 400 0.9rem/1 var(--font-body);
+    cursor: default;
+    transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+}
+
+.theme-modern button.skill-chip {
+    cursor: pointer;
+    text-align: left;
+    line-height: 1.25;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+}
+
+.theme-modern .skill-chip[aria-pressed='true'] {
+    border-color: var(--signal);
+    color: var(--signal);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .theme-modern button.skill-chip:hover {
+        border-color: var(--accent, var(--accent-fallback));
+    }
+}
+
+/* ---------- Experience timeline ---------- */
+
+.theme-modern .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 1.5rem;
+    border-left: 1px solid var(--hairline);
+}
+
+.theme-modern .timeline > li {
+    position: relative;
+    padding: 0 0 2.75rem;
+}
+
+.theme-modern .timeline > li:last-child {
+    padding-bottom: 0;
+}
+
+.theme-modern .timeline > li::before {
+    content: '';
+    position: absolute;
+    left: calc(-1.5rem - 4px);
+    top: 0.55rem;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--starlight);
+    box-shadow: 0 0 10px rgba(232, 236, 248, 0.7);
+}
+
+.theme-modern .timeline-when {
+    color: var(--dust);
+    font-size: var(--step--1);
+    margin: 0 0 0.25rem;
+}
+
+.theme-modern .timeline-role {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--step-3);
+    line-height: 1.15;
+    margin: 0;
+}
+
+.theme-modern .timeline-org {
+    color: var(--dust);
+    margin: 0.2rem 0 1.5rem;
+}
+
+.theme-modern .work {
+    margin: 0 0 1.75rem;
+}
+
+.theme-modern .work h4 {
+    font-size: var(--step-1);
+    font-weight: 600;
+    margin: 0 0 0.35rem;
+}
+
+.theme-modern .work-stack {
+    color: var(--dust);
+    font-size: var(--step--1);
+    margin: 0 0 0.5rem;
+}
+
+.theme-modern .work p {
+    margin: 0;
+}
+
+.theme-modern .workstreams {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+}
+
+.theme-modern .workstreams li {
+    padding-left: 1rem;
+    border-left: 2px solid var(--accent, var(--accent-fallback));
+}
+
+.theme-modern .workstreams h5 {
+    font-size: var(--step-0);
+    font-weight: 600;
+    margin: 0 0 0.25rem;
+}
+
+/* ---------- Projects ---------- */
+
+.theme-modern .case-study {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: center;
+    margin: 0 0 4rem;
+}
+
+.theme-modern .case-study img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    border: 1px solid var(--hairline);
+}
+
+.theme-modern .project-name {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--step-4);
+    line-height: 1.1;
+    margin: 0 0 0.75rem;
+}
+
+.theme-modern .project-stack {
+    color: var(--dust);
+    font-size: var(--step--1);
+    margin: 0.75rem 0 1.25rem;
+}
+
+.theme-modern .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.theme-modern .project-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem clamp(2rem, 5vw, 4rem);
+    margin: 0 0 3rem;
+}
+
+.theme-modern .project-list h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--step-3);
+    margin: 0 0 0.5rem;
+}
+
+.theme-modern .earlier h3 {
+    font-size: var(--step-1);
+    font-weight: 600;
+    margin: 0 0 1rem;
+}
+
+.theme-modern .earlier ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--hairline);
+}
+
+.theme-modern .earlier li {
+    display: grid;
+    grid-template-columns: minmax(10rem, 0.35fr) minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--hairline);
+}
+
+.theme-modern .earlier .earlier-desc {
+    color: var(--dust);
+}
+
+@media (max-width: 800px) {
+    .theme-modern .case-study,
+    .theme-modern .project-list {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .theme-modern .earlier li {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .theme-modern .earlier .earlier-desc {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+}
+
+/* ---------- Background (education + certifications) ---------- */
+
+.theme-modern .records {
+    display: grid;
+    gap: 2rem;
+}
+
+.theme-modern .record h3 {
+    font-size: var(--step-1);
+    font-weight: 600;
+    margin: 0 0 0.25rem;
+}
+
+.theme-modern .record p {
+    margin: 0;
+    color: var(--dust);
+}
+
+.theme-modern .record .record-highlight {
+    color: var(--starlight);
+}
+
+.theme-modern .cert-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+}
+
+.theme-modern .cert-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--hairline);
+}
+
+.theme-modern .cert-list span:last-child {
+    color: var(--dust);
+    white-space: nowrap;
+}
+
+/* ---------- Contact ---------- */
+
+.theme-modern .contact-direct {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    margin: 0 0 2.5rem;
+}
+
+.theme-modern .contact-email {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    color: var(--starlight);
+    text-decoration: underline;
+    text-decoration-color: var(--accent, var(--accent-fallback));
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    overflow-wrap: anywhere;
+}
+
+.theme-modern .contact-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin: 0 0 3rem;
+    padding: 0;
+    list-style: none;
+}
+
+.theme-modern .contact-socials a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    color: var(--dust);
+    text-decoration: none;
+    transition: color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .theme-modern .contact-socials a:hover {
+        color: var(--starlight);
+    }
+}
+
+.theme-modern .contact-form {
+    max-width: 640px;
+}
+
+.theme-modern .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.25rem;
+}
+
+.theme-modern .form-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin-bottom: 1.25rem;
+}
+
+.theme-modern .form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--dust);
+    margin-bottom: 0.4rem;
+}
+
+.theme-modern .form-group input,
+.theme-modern .form-group select,
+.theme-modern .form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 46px;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--hairline);
+    border-radius: 6px;
+    background: rgba(2, 3, 8, 0.7);
+    color: var(--starlight);
+    font: 400 1rem/1.4 var(--font-body);
+    transition: border-color 150ms ease;
+}
+
+.theme-modern .form-group select option {
+    background: var(--sky);
+    color: var(--starlight);
+}
+
+.theme-modern .form-group input::placeholder,
+.theme-modern .form-group textarea::placeholder {
+    color: rgba(140, 149, 184, 0.7);
+}
+
+.theme-modern .form-group input:focus,
+.theme-modern .form-group select:focus,
+.theme-modern .form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent, var(--accent-fallback));
+}
+
+.theme-modern .form-group textarea {
+    resize: vertical;
+    min-height: 130px;
+}
+
+.theme-modern .form-group .error {
+    border-color: var(--danger);
+}
+
+.theme-modern .error-message {
+    color: var(--danger);
+    font-size: 0.85rem;
+    margin-top: 0.35rem;
+}
+
+.theme-modern .form-submit {
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 600px) {
+    .theme-modern .form-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* ---------- Footer ---------- */
+
+.theme-modern .site-footer {
+    margin-top: 2rem;
+    padding: 2.5rem 0 3.5rem;
+    border-top: 1px solid var(--hairline);
+    color: var(--dust);
+    font-size: var(--step--1);
+}
+
+.theme-modern .footer-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2rem;
+    align-items: start;
+}
+
+.theme-modern .footer-grid .indian-event-card {
+    margin: 0 !important;
+}
+
+.theme-modern .footer-meta {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: end;
+    text-align: right;
+}
+
+.theme-modern .sky-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 44px;
+    padding: 0 0.9rem;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--starlight);
+    font: 500 0.9rem/1 var(--font-body);
+    cursor: pointer;
+    transition: border-color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .theme-modern .sky-toggle:hover {
+        border-color: var(--dust);
+    }
+}
+
+@media (max-width: 700px) {
+    .theme-modern .footer-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .theme-modern .footer-meta {
+        justify-items: start;
+        text-align: left;
+    }
+}
+
+/* ---------- Reduced motion: keep fades, drop movement ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .theme-modern *,
+    .theme-modern *::before,
+    .theme-modern *::after {
+        scroll-behavior: auto !important;
+    }
+
+    .theme-modern .btn:active {
+        transform: none;
+    }
+
+    .theme-modern .nav-links,
+    .theme-modern .nav-links.active {
+        transform: none;
+    }
+}
+
+/* Text for screen readers only */
+.theme-modern .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ---------- Hero: star-drawn name ---------- */
+
+.theme-modern .hero-name {
+    /* The text dissolves as the stars arrive and take over the letters */
+    transition: color 1.4s var(--ease-in-out);
+}
+
+/* The stars draw the name; the real text stays for screen readers, search and selection */
+.theme-modern .hero-name.is-starlit {
+    color: transparent;
+}
+
+.theme-modern .hero-note {
+    margin: 0;
+    max-width: 52ch;
+    color: var(--dust);
+    font-size: var(--step--1);
+}
+
+.theme-modern .text-button {
+    margin-left: 0.5rem;
+    padding: 0.35rem 0.1rem;
+    min-height: 32px;
+    background: none;
+    border: 0;
+    color: var(--starlight);
+    font: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--accent, var(--accent-fallback));
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .theme-modern .hero-name {
+        font-size: clamp(3.25rem, 14vw, 5rem);
+    }
+}
+
+/* ---------- Algorithm demos ---------- */
+
+.theme-modern .sky-stage {
+    position: relative;
+    width: 100%;
+    /* The stars are drawn by the sky canvas behind; this box only reserves and positions the space */
+    touch-action: pan-y;
+}
+
+.theme-modern .skills-stage {
+    height: clamp(420px, 62vh, 580px);
+    cursor: pointer;
+}
+
+.theme-modern .stage-label {
+    position: absolute;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    pointer-events: none;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.01em;
+    color: #b4bcdc;
+    /* A soft dark halo keeps labels readable where they cross lines or bright stars */
+    text-shadow: 0 0 6px var(--sky), 0 0 2px var(--sky);
+}
+
+.theme-modern .stage-label-selected {
+    color: var(--signal);
+    font-weight: 600;
+}
+
+.theme-modern .demo-caption {
+    margin: 1rem 0 0.75rem;
+    min-height: 3.2em;
+    font-weight: 450;
+    color: #a3abcb;
+    font-size: var(--step--1);
+    max-width: 60ch;
+}
+
+.theme-modern .demo-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.theme-modern .demo-button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 1rem;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    background: rgba(2, 3, 8, 0.5);
+    color: var(--starlight);
+    font: 500 0.9rem/1 var(--font-body);
+    cursor: pointer;
+    transition: border-color 150ms ease, transform 160ms var(--ease-out);
+}
+
+.theme-modern .demo-button:active {
+    transform: scale(0.97);
+}
+
+.theme-modern .demo-button[aria-pressed='true'] {
+    border-color: var(--accent, var(--accent-fallback));
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .theme-modern .demo-button:hover {
+        border-color: var(--dust);
+    }
+}
+
+.theme-modern .skill-usage {
+    margin: 1.25rem 0 0;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--signal);
+}
+
+.theme-modern .skill-usage strong {
+    color: var(--signal);
+    font-weight: 600;
+}
+
+@media (max-width: 900px) {
+    .theme-modern .skills-stage {
+        height: clamp(360px, 56vh, 480px);
+    }
+}
+
+/* ---------- Sorting race ---------- */
+
+.theme-modern .race {
+    margin: 0 0 5rem;
+}
+
+.theme-modern .race-stage {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+.theme-modern .race-stage.lanes-2 {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.theme-modern .race-lane-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 0.75rem;
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+}
+
+.theme-modern .race-lane-name {
+    font-weight: 600;
+}
+
+.theme-modern .race-lane-complexity,
+.theme-modern .race-lane-count {
+    color: var(--dust);
+    font-size: var(--step--1);
+}
+
+.theme-modern .race-plot {
+    height: 220px;
+    /* Axes: position runs left to right, value bottom to top */
+    border-left: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+}
+
+.theme-modern .race-stage.lanes-2 .race-plot {
+    height: 160px;
+}
+
+.theme-modern .race-lane-count {
+    margin: 0.5rem 0 0;
+}
+
+.theme-modern .race-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+}
+
+@media (max-width: 1100px) {
+    .theme-modern .race-stage {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* ---------- Career route ---------- */
+
+.theme-modern .career-stage {
+    height: clamp(420px, 64vh, 600px);
+}
+
+.theme-modern .route-button {
+    margin-left: 0.6rem;
+    font-size: var(--step--1);
+    font-weight: 400;
+    color: var(--dust);
+}
+
+/* Timeline entries light up as the route reaches them */
+.theme-modern .work,
+.theme-modern .workstreams li {
+    transition: color 300ms ease, border-color 300ms ease;
+}
+
+.theme-modern .work.is-reached > h4,
+.theme-modern .workstreams li.is-reached > h5 {
+    color: var(--signal);
+}
+
+.theme-modern .workstreams li.is-reached {
+    border-left-color: var(--signal);
+}
+
+.theme-modern .timeline > li.is-reached::before {
+    background: var(--signal);
+    box-shadow: 0 0 12px rgba(242, 196, 109, 0.8);
+}
+
+@media (max-width: 900px) {
+    .theme-modern .career-stage {
+        height: clamp(340px, 52vh, 460px);
+    }
+}
+
+/* ---------- Rank search ---------- */
+
+.theme-modern .rank-range {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: baseline;
+    color: var(--dust);
+    font-size: var(--step--1);
+}
+
+.theme-modern .rank-range span:last-child {
+    text-align: right;
+}
+
+.theme-modern .rank-probe {
+    color: var(--signal);
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    min-width: 6ch;
+    text-align: center;
+}
+
+.theme-modern .rank-probe.is-found {
+    color: var(--starlight);
+}
+
+.theme-modern .rank-stage {
+    height: 220px;
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+}
+
+@media (max-width: 900px) {
+    .theme-modern .rank-stage {
+        height: 170px;
+    }
+}
+
+/* ---------- Message route ---------- */
+
+.theme-modern .route-stage {
+    height: clamp(320px, 48vh, 440px);
+}
+
+@media (max-width: 900px) {
+    .theme-modern #contact .chart-stage-col {
+        order: 0;
+    }
+
+    .theme-modern .route-stage {
+        height: 280px;
+    }
+}
+
+/* Projects: AlgoTracker stacked on the left, merge sort beside it */
+.theme-modern .projects-top {
+    margin-bottom: 3rem;
+}
+
+.theme-modern .case-study.is-stacked {
+    grid-template-columns: minmax(0, 1fr);
+    margin: 0;
+}
+
+.theme-modern .race-stage.lanes-1 {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.theme-modern .race-stage.lanes-1 .race-plot {
+    height: 300px;
+}
+
+.theme-modern .projects-top .race {
+    margin: 0;
+}

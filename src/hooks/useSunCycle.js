@@ -1,21 +1,35 @@
 import { useState, useEffect } from 'react';
 import { TIMING } from '../constants/timing';
 
+// First guess from the visitor's own clock, used until real sunrise/sunset data arrives
+const guessCycleFromClock = (hour = new Date().getHours()) => {
+    if (hour === 5 || hour === 6) return 'dawn';
+    if (hour === 7) return 'early-morning';
+    if (hour >= 8 && hour < 12) return 'morning';
+    if (hour >= 12 && hour < 16) return 'noon';
+    if (hour >= 16 && hour < 18) return 'afternoon';
+    if (hour === 18) return 'dusk';
+    if (hour === 19) return 'blue-hour';
+    return 'night';
+};
+
 const useSunCycle = () => {
     const [cycle, setCycle] = useState(() => {
         try {
-            return localStorage.getItem('lastCycle') || 'day';
+            return localStorage.getItem('lastCycle') || guessCycleFromClock();
         } catch {
-            return 'day';
+            return guessCycleFromClock();
         }
     });
     const [isDay, setIsDay] = useState(() => {
         try {
             const stored = localStorage.getItem('lastIsDay');
-            return stored === null ? true : stored === 'true';
+            if (stored !== null) return stored === 'true';
         } catch {
-            return true;
+            // Storage unavailable; fall through to the clock
         }
+        const hour = new Date().getHours();
+        return hour >= 6 && hour < 18;
     });
     const [loading, setLoading] = useState(true);
     const [solarData, setSolarData] = useState(null);

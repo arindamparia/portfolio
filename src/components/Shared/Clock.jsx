@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { TIMING } from '../../constants/timing';
 
-const Clock = ({ solarData, cycle }) => {
+// blended: no card, just the glyph and time in the page's own colours (for the night-sky hero)
+const Clock = ({ solarData, cycle, blended = false }) => {
     const [time, setTime] = useState(new Date());
 
     useEffect(() => {
@@ -135,7 +136,7 @@ const Clock = ({ solarData, cycle }) => {
             const duskInMinutes = 18 * 60; // 6:00 PM
 
             // Normalize time to 0-720 minutes (6 PM to 6 AM)
-            let nightTime = timeInMinutes;
+            let nightTime;
             if (hour >= 18) {
                 nightTime = timeInMinutes - duskInMinutes; // 0-360 (6 PM to midnight)
             } else {
@@ -184,15 +185,15 @@ const Clock = ({ solarData, cycle }) => {
         <div
             className="navbar-clock"
             style={{
-                background: getBackgroundColor(),
-                padding: '0.5rem 1rem',
+                background: blended ? 'transparent' : getBackgroundColor(),
+                padding: blended ? 0 : '0.5rem 1rem',
                 borderRadius: '0.75rem',
-                color: getTextColor(),
-                fontWeight: '600',
+                color: blended ? 'var(--dust, #8c95b8)' : getTextColor(),
+                fontWeight: blended ? '500' : '600',
                 fontSize: '0.85rem',
-                textAlign: 'center',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                minWidth: '140px',
+                textAlign: blended ? 'left' : 'center',
+                boxShadow: blended ? 'none' : '0 2px 8px rgba(0, 0, 0, 0.15)',
+                minWidth: blended ? 0 : '140px',
                 userSelect: 'none',
                 transition: 'background 0.5s ease, color 0.5s ease',
                 display: 'flex',
@@ -223,9 +224,11 @@ const Clock = ({ solarData, cycle }) => {
             }}>
                 <div style={{
                     fontSize: '1rem',
-                    fontFamily: 'monospace',
+                    fontFamily: blended ? 'inherit' : 'monospace',
+                    fontVariantNumeric: 'tabular-nums',
                     letterSpacing: '0.5px',
-                    textShadow: time.getHours() >= 8 && time.getHours() < 17
+                    color: blended ? 'var(--starlight, #e8ecf8)' : undefined,
+                    textShadow: blended ? 'none' : time.getHours() >= 8 && time.getHours() < 17
                         ? '0 1px 2px rgba(255, 255, 255, 0.5)'
                         : '0 1px 2px rgba(0, 0, 0, 0.5)'
                 }}>

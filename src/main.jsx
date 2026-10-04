@@ -11,7 +11,8 @@ import './styles/variables.css';
 import './styles/reset.css';
 import './styles/typography.css';
 import './styles/components.css';
-import './styles/themes/modern.css';
+import './styles/themes/night.css';
+import './styles/themes/hacker.css';
 import './styles/themes/ide.css';
 import App from './App.jsx'
 
@@ -23,15 +24,19 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
-// Register Service Worker for PWA
+// Service worker (PWA) in production only. In development it would cache Vite's source modules,
+// so remove any worker and caches left over from earlier visits.
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('SW registered: ', registration);
-      })
-      .catch(registrationError => {
-        console.log('SW registration failed: ', registrationError);
-      });
-  });
+  if (import.meta.env.PROD) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+  } else {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      registrations.forEach((registration) => registration.unregister());
+    });
+    if ('caches' in window) {
+      caches.keys().then((keys) => keys.forEach((key) => caches.delete(key)));
+    }
+  }
 }

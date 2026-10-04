@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { personalInfo } from '../../constants/personalInfo';
 
 const Home = ({ setActiveTab }) => {
     return (
@@ -19,7 +20,7 @@ const Home = ({ setActiveTab }) => {
                         <span className="code-keyword">const</span> <span className="code-variable">developer</span> = <span className="code-keyword">new</span> <span className="code-class">Developer</span>();<br />
                         <span className="code-variable">developer</span>.<span className="code-function">name</span> = <span className="code-string">"Arindam Paria"</span>;<br />
                         <span className="code-variable">developer</span>.<span className="code-function">role</span> = <span className="code-string">"Software Engineer"</span>;<br />
-                        <span className="code-variable">developer</span>.<span className="code-function">location</span> = <span className="code-string">"India"</span>;<br />
+                        <span className="code-variable">developer</span>.<span className="code-function">location</span> = <span className="code-string">"{personalInfo.location}"</span>;<br />
                         <span className="code-variable">developer</span>.<span className="code-function">passion</span> = <span className="code-string">"Building scalable applications"</span>;<br />
                     </p>
                 </div>

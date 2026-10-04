@@ -1,151 +1,171 @@
 /**
  * Modern Layout Component
  *
- * A clean, contemporary portfolio layout with:
- * - Responsive navigation with hamburger menu
- * - Hero section
- * - Smooth scrolling sections
- * - Mobile-first design
+ * "One night sky": a single fixed WebGPU sky behind the whole page (SkyProvider),
+ * with each section performing an algorithm on its stars.
  *
- * Features:
- * - Works on all screen sizes
- * - Lazy loading for below-the-fold content
- * - Haptic feedback on mobile devices
- * - Smooth section transitions
+ * - Hero and About load immediately; later sections are lazy loaded
+ * - Navigation highlights the section in view
+ * - Mobile menu with haptic feedback
  */
 
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
 import Hero from '../Modern/Hero';
 import About from '../Modern/About';
-import JokeButton from '../Shared/JokeButton';
+import SkyProvider from '../../sky/react/SkyProvider';
 import { vibrateLight } from '../../utils/vibration';
 
-// Lazy load components that are below the fold (not immediately visible)
-// This improves initial page load performance
+// Lazy load components that are below the fold
 const Skills = lazy(() => import('../Modern/Skills'));
-const Projects = lazy(() => import('../Modern/Projects'));
 const Experience = lazy(() => import('../Modern/Experience'));
-const Education = lazy(() => import('../Modern/Education'));
-const Certifications = lazy(() => import('../Modern/Certifications'));
+const Projects = lazy(() => import('../Modern/Projects'));
+const Background = lazy(() => import('../Modern/Background'));
 const Contact = lazy(() => import('../Modern/Contact'));
+const Footer = lazy(() => import('../Modern/Footer'));
+const JokeButton = lazy(() => import('../Shared/JokeButton'));
+
+// Render the rest of the page once the hero has painted (immediately if the URL points at a section)
+const useAfterFirstPaint = () => {
+    const [ready, setReady] = useState(() => window.location.hash.length > 1);
+    useEffect(() => {
+        if (ready) return undefined;
+        const id = window.requestIdleCallback
+            ? window.requestIdleCallback(() => setReady(true), { timeout: 700 })
+            : setTimeout(() => setReady(true), 200);
+        return () => (window.cancelIdleCallback ? window.cancelIdleCallback(id) : clearTimeout(id));
+    }, [ready]);
+    return ready;
+};
+
+const NAV_ITEMS = [
+    { id: 'skills', label: 'Skills' },
+    { id: 'experience', label: 'Work' },
+    { id: 'projects', label: 'Projects' },
+    { id: 'background', label: 'Background' },
+    { id: 'contact', label: 'Contact' },
+];
+
+// Track which section is in view, for aria-current on the nav
+const useActiveSection = () => {
+    const [active, setActive] = useState(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) setActive(entry.target.id);
+                });
+            },
+            { rootMargin: '-45% 0px -50% 0px' }
+        );
+
+        // Sections mount lazily, so watch for them as they appear
+        const observeAll = () => document.querySelectorAll('main section[id]').forEach((s) => observer.observe(s));
+        observeAll();
+        const mutation = new MutationObserver(observeAll);
+        mutation.observe(document.querySelector('main') || document.body, { childList: true, subtree: true });
+
+        return () => {
+            observer.disconnect();
+            mutation.disconnect();
+        };
+    }, []);
+
+    return active;
+};
 
 const ModernLayout = () => {
-    // Track mobile menu open/closed state
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const active = useActiveSection();
+    const showRest = useAfterFirstPaint();
 
-    /**
-     * Toggle mobile navigation menu with haptic feedback
-     */
     const toggleMenu = () => {
         vibrateLight();
-        setIsMenuOpen(!isMenuOpen);
+        setIsMenuOpen((open) => !open);
     };
 
-    /**
-     * Close mobile navigation menu
-     */
-    const closeMenu = () => {
-        setIsMenuOpen(false);
-    };
+    const closeMenu = () => setIsMenuOpen(false);
 
-    /**
-     * Handle navigation link click
-     * Provides haptic feedback and closes mobile menu with a delay
-     * to allow smooth scrolling to start before the menu disappears
-     */
     const handleNavClick = () => {
         vibrateLight();
-        // Delay closing the menu slightly to allow smooth scroll to initiate visually
-        setTimeout(() => {
-            closeMenu();
-        }, 300);
+        closeMenu();
     };
 
-    // Prevent body and html scroll when menu is open
-    React.useEffect(() => {
-        if (isMenuOpen) {
-            document.body.style.overflow = 'hidden';
-            document.documentElement.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
-        }
+    // Close the menu with Escape, and lock page scroll while it is open
+    useEffect(() => {
+        if (!isMenuOpen) return undefined;
+        const onKeyDown = (e) => {
+            if (e.key === 'Escape') closeMenu();
+        };
+        window.addEventListener('keydown', onKeyDown);
+        document.body.style.overflow = 'hidden';
         return () => {
+            window.removeEventListener('keydown', onKeyDown);
             document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
         };
     }, [isMenuOpen]);
 
     return (
-        <div className="modern-app">
-            {/* Top navigation bar */}
-            <nav>
-                <div className="container nav-content">
-                    {/* Portfolio logo/initials */}
-                    <a href="#home" className="logo" onClick={handleNavClick} style={{ textDecoration: 'none', cursor: 'pointer' }}>AP</a>
+        <SkyProvider>
+            <div className="modern-app">
+                <nav aria-label="Main">
+                    <div className="container nav-content">
+                        <a href="#home" className="logo" onClick={handleNavClick}>AP<span className="visually-hidden">, Arindam Paria, back to top</span></a>
 
-                    {/* Navigation links (horizontal on desktop, slide-in menu on mobile) */}
-                    <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
-                        <a href="#home" onClick={handleNavClick}>Home</a>
-                        <a href="#skills" onClick={handleNavClick}>Skills</a>
-                        <a href="#experience" onClick={handleNavClick}>Experience</a>
-                        <a href="#education" onClick={handleNavClick}>Education</a>
-                        <a href="#certifications" onClick={handleNavClick}>Certifications</a>
-                        <a href="#projects" onClick={handleNavClick}>Projects</a>
-                        <a href="#contact" onClick={handleNavClick}>Contact</a>
+                        <div id="nav-links" className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
+                            {NAV_ITEMS.map((item) => (
+                                <a
+                                    key={item.id}
+                                    href={`#${item.id}`}
+                                    onClick={handleNavClick}
+                                    aria-current={active === item.id ? 'true' : undefined}
+                                >
+                                    {item.label}
+                                </a>
+                            ))}
+                        </div>
+
+                        <button
+                            type="button"
+                            className={`hamburger ${isMenuOpen ? 'active' : ''}`}
+                            onClick={toggleMenu}
+                            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                            aria-expanded={isMenuOpen}
+                            aria-controls="nav-links"
+                        >
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
                     </div>
+                </nav>
 
-                    {/* Hamburger menu button (visible on mobile) */}
-                    <button
-                        className={`hamburger ${isMenuOpen ? 'active' : ''}`}
-                        onClick={toggleMenu}
-                        aria-label="Toggle menu"
-                    >
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                </div>
-            </nav>
+                {isMenuOpen && <div className="nav-overlay" onClick={closeMenu} />}
 
-            {/* Dark overlay when mobile menu is open (click to close) */}
-            {isMenuOpen && (
-                <div
-                    className="nav-overlay"
-                    onClick={closeMenu}
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        background: 'rgba(0, 0, 0, 0.5)',
-                        zIndex: 998, // Below nav (1000) but above content
-                        backdropFilter: 'blur(4px)'
-                    }}
-                ></div>
-            )}
+                <main>
+                    <Hero />
+                    <About />
+                    {showRest ? (
+                        <Suspense fallback={<div style={{ minHeight: '60vh' }} />}>
+                            <Skills />
+                            <Experience />
+                            <Projects />
+                            <Background />
+                            <Contact />
+                        </Suspense>
+                    ) : (
+                        <div style={{ minHeight: '60vh' }} />
+                    )}
+                </main>
 
-            {/* Main content area with all sections */}
-            <main>
-                {/* Hero and About are loaded immediately (above the fold) */}
-                <Hero />
-                <About />
-
-                {/* Below-the-fold sections are lazy loaded for better performance */}
-                <Suspense fallback={<div style={{ minHeight: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>}>
-                    <Skills />
-                    <Experience />
-                    <Education />
-                    <Certifications />
-                    <Projects />
-                    <Contact />
-                </Suspense>
-            </main>
-
-            {/* Floating Dev Joke Button */}
-            <JokeButton />
-        </div>
+                {showRest && (
+                    <Suspense fallback={null}>
+                        <Footer />
+                        <JokeButton />
+                    </Suspense>
+                )}
+            </div>
+        </SkyProvider>
     );
 };
 

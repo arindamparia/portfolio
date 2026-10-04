@@ -38,53 +38,56 @@ export const useViewMode = () => {
     }, [viewMode]);
 
     /**
-     * Toggle between Modern and IDE view modes
-     * Includes safeguards for:
-     * - Screen size validation (IDE only on 1024px+)
-     * - Unsaved form data warnings
-     * - SessionStorage preservation
+     * Change view mode to a specific theme
+     * Includes safeguards for IDE view on small screens and unsaved form data
      */
-    const toggleView = () => {
+    const changeViewMode = (newMode) => {
+        if (newMode === viewMode) return;
+
         // Prevent switching to IDE view on mobile/small screens
-        if (!isDesktop && viewMode === 'modern') {
+        if (!isDesktop && newMode === 'ide') {
             alert('💻 IDE View is available on laptop or tablet!\n\nThe IDE view provides a VS Code-style interface and is optimized for larger screens (1024px+). Please open this portfolio on a laptop or tablet to experience this feature.');
             return;
         }
 
-        // Warn user about unsaved form data when switching from Modern view
+        // Warn user about unsaved form data when switching from Modern/Hacker view to IDE or vice versa
         // Form data is preserved in sessionStorage and will be restored on return
-        if (viewMode === 'modern') {
-            try {
-                const savedFormData = sessionStorage.getItem('contactFormData');
-                if (savedFormData) {
-                    const formData = JSON.parse(savedFormData);
-                    // Check if any field has actual data
-                    const hasData = Object.values(formData).some(value => value && value.trim() !== '');
+        try {
+            const savedFormData = sessionStorage.getItem('contactFormData');
+            if (savedFormData) {
+                const formData = JSON.parse(savedFormData);
+                const hasData = Object.values(formData).some(value => value && value.trim() !== '');
 
-                    if (hasData) {
-                        const confirmed = window.confirm(
-                            '📝 You have unsaved form data!\n\n' +
-                            'Your contact form will be preserved and restored when you return to Modern view.\n\n' +
-                            'Click OK to switch to IDE view, or Cancel to stay.'
-                        );
-                        if (!confirmed) {
-                            return; // User chose to stay, cancel view switch
-                        }
+                if (hasData) {
+                    const confirmed = window.confirm(
+                        '📝 You have unsaved form data!\n\n' +
+                        'Your contact form will be preserved and restored when you switch views.\n\n' +
+                        'Click OK to switch view, or Cancel to stay.'
+                    );
+                    if (!confirmed) {
+                        return; // User chose to stay, cancel view switch
                     }
                 }
-            } catch (error) {
-                console.error('Error checking form data:', error);
             }
+        } catch (error) {
+            console.error('Error checking form data:', error);
         }
 
-        // Toggle between the two view modes
-        setViewMode(prev => prev === 'ide' ? 'modern' : 'ide');
+        setViewMode(newMode);
+    };
+
+    /**
+     * Legacy toggle function (kept for backward compatibility if needed)
+     */
+    const toggleView = () => {
+        changeViewMode(viewMode === 'ide' ? 'modern' : 'ide');
     };
 
     return {
         viewMode,
-        setViewMode,
+        setViewMode: changeViewMode,
         isDesktop,
-        toggleView
+        toggleView,
+        changeViewMode
     };
 };

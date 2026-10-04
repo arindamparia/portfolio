@@ -1,112 +1,98 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
-import { VscChevronDown } from 'react-icons/vsc';
 import { personalInfo, socialLinks, assets } from '../../constants/personalInfo';
-import { vibrateMedium, vibrateLight } from '../../utils/vibration';
-import InteractiveBackground from '../Shared/InteractiveBackground';
+import { experienceData } from '../../data/experience';
+import { vibrateLight } from '../../utils/vibration';
+import { liftCurtain, waitForFonts } from '../../utils/curtain';
 import Clock from '../Shared/Clock';
-import IndianEvent from '../Shared/IndianEvent';
-import useSunCycle from '../../hooks/useSunCycle';
+import TypedLines from './TypedLines';
+import { useSkyDemo } from '../../sky/react/useSkyDemo';
+import { useSky } from '../../sky/react/SkyContext';
+
+const loadHeroName = () => import('../../sky/demos/heroName');
+// Not part of the first paint (and it uses Framer Motion), so it loads afterwards into reserved space
+const IndianEvent = lazy(() => import('../Shared/IndianEvent'));
+
+
+const PITCH = [
+    { text: personalInfo.pitch, className: 'hero-pitch', speed: 42, pause: 250 },
+    { text: personalInfo.pitchAside, className: 'hero-aside', speed: 16, pause: 650 },
+];
 
 const Hero = () => {
-    const { cycle, isDay, solarData } = useSunCycle();
+    const current = experienceData[0];
+    const { cycle, solarData, reducedMotion } = useSky();
+    const { ref: nameRef, state: nameState, call: nameCall } = useSkyDemo(loadHeroName, { eager: true });
+    // The text name shows first; it fades out only once the stars are taking over the letters
+    const starlit = nameState && (nameState.phase === 'forming' || nameState.phase === 'formed');
 
-    // Determine color scheme based on cycle
-    const getHeroColorScheme = () => {
-        switch (cycle) {
-            case 'dawn':
-            case 'early-morning':
-                return 'pink';
-            case 'day':
-            case 'morning':
-            case 'late-morning':
-            case 'noon':
-            case 'early-afternoon':
-                return 'blue';
-            case 'afternoon':
-            case 'late-afternoon':
-            case 'dusk':
-                return 'orange';
-            case 'blue-hour':
-            case 'blue-hour-morning':
-                return 'teal';
-            case 'pre-dawn':
-            case 'early-night':
-            case 'night':
-            default:
-                return 'purple';
-        }
-    };
+    // Show the page as soon as the fonts are applied. The 3D sky and the star name arrive
+    // when the GPU is ready, without holding up the first paint
+    useEffect(() => {
+        waitForFonts().then(liftCurtain);
+    }, []);
 
     return (
         <section id="home" className="hero">
-            <InteractiveBackground
-                variant="universe"
-                colorScheme={getHeroColorScheme()}
-                intensity={isDay ? 0.3 : 0.5}
-                cycle={cycle}
-            />
-            {/* Clock positioned at top-left corner */}
-            <div style={{
-                position: 'absolute',
-                top: '1.5rem',
-                left: '1.5rem',
-                zIndex: 10
-            }}>
-                <Clock solarData={solarData} cycle={cycle} />
+            <div className="hero-clock">
+                <Clock solarData={solarData} cycle={cycle} blended />
             </div>
+
             <div className="container">
-                <div className="hero-content">
-                    <motion.img
-                        src={assets.profileImage}
-                        alt={`${personalInfo.name.full} - ${personalInfo.title}`}
-                        className="profile-image"
-                        fetchPriority="high"
-                        width="400"
-                        height="400"
-                        // Removed loading="lazy" as this is the LCP element
-                        // Simplified animation to prevent delaying LCP
-                        initial={{ opacity: 1, scale: 1 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                    />
-                    <motion.div
-                        className="hero-text"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                    >
-                        <p className="greeting">{personalInfo.greeting}</p>
-                        <h1>{personalInfo.name.first}</h1>
-                        <h2>{personalInfo.title}</h2>
-                        <div className="hero-buttons">
-                            <a href={assets.cvPath} className="btn" download onClick={vibrateLight}>Download CV</a>
-                            <a href="#contact" className="btn btn-secondary" onClick={vibrateLight}>Contact</a>
-                        </div>
-                        <div className="social-icons">
-                            <a href={socialLinks.linkedin.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight} aria-label="LinkedIn Profile">
-                                <FaLinkedin />
-                            </a>
-                            <a href={socialLinks.github.url} target="_blank" rel="noopener noreferrer" onClick={vibrateLight} aria-label="GitHub Profile">
-                                <FaGithub />
-                            </a>
-                        </div>
-                    </motion.div>
-                </div>
-                <IndianEvent />
-                <motion.div
-                    className="section-arrow"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                >
-                    <a href="#about" onClick={vibrateMedium}>
-                        <VscChevronDown />
+                <h1 ref={nameRef} className={`hero-name ${starlit ? 'is-starlit' : ''}`}>{personalInfo.name.full}</h1>
+                <TypedLines lines={PITCH} reducedMotion={reducedMotion} />
+                <p className="hero-role">{current.role} at {current.company}, based in India.</p>
+
+                <div className="hero-actions">
+                    <a href="#contact" className="btn btn-primary" onClick={vibrateLight}>
+                        Get in touch
                     </a>
-                </motion.div>
+                    {assets.cvPath && (
+                        <a href={assets.cvPath} className="btn btn-ghost" download onClick={vibrateLight}>
+                            Download CV
+                        </a>
+                    )}
+                    <a
+                        href={socialLinks.linkedin.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="icon-link"
+                        onClick={vibrateLight}
+                        aria-label="LinkedIn profile"
+                    >
+                        <FaLinkedin />
+                    </a>
+                    <a
+                        href={socialLinks.github.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="icon-link"
+                        onClick={vibrateLight}
+                        aria-label="GitHub profile"
+                    >
+                        <FaGithub />
+                    </a>
+                </div>
+
+                <div className="hero-footnotes">
+                    {starlit && (
+                        <p className="hero-note">
+                            My name above is drawn by {nameState.stars.toLocaleString('en-IN')} stars, each matched to a
+                            spot in the letters by sorting both sets from left to right.
+                            <button type="button" className="text-button" onClick={() => nameCall('replay')}>
+                                Replay
+                            </button>
+                        </p>
+                    )}
+                </div>
             </div>
-        </section >
+
+            <div className="hero-fact">
+                <Suspense fallback={null}>
+                    <IndianEvent blended />
+                </Suspense>
+            </div>
+        </section>
     );
 };
 

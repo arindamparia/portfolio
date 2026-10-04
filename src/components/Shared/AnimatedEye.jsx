@@ -214,10 +214,10 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                         <stop offset="100%" stopColor="#000000" />
                     </radialGradient>
 
-                    {/* Eyelid gradient - Updated to match page background (white) */}
+                    {/* Eyelid gradient - matches the night sky behind the form */}
                     <linearGradient id="eyelidGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#ffffff" />
-                        <stop offset="100%" stopColor="#f8f9fa" /> {/* Subtle shift to secondary bg color */}
+                        <stop offset="0%" stopColor="#0b0e1c" />
+                        <stop offset="100%" stopColor="#05060f" />
                     </linearGradient>
 
                     {/* Eye Shadow Filter */}
@@ -248,7 +248,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                     rx="45"
                     ry="38"
                     fill="#F8F5FA"
-                    stroke="#d0d0d0"
+                    stroke="#273052"
                     strokeWidth="1.5"
                     filter="url(#eyeShadow)"
                 />

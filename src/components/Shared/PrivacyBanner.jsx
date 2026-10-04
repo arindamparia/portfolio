@@ -1,64 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { FaShieldAlt, FaCheck, FaTimes } from 'react-icons/fa';
 import { PRIVACY_CONTENT, PRIVACY_CONFIG } from '../../constants/privacy';
+import { waitForCurtain } from '../../utils/curtain';
 
+// Leaving takes a little less time than arriving (see the .privacy-banner transitions)
+const EXIT_MS = 180;
+
+const needsConsent = () => {
+    try {
+        const consent = localStorage.getItem('privacyConsent');
+        const consentTime = localStorage.getItem('privacyConsentTime');
+        if (consent && consentTime) {
+            const expired = Date.now() - parseInt(consentTime, 10) > PRIVACY_CONFIG.CONSENT_DURATION;
+            if (!expired) return false;
+            localStorage.removeItem('privacyConsent');
+            localStorage.removeItem('privacyConsentTime');
+        }
+        return !localStorage.getItem('privacyConsent');
+    } catch {
+        return false;
+    }
+};
+
+/**
+ * Privacy banner. Plain CSS animation (no Framer Motion), so it ships with the page and appears
+ * as soon as the page is shown, instead of popping in later.
+ */
 const PrivacyBanner = () => {
+    const [mounted, setMounted] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        const consent = localStorage.getItem('privacyConsent');
-        const consentTime = localStorage.getItem('privacyConsentTime');
-
-        console.log('🛡️ PrivacyBanner mounted. Consent:', consent);
-
-        // Check if consent has expired
-        if (consent && consentTime) {
-            const isExpired = (Date.now() - parseInt(consentTime)) > PRIVACY_CONFIG.CONSENT_DURATION;
-            if (isExpired) {
-                console.log('⌛ Privacy consent expired. Clearing...');
-                localStorage.removeItem('privacyConsent');
-                localStorage.removeItem('privacyConsentTime');
-                // Fall through to show banner
-            } else {
-                console.log('🛡️ PrivacyBanner hidden (consent valid)');
-                return;
-            }
-        }
-
-        // If no consent or expired
-        if (!localStorage.getItem('privacyConsent')) {
-            // Show banner after a short delay for better UX
-            const timer = setTimeout(() => {
-                console.log('🛡️ PrivacyBanner showing now...');
-                setIsVisible(true);
-            }, PRIVACY_CONFIG.BANNER_DELAY);
-            return () => clearTimeout(timer);
-        }
+        if (!needsConsent()) return undefined;
+        let cancelled = false;
+        waitForCurtain().then(() => {
+            if (cancelled) return;
+            setMounted(true);
+            // Next frame, so the entry transition runs from the hidden state
+            requestAnimationFrame(() => requestAnimationFrame(() => !cancelled && setIsVisible(true)));
+        });
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
-    const handleAccept = () => {
-        console.log('✅ Privacy accepted');
-        localStorage.setItem('privacyConsent', 'granted');
-        localStorage.setItem('privacyConsentTime', Date.now().toString());
+    const dismiss = (value) => {
+        try {
+            localStorage.setItem('privacyConsent', value);
+            localStorage.setItem('privacyConsentTime', Date.now().toString());
+        } catch {
+            // Storage unavailable: the banner returns next visit
+        }
         setIsVisible(false);
+        setTimeout(() => setMounted(false), EXIT_MS);
     };
 
-    const handleDecline = () => {
-        console.log('❌ Privacy declined');
-        localStorage.setItem('privacyConsent', 'denied');
-        localStorage.setItem('privacyConsentTime', Date.now().toString());
-        setIsVisible(false);
-    };
+    const handleAccept = () => dismiss('granted');
+    const handleDecline = () => dismiss('denied');
+
+    if (!mounted) return null;
 
     return (
-        <AnimatePresence>
-            {isVisible && (
-                <motion.div
-                    initial={{ y: 100, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: 100, opacity: 0 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                <div
+                    className={`privacy-banner ${isVisible ? 'is-visible' : ''}`}
+                    role="region"
+                    aria-label={PRIVACY_CONTENT.TITLE}
                     style={{
                         position: 'fixed',
                         bottom: '20px',
@@ -113,7 +119,7 @@ const PrivacyBanner = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.5rem',
-                                transition: 'all 0.2s'
+                                transition: 'background-color 150ms ease, color 150ms ease, border-color 150ms ease'
                             }}
                             onMouseEnter={(e) => {
                                 e.target.style.background = 'rgba(255, 255, 255, 0.05)';
@@ -141,7 +147,7 @@ const PrivacyBanner = () => {
                                 alignItems: 'center',
                                 gap: '0.5rem',
                                 boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
-                                transition: 'all 0.2s'
+                                transition: 'background-color 150ms ease, color 150ms ease, border-color 150ms ease'
                             }}
                             onMouseEnter={(e) => {
                                 e.target.style.transform = 'translateY(-1px)';
@@ -155,9 +161,7 @@ const PrivacyBanner = () => {
                             <FaCheck size={12} /> {PRIVACY_CONTENT.BUTTON_ACCEPT}
                         </button>
                     </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
+                </div>
     );
 };
 

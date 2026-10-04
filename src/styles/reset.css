@@ -33,20 +33,14 @@ body {
     position: relative;
 }
 
-/* Scrollbar styling */
+/* Hide scrollbar globally as requested */
 ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    display: none;
+    width: 0;
+    height: 0;
 }
 
-::-webkit-scrollbar-track {
-    background: var(--bg-editor, #1e1e1e);
-}
-
-::-webkit-scrollbar-thumb {
-    background: #424242;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #4f4f4f;
+* {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
 }

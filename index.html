@@ -13,141 +13,69 @@
 
   <!-- Resource Hints for Performance -->
   <link rel="preconnect" href="https://res.cloudinary.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-  <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 
-  <!-- Optimized Font Loading - Inlined for Critical Path -->
+  <!-- Fonts: Libre Caslon Display (headings) + IBM Plex Sans (body, variable 400–600).
+       Self-hosted and preloaded so they arrive with the page instead of after Google's CSS (both OFL) -->
+  <link rel="preload" href="/fonts/libre-caslon-display-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
   <style>
     @font-face {
-      font-family: 'Outfit';
-      font-style: normal;
-      font-weight: 300;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4W61C4E.ttf) format('truetype');
-    }
-
-    @font-face {
-      font-family: 'Outfit';
+      font-family: 'Libre Caslon Display';
       font-style: normal;
       font-weight: 400;
       font-display: swap;
-      src: url(https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC1C4E.ttf) format('truetype');
+      src: url(/fonts/libre-caslon-display-latin.woff2) format('woff2');
     }
-
     @font-face {
-      font-family: 'Outfit';
+      font-family: 'IBM Plex Sans';
       font-style: normal;
-      font-weight: 500;
+      font-weight: 400 600;
       font-display: swap;
-      src: url(https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4QK1C4E.ttf) format('truetype');
+      src: url(/fonts/ibm-plex-sans-latin.woff2) format('woff2');
     }
+  </style>
 
-    @font-face {
-      font-family: 'Outfit';
-      font-style: normal;
-      font-weight: 600;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4e6yC4E.ttf) format('truetype');
-    }
+  <!-- Dark from the first frame, so the night sky never flashes white -->
+  <style>
+    html, body { background: #020308; }
 
-    @font-face {
-      font-family: 'Outfit';
-      font-style: normal;
-      font-weight: 700;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4deyC4E.ttf) format('truetype');
+    /* Curtain: covers the first frames until the hero is ready (lifted from JS, see src/utils/curtain.js).
+       If JavaScript never runs, it lifts by itself after 5s. */
+    #curtain {
+      position: fixed;
+      inset: 0;
+      z-index: 20000;
+      background: #020308;
+      transition: opacity 450ms cubic-bezier(0.23, 1, 0.32, 1);
+      animation: curtain-out 450ms ease 5s forwards;
     }
-
-    @font-face {
-      font-family: 'Plus Jakarta Sans';
-      font-style: normal;
-      font-weight: 300;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_907NSg.ttf) format('truetype');
+    #curtain::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 6px;
+      height: 6px;
+      margin: -3px 0 0 -3px;
+      border-radius: 50%;
+      background: #e8ecf8;
+      box-shadow: 0 0 12px 3px rgba(232, 236, 248, 0.55);
+      animation: curtain-star 1.6s ease-in-out infinite alternate;
     }
-
-    @font-face {
-      font-family: 'Plus Jakarta Sans';
-      font-style: normal;
-      font-weight: 400;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_qU7NSg.ttf) format('truetype');
-    }
-
-    @font-face {
-      font-family: 'Plus Jakarta Sans';
-      font-style: normal;
-      font-weight: 500;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_m07NSg.ttf) format('truetype');
-    }
-
-    @font-face {
-      font-family: 'Plus Jakarta Sans';
-      font-style: normal;
-      font-weight: 600;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_d0nNSg.ttf) format('truetype');
-    }
-
-    @font-face {
-      font-family: 'Plus Jakarta Sans';
-      font-style: normal;
-      font-weight: 700;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_TknNSg.ttf) format('truetype');
-    }
-
-    @font-face {
-      font-family: 'Space Grotesk';
-      font-style: normal;
-      font-weight: 300;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/spacegrotesk/v22/V8mQoQDjQSkFtoMM3T6r8E7mF71Q-gOoraIAEj62UUsj.ttf) format('truetype');
-    }
-
-    @font-face {
-      font-family: 'Space Grotesk';
-      font-style: normal;
-      font-weight: 400;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/spacegrotesk/v22/V8mQoQDjQSkFtoMM3T6r8E7mF71Q-gOoraIAEj7oUUsj.ttf) format('truetype');
-    }
-
-    @font-face {
-      font-family: 'Space Grotesk';
-      font-style: normal;
-      font-weight: 500;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/spacegrotesk/v22/V8mQoQDjQSkFtoMM3T6r8E7mF71Q-gOoraIAEj7aUUsj.ttf) format('truetype');
-    }
-
-    @font-face {
-      font-family: 'Space Grotesk';
-      font-style: normal;
-      font-weight: 600;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/spacegrotesk/v22/V8mQoQDjQSkFtoMM3T6r8E7mF71Q-gOoraIAEj42Vksj.ttf) format('truetype');
-    }
-
-    @font-face {
-      font-family: 'Space Grotesk';
-      font-style: normal;
-      font-weight: 700;
-      font-display: swap;
-      src: url(https://fonts.gstatic.com/s/spacegrotesk/v22/V8mQoQDjQSkFtoMM3T6r8E7mF71Q-gOoraIAEj4PVksj.ttf) format('truetype');
-    }
+    #curtain.lifted { opacity: 0; pointer-events: none; }
+    @keyframes curtain-out { to { opacity: 0; visibility: hidden; } }
+    @keyframes curtain-star { from { opacity: 0.25; } to { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { #curtain::after { animation: none; } }
   </style>
 
   <!-- Primary Meta Tags -->
   <!-- Primary Meta Tags -->
-  <title>Arindam Paria - Java & Spring Boot Engineer | nCino & Agentforce Expert</title>
-  <meta name="title" content="Arindam Paria - Java & Spring Boot Engineer | nCino & Agentforce Expert" />
+  <title>Arindam Paria, backend engineer for commerce and AI agents</title>
+  <meta name="title" content="Arindam Paria, backend engineer for commerce and AI agents" />
   <meta name="description"
-    content="Software Engineer specializing in Java, Spring Boot, Spring AI, and Algorithms. Expert in nCino, Agentforce, and building scalable enterprise applications." />
+    content="Arindam Paria builds commerce backends and AI shopping agents at Publicis Sapient with Java, Spring Boot, Go, GraphQL and Salesforce Commerce Cloud. The portfolio runs live algorithm demos in WebGPU." />
   <meta name="keywords"
-    content="Arindam Paria, Software Engineer, Java Developer, Spring Boot, Spring AI, nCino, Agentforce, Algorithms, Data Structures, Backend Developer, Salesforce" />
+    content="Arindam Paria, Backend Engineer, Java, Spring Boot, Spring AI, Go, GraphQL, Salesforce Commerce Cloud, SCAPI, AI agents, MCP, Algorithms, Publicis Sapient" />
   <meta name="author" content="Arindam Paria" />
   <meta name="robots" content="index, follow" />
   <meta name="language" content="English" />
@@ -158,9 +86,9 @@
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://arindamparia.in/" />
-  <meta property="og:title" content="Arindam Paria - Java & Spring Boot Engineer | nCino & Agentforce Expert" />
+  <meta property="og:title" content="Arindam Paria, backend engineer for commerce and AI agents" />
   <meta property="og:description"
-    content="Software Engineer specializing in Java, Spring Boot, Spring AI, and Algorithms. Expert in nCino, Agentforce, and building scalable enterprise applications." />
+    content="Arindam Paria builds commerce backends and AI shopping agents at Publicis Sapient with Java, Spring Boot, Go, GraphQL and Salesforce Commerce Cloud. The portfolio runs live algorithm demos in WebGPU." />
   <meta property="og:image" content="https://res.cloudinary.com/dnju7wfma/image/upload/og-image_e0mipd" />
   <meta property="og:site_name" content="Arindam Paria Portfolio" />
   <meta property="og:locale" content="en_US" />
@@ -168,14 +96,14 @@
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:url" content="https://arindamparia.in/" />
-  <meta property="twitter:title" content="Arindam Paria - Java & Spring Boot Engineer | nCino & Agentforce Expert" />
+  <meta property="twitter:title" content="Arindam Paria, backend engineer for commerce and AI agents" />
   <meta property="twitter:description"
-    content="Software Engineer specializing in Java, Spring Boot, Spring AI, and Algorithms. Expert in nCino, Agentforce, and building scalable enterprise applications." />
+    content="Arindam Paria builds commerce backends and AI shopping agents at Publicis Sapient with Java, Spring Boot, Go, GraphQL and Salesforce Commerce Cloud. The portfolio runs live algorithm demos in WebGPU." />
   <meta property="twitter:image" content="https://res.cloudinary.com/dnju7wfma/image/upload/og-image_e0mipd" />
 
   <!-- Theme Color for browsers -->
-  <meta name="theme-color" content="#667eea" />
-  <meta name="msapplication-TileColor" content="#667eea" />
+  <meta name="theme-color" content="#020308" />
+  <meta name="msapplication-TileColor" content="#020308" />
 
   <!-- Apple Mobile Web App -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -200,11 +128,13 @@
             "https://leetcode.com/u/ARINDAM9064/"
           ],
           "email": "arindamparia321@gmail.com",
-          "description": "Passionate Software Engineer specializing in Java, Spring Boot, Spring AI, and Algorithms. Expert in nCino, Agentforce, and building scalable enterprise applications.",
+          "description": "Passionate Arindam Paria builds commerce backends and AI shopping agents at Publicis Sapient with Java, Spring Boot, Go, GraphQL and Salesforce Commerce Cloud. The portfolio runs live algorithm demos in WebGPU.",
           "knowsAbout": [
             "Java", 
             "Spring Boot", 
             "Spring AI", 
+            "Go",
+            "GraphQL",
             "React", 
             "JavaScript", 
             "nCino", 
@@ -291,6 +221,7 @@
 </head>
 
 <body>
+  <div id="curtain" aria-hidden="true"></div>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
