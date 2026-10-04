@@ -1,4 +1,5 @@
 import React from 'react';
+import ChartTitle from './ChartTitle';
 import { educationData } from '../../data/education';
 import { certificationsData } from '../../data/certifications';
 import { candidatesFromPercentile } from '../../sky/algorithms/binarySearch';
@@ -46,7 +47,7 @@ const Background = () => {
     return (
         <section id="background">
             <div className="container">
-                <h2 className="chart-title">Background</h2>
+                <ChartTitle algorithm="Binary search">Background</ChartTitle>
                 <p className="chart-intro">Education and certifications.</p>
 
                 <div className="chart-grid">

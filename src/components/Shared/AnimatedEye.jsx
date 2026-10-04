@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
@@ -157,14 +157,12 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
     // We animate the 'd' attribute (path definition) to smoothly morph between open and closed shapes.
     // Open: Arched curve (Q 50 5)
     // Closed: Flat/Slightly curved down (Q 50 50)
-    const upperEyelidVariants = {
-        open: { d: "M 0 0 L 100 0 L 100 50 L 95 50 Q 50 5 5 50 L 0 50 Z" },
-        closed: { d: "M 0 0 L 100 0 L 100 50 L 95 50 Q 50 50 5 50 L 0 50 Z" }
-    };
-
-    const lowerEyelidVariants = {
-        open: { d: "M 0 100 L 100 100 L 100 50 L 95 50 Q 50 95 5 50 L 0 50 Z" },
-        closed: { d: "M 0 100 L 100 100 L 100 50 L 95 50 Q 50 50 5 50 L 0 50 Z" }
+    // The visible eye opening: an almond between the upper and lower lid curves. Closed, both
+    // curves meet in a line. The eyeball is clipped to this shape instead of painting eyelid skin
+    // over it, so everything outside the eye stays transparent and blends with the page behind
+    const openingVariants = {
+        open: { d: "M 5 50 Q 50 5 95 50 Q 50 95 5 50 Z" },
+        closed: { d: "M 5 50 Q 50 50 95 50 Q 50 50 5 50 Z" }
     };
 
     const lashesVariants = {
@@ -175,6 +173,16 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
     const closedLashesVariants = {
         open: { opacity: 0, scaleY: 0.5 },
         closed: { opacity: 1, scaleY: 1 }
+    };
+
+    // Unique ids: several eyes share the page, and each needs its own gradients and clip shapes
+    const uid = useId().replace(/:/g, '');
+    const ids = {
+        iris: `iris-${uid}`,
+        pupil: `pupil-${uid}`,
+        shadow: `shadow-${uid}`,
+        eyeClip: `eyeclip-${uid}`,
+        opening: `opening-${uid}`,
     };
 
     return (
@@ -202,26 +210,30 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
             >
                 <defs>
                     {/* Iris gradient */}
-                    <radialGradient id="irisGradient">
+                    <radialGradient id={ids.iris}>
                         <stop offset="0%" stopColor="#64b5f6" />
                         <stop offset="50%" stopColor="#2196f3" />
                         <stop offset="100%" stopColor="#1565c0" />
                     </radialGradient>
 
                     {/* Pupil gradient */}
-                    <radialGradient id="pupilGradient">
+                    <radialGradient id={ids.pupil}>
                         <stop offset="0%" stopColor="#0d0d0d" />
                         <stop offset="100%" stopColor="#000000" />
                     </radialGradient>
 
-                    {/* Eyelid gradient - matches the night sky behind the form */}
-                    <linearGradient id="eyelidGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#0b0e1c" />
-                        <stop offset="100%" stopColor="#05060f" />
-                    </linearGradient>
+                    {/* The eye opening, animated between open and closed */}
+                    <clipPath id={ids.opening}>
+                        <motion.path
+                            variants={openingVariants}
+                            initial={isOpen ? "open" : "closed"}
+                            animate={isOpen ? "open" : "closed"}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                        />
+                    </clipPath>
 
                     {/* Eye Shadow Filter */}
-                    <filter id="eyeShadow">
+                    <filter id={ids.shadow}>
                         <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
                         <feOffset dx="0" dy="1" result="offsetblur" />
                         <feComponentTransfer>
@@ -234,12 +246,13 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                     </filter>
 
                     {/* Clip Path for Pupil - Matches the Eye White shape */}
-                    <clipPath id="eyeClip">
+                    <clipPath id={ids.eyeClip}>
                         <ellipse cx="50" cy="50" rx="45" ry="38" />
                     </clipPath>
                 </defs>
 
-                {/* --- EYE BALL LAYER --- */}
+                {/* --- EYE BALL LAYER (shown only through the opening) --- */}
+                <g clipPath={`url(#${ids.opening})`}>
 
                 {/* Eye white background - Eye pleasing white */}
                 <ellipse
@@ -250,7 +263,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                     fill="#F8F5FA"
                     stroke="#273052"
                     strokeWidth="1.5"
-                    filter="url(#eyeShadow)"
+                    filter={`url(#${ids.shadow})`}
                 />
 
                 {/* Veins */}
@@ -262,7 +275,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                     Wrapped in a clipPath to ensure the pupil/iris never bleeds outside the eye white
                     when looking at extreme angles.
                 */}
-                <g clipPath="url(#eyeClip)">
+                <g clipPath={`url(#${ids.eyeClip})`}>
                     <motion.g
                         animate={{
                             x: pupilPosition.x,
@@ -275,7 +288,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                         }}
                     >
                         {/* Iris */}
-                        <circle cx="50" cy="50" r="20" fill="url(#irisGradient)" opacity="0.95" />
+                        <circle cx="50" cy="50" r="20" fill={`url(#${ids.iris})`} opacity="0.95" />
 
                         {/* Iris texture */}
                         {[...Array(12)].map((_, i) => {
@@ -290,7 +303,7 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                         })}
 
                         {/* Pupil */}
-                        <circle cx="50" cy="50" r="11" fill="url(#pupilGradient)" />
+                        <circle cx="50" cy="50" r="11" fill={`url(#${ids.pupil})`} />
 
                         {/* Reflections */}
                         <circle cx="44" cy="44" r="4.5" fill="white" opacity="0.9" />
@@ -298,24 +311,20 @@ const AnimatedEye = ({ isOpen, inputRef, size = '2rem' }) => {
                     </motion.g>
                 </g>
 
-                {/* --- EYELID LAYER --- */}
+                </g>
 
-                {/* Upper Eyelid Skin */}
+                {/* --- EYELID LAYER: no skin is painted, so the page shows through around the eye --- */}
+
+                {/* Lid line: outlines the opening so the eye has a clean edge on any background */}
                 <motion.path
-                    variants={upperEyelidVariants}
+                    variants={openingVariants}
                     initial={isOpen ? "open" : "closed"}
                     animate={isOpen ? "open" : "closed"}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
-                    fill="url(#eyelidGradient)"
-                />
-
-                {/* Lower Eyelid Skin */}
-                <motion.path
-                    variants={lowerEyelidVariants}
-                    initial={isOpen ? "open" : "closed"}
-                    animate={isOpen ? "open" : "closed"}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    fill="url(#eyelidGradient)"
+                    fill="none"
+                    stroke="#8c95b8"
+                    strokeWidth="2"
+                    strokeLinejoin="round"
                 />
 
                 {/* Eyelid Crease (Only visible when open/semi-open) */}

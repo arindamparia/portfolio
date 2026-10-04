@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
 import { personalInfo, socialLinks, assets } from '../../constants/personalInfo';
 import { experienceData } from '../../data/experience';
@@ -8,6 +8,7 @@ import Clock from '../Shared/Clock';
 import TypedLines from './TypedLines';
 import { useSkyDemo } from '../../sky/react/useSkyDemo';
 import { useSky } from '../../sky/react/SkyContext';
+import { heroStarCount } from '../../sky/heroStars';
 
 const loadHeroName = () => import('../../sky/demos/heroName');
 // Not part of the first paint (and it uses Framer Motion), so it loads afterwards into reserved space
@@ -21,16 +22,35 @@ const PITCH = [
 
 const Hero = () => {
     const current = experienceData[0];
-    const { cycle, solarData, reducedMotion } = useSky();
-    const { ref: nameRef, state: nameState, call: nameCall } = useSkyDemo(loadHeroName, { eager: true });
-    // The text name shows first; it fades out only once the stars are taking over the letters
+    const { cycle, solarData, reducedMotion, status, isSmall } = useSky();
+    const { ref: nameRef, state: nameState, call: nameCall, failed: nameFailed } = useSkyDemo(loadHeroName, { eager: true });
     const starlit = nameState && (nameState.phase === 'forming' || nameState.phase === 'formed');
 
-    // Show the page as soon as the fonts are applied. The 3D sky and the star name arrive
-    // when the GPU is ready, without holding up the first paint
+    // The stars draw the name; the text stays invisible (but present for screen readers and search)
+    // so the visitor never sees it switch styles. Text appears only if the stars can't: no GPU, an
+    // error, or nothing within 3 seconds
+    const [late, setLate] = useState(false);
     useEffect(() => {
-        waitForFonts().then(liftCurtain);
+        const timer = setTimeout(() => setLate(true), 3000);
+        return () => clearTimeout(timer);
     }, []);
+    const showText = status === 'fallback' || nameFailed || (late && !starlit);
+
+    // One reveal: lift the curtain when the fonts are applied AND the star name is ready to draw
+    // (or the text fallback applies), so the sky, the name and the text appear together. Capped
+    // so a slow device never waits on a black screen for long
+    const [fontsIn, setFontsIn] = useState(false);
+    const [capped, setCapped] = useState(false);
+    useEffect(() => {
+        waitForFonts().then(() => setFontsIn(true));
+        const timer = setTimeout(() => setCapped(true), 1200);
+        return () => clearTimeout(timer);
+    }, []);
+    const nameReady = Boolean(nameState && nameState.phase !== 'idle');
+    useEffect(() => {
+        if (fontsIn && (nameReady || showText || capped)) liftCurtain();
+    }, [fontsIn, nameReady, showText, capped]);
+
 
     return (
         <section id="home" className="hero">
@@ -39,7 +59,7 @@ const Hero = () => {
             </div>
 
             <div className="container">
-                <h1 ref={nameRef} className={`hero-name ${starlit ? 'is-starlit' : ''}`}>{personalInfo.name.full}</h1>
+                <h1 ref={nameRef} className={`hero-name ${showText ? '' : 'is-starlit'}`}>{personalInfo.name.full}</h1>
                 <TypedLines lines={PITCH} reducedMotion={reducedMotion} />
                 <p className="hero-role">{current.role} at {current.company}, based in India.</p>
 
@@ -75,15 +95,14 @@ const Hero = () => {
                 </div>
 
                 <div className="hero-footnotes">
-                    {starlit && (
-                        <p className="hero-note">
-                            My name above is drawn by {nameState.stars.toLocaleString('en-IN')} stars, each matched to a
-                            spot in the letters by sorting both sets from left to right.
-                            <button type="button" className="text-button" onClick={() => nameCall('replay')}>
-                                Replay
-                            </button>
-                        </p>
-                    )}
+                    {/* Always rendered so its space is reserved; it fades in once the stars have drawn the name */}
+                    <p className={`hero-note ${starlit ? 'is-shown' : ''}`} aria-hidden={!starlit}>
+                        My name above is drawn by {heroStarCount(isSmall).toLocaleString('en-IN')} stars, each matched to a
+                        spot in the letters by sorting both sets from left to right.
+                        <button type="button" className="text-button" onClick={() => nameCall('replay')} tabIndex={starlit ? 0 : -1}>
+                            Replay
+                        </button>
+                    </p>
                 </div>
             </div>
 

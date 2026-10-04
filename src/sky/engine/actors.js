@@ -154,6 +154,16 @@ export const createActors = ({ capacity, palette }) => {
             markDirty(from, to);
         },
 
+        /** Current target positions as [x0, y0, x1, y1, ...] */
+        getPositions() {
+            const points = new Float32Array(sprite.count * 2);
+            for (let i = 0; i < sprite.count; i++) {
+                points[i * 2] = to.array[i * 3];
+                points[i * 2 + 1] = to.array[i * 3 + 1];
+            }
+            return points;
+        },
+
         setStates(states) {
             for (let i = 0; i < Math.min(states.length, sprite.count); i++) data.array[i * 4 + 1] = states[i];
             markDirty(data);

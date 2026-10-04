@@ -1,4 +1,5 @@
 import React from 'react';
+import ChartTitle from './ChartTitle';
 import { experienceData } from '../../data/experience';
 import { educationData } from '../../data/education';
 import { personalInfo, assets } from '../../constants/personalInfo';
@@ -28,7 +29,7 @@ const About = () => {
         <section id="about">
             <div className="container about-layout">
                 <div className="about-text">
-                    <h2 className="chart-title">About</h2>
+                    <ChartTitle>About</ChartTitle>
                     <p className="about-lead">
                         I work on the parts of online shopping nobody notices until they break: carts,
                         checkouts and payments.

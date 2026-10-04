@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useState } from 'react';
+import ChartTitle from './ChartTitle';
 import { skillsData, skillCategoryNames } from '../../data/skills';
 import { experienceData } from '../../data/experience';
 import { projectsData } from '../../data/projects';
@@ -49,6 +50,35 @@ const Skills = () => {
     const selected = state?.selected;
     const usage = selected ?? (picked && graph.nodes.find((node) => node.name === picked));
 
+    // Random layouts can bring two cluster labels close: nudge any label that overlaps one above
+    // it down just enough to clear it. Re-run whenever the layout or the stage size changes
+    useLayoutEffect(() => {
+        const stage = ref.current;
+        if (!stage || !showStage) return undefined;
+        const separate = () => {
+            const labels = [...stage.querySelectorAll('.stage-label:not(.stage-label-selected)')];
+            labels.forEach((label) => label.style.setProperty('--nudge', '0px'));
+            const placed = [];
+            labels
+                .map((label) => ({ label, rect: label.getBoundingClientRect() }))
+                .sort((a, b) => a.rect.top - b.rect.top)
+                .forEach(({ label, rect }) => {
+                    let top = rect.top;
+                    for (const other of placed) {
+                        const overlapX = Math.min(rect.right, other.right) - Math.max(rect.left, other.left);
+                        const overlapY = Math.min(top + rect.height, other.bottom) - Math.max(top, other.top);
+                        if (overlapX > 0 && overlapY > 0) top = other.bottom + 4;
+                    }
+                    if (top !== rect.top) label.style.setProperty('--nudge', `${Math.round(top - rect.top)}px`);
+                    placed.push({ left: rect.left, right: rect.right, top, bottom: top + rect.height });
+                });
+        };
+        separate();
+        const observer = new ResizeObserver(separate);
+        observer.observe(stage);
+        return () => observer.disconnect();
+    }, [graph, showStage, ref]);
+
     const pick = (name) => {
         setPicked((current) => (current === name ? null : name));
         call('selectByName', name);
@@ -57,7 +87,7 @@ const Skills = () => {
     return (
         <section id="skills">
             <div className="container">
-                <h2 className="chart-title">Skills</h2>
+                <ChartTitle algorithm="Kruskal's minimum spanning tree">Skills</ChartTitle>
                 <p className="chart-intro">
                     The languages, frameworks and platforms I work with. Pick one to see where I've used it.
                 </p>

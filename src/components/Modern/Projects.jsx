@@ -1,4 +1,5 @@
 import React from 'react';
+import ChartTitle from './ChartTitle';
 import { FaGithub } from 'react-icons/fa';
 import { projectsData } from '../../data/projects';
 import { SORTS } from '../../sky/algorithms/sorts';
@@ -87,7 +88,7 @@ const Projects = () => {
     return (
         <section id="projects">
             <div className="container">
-                <h2 className="chart-title">Projects</h2>
+                <ChartTitle algorithm="Merge sort">Projects</ChartTitle>
                 <p className="chart-intro">
                     Things I've built for myself and keep using.
                     {showRace && ' Beside AlgoTracker, the kind of thing it helps you practise: merge sort, step by step.'}

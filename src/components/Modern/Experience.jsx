@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import ChartTitle from './ChartTitle';
 import { experienceData } from '../../data/experience';
 import { educationData } from '../../data/education';
 import { buildCareerGraph } from '../../sky/algorithms/careerGraph';
@@ -81,7 +82,7 @@ const Experience = () => {
     return (
         <section id="experience">
             <div className="container">
-                <h2 className="chart-title">Work</h2>
+                <ChartTitle algorithm="Dijkstra's shortest path">Work</ChartTitle>
                 <p className="chart-intro">
                     Where I've worked and what I built there, most recent first.
                     {live && ' The stars trace the route from where I started.'}

@@ -371,10 +371,11 @@ export const useContactForm = () => {
         const min = 10;
         const max = 100;
 
-        if (count === 0) return { text: "Start typing your epic message! ✍️", color: '#888' };
-        if (count < min) return { text: `${min - count} more characters needed. You're almost there! 💪`, color: '#f5576c' };
-        if (count >= max) return { text: `Whoa! Maximum reached. Keep it concise! 🎯`, color: '#f5576c' };
-        return { text: `${count} characters. Looking good! 👍`, color: '#667eea' };
+        // tone: 'idle' before typing, 'warn' when too short or at the limit, 'ok' otherwise
+        if (count === 0) return { text: "Start typing your epic message! ✍️", tone: 'idle' };
+        if (count < min) return { text: `${min - count} more characters needed. You're almost there! 💪`, tone: 'warn' };
+        if (count >= max) return { text: `Whoa! Maximum reached. Keep it concise! 🎯`, tone: 'warn' };
+        return { text: `${count} characters. Looking good! 👍`, tone: 'ok' };
     };
 
     return {

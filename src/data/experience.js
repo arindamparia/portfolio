@@ -36,13 +36,13 @@ export const experienceData = [
             {
                 "name": "LLOYDS Credit System",
                 "focus": "nCino, Agentforce, Salesforce, Jenkins",
-                "details": "Automated commercial credit processes using nCino: dynamic document links, fulfillment-flow improvements, grouped request handling and defect fixes. Explored Agentforce for intelligent automation. Optimized Jenkins pipeline (40m -> 15m)."
+                "details": "Automated commercial credit processes using nCino: dynamic document links, fulfillment-flow improvements, grouped request handling and defect fixes. Explored Agentforce for intelligent automation."
             },
             {
                 "name": "Hire Buddy",
                 "role": "ASDE 1",
                 "focus": "Java, Spring Boot, REST APIs",
-                "details": "Onboarding project: a hiring platform where HR receives applications, creates candidate profiles and assigns each candidate to a dedicated interviewer. Built Spring Boot APIs for candidate search and filtering with log tracing. Achieved 95% SonarQube coverage."
+                "details": "Onboarding project: a hiring platform where HR receives applications, creates candidate profiles and assigns each candidate to a dedicated interviewer. Built Spring Boot REST APIs for candidate search and filtering with log tracing."
             }
         ]
     }

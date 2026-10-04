@@ -12,12 +12,14 @@ import { seededRandom, shuffle } from './random';
  * - If that graph is disconnected, the shortest bridges between components are added.
  */
 
-// How a skill might be written in work descriptions, when not exactly its display name
+// How a skill might be written in work descriptions, when not exactly its display name. Includes
+// what a stack implies: SCAPI/OCAPI and serverless endpoints are REST APIs, Spring Boot is Java,
+// SFRA cartridges are JavaScript, Flutter is Dart.
 const ALIASES = {
     'SFCC (SFRA, SCAPI, OCAPI, SLAS)': ['SFCC', 'SCAPI', 'SFRA', 'OCAPI', 'SLAS', 'Salesforce Commerce Cloud'],
     'Gemini Agents': ['Gemini'],
     'Java Microservices': ['microservices'],
-    'REST APIs': ['REST'],
+    'REST APIs': ['REST', 'SCAPI', 'OCAPI', 'Express', 'Netlify Serverless', 'Cloudflare Pages Functions'],
     'Three.js (WebGPU, TSL)': ['Three.js', 'WebGPU'],
     'BFF Architecture': ['BFF', 'middleware'],
     'Cloudflare Workers': ['Cloudflare Pages', 'Cloudflare Workers', 'Cloudflare Pages Functions'],
@@ -27,7 +29,10 @@ const ALIASES = {
     'Spring Boot': ['Spring Boot'],
     'Spring AI': ['Spring AI'],
     'Salesforce Sales Cloud': ['Salesforce'],
-    Java: ['Java,', 'Java '],
+    'HTML/CSS': ['HTML', 'CSS'],
+    Java: ['Java,', 'Java ', 'Spring Boot'],
+    JavaScript: ['Vanilla JS', 'SFRA'],
+    Dart: ['Flutter'],
     PostgreSQL: ['PostgreSQL', 'Postgres'],
 };
 
@@ -51,7 +56,8 @@ export const workSources = (experienceData, projectsData) => {
             sources.push({ label: project.name, text: `${project.focus}. ${project.details}` });
         }
     }));
-    projectsData.filter((p) => !p.earlier).forEach((project) => sources.push({
+    // Earlier (college) projects count too: they're where Node.js, MongoDB and Python were used
+    projectsData.forEach((project) => sources.push({
         label: project.name,
         text: project.tech.join(', '),
     }));

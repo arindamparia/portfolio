@@ -15,6 +15,10 @@ import './styles/themes/night.css';
 import './styles/themes/hacker.css';
 import './styles/themes/ide.css';
 import App from './App.jsx'
+import { initLayoutClass } from './utils/layoutClass';
+
+// Layout attributes must be on <html> before the first render (the CSS depends on them)
+initLayoutClass();
 
 // Initialize React root and render the application with StrictMode enabled
 // StrictMode helps identify potential problems in the application during development

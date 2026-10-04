@@ -52,7 +52,7 @@
 }
 
 /* Desktop - Full text IDE/Modern toggle button */
-@media (min-width: 769px) {
+:root:not([data-bp="phone"]) {
     .theme-toggle {
         width: auto !important;
         height: auto !important;
@@ -63,7 +63,7 @@
 }
 
 /* Mobile Theme Toggle */
-@media (max-width: 768px) {
+:root[data-bp="phone"] {
     .theme-toggle {
         bottom: 1rem;
         left: 1rem;
@@ -427,7 +427,7 @@
 /* Removed specific overrides to maintain consistent 400px max-width */
 
 /* Mobile Responsive - Tablet and phones */
-@media (max-width: 768px) {
+:root[data-bp="phone"] {
 
     /* Hide speech bubble on mobile */
     .joke-speech-bubble {
@@ -571,7 +571,7 @@
     }
 }
 /* Phones: the Developer Pause launcher sits at the end of the page instead of floating over demos */
-@media (max-width: 768px) {
+:root[data-bp="phone"] {
     #root .theme-modern .joke-morphing-button {
         position: relative;
         bottom: auto;
@@ -581,6 +581,130 @@
 }
 
 /* Theme menu: grows from the cog button (top-right), interruptible CSS transition */
+/* ---------- Look switcher (top right) ----------
+   The container is only a positioning box: it never takes the pointer itself, so its closed menu
+   can't sit invisibly on top of the nav links or the page under it. */
+
+.theme-switcher-container {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.theme-switcher-container > * {
+    pointer-events: auto;
+}
+
+.theme-switcher-container > .theme-menu:not(.is-open) {
+    pointer-events: none;
+}
+
+.theme-switcher-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--border-medium);
+    background: var(--bg-card, rgba(0, 0, 0, 0.8));
+    color: var(--text-primary);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    cursor: pointer;
+    transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease, transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.theme-switcher-button svg {
+    transition: transform 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.theme-switcher-button[aria-expanded='true'] svg {
+    transform: rotate(60deg);
+}
+
+.theme-switcher-button:active {
+    transform: scale(0.94);
+}
+
+.theme-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 9.5rem;
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border-medium);
+    background: var(--bg-card, rgba(0, 0, 0, 0.8));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.theme-menu-item {
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 0.9rem;
+    text-align: left;
+    opacity: 0.65;
+    cursor: pointer;
+    transition: background-color 120ms ease, opacity 120ms ease;
+}
+
+.theme-menu-item[aria-current='true'] {
+    opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .theme-menu-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        opacity: 1;
+    }
+}
+
+/* Modern look: the switcher sits in the nav bar's row, as a quiet icon like the rest of the bar */
+.theme-modern .theme-switcher-container {
+    top: calc((var(--nav-height) - 44px) / 2);
+    /* Mirror the logo: the icon's right edge lines up with the content column (44px button, 18px icon) */
+    right: calc(max(var(--gutter), (100vw - 1240px) / 2 + var(--gutter)) - 13px);
+}
+
+.theme-modern .theme-switcher-button {
+    border-color: transparent;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    color: var(--dust);
+}
+
+.theme-modern .theme-switcher-button[aria-expanded='true'] {
+    color: var(--starlight);
+    border-color: var(--hairline);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .theme-modern .theme-switcher-button:hover {
+        color: var(--starlight);
+        border-color: var(--hairline);
+    }
+}
+
+.theme-modern .theme-menu {
+    background: rgba(5, 7, 16, 0.92);
+    border-color: var(--hairline);
+}
+
 .theme-menu {
     transform-origin: top right;
     opacity: 0;
@@ -690,7 +814,7 @@
 }
 
 /* Phones: blur is expensive to animate on mobile GPUs; dimming alone reads the same */
-@media (max-width: 768px) {
+:root[data-bp="phone"] {
     .joke-backdrop {
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
@@ -736,4 +860,119 @@
     .privacy-banner.is-visible {
         transform: none;
     }
+}
+
+/* ---------- Toasts (contact form) ----------
+   Portalled to <body>, so colours are spelled out rather than read from the theme. */
+
+.toast-stack {
+    position: fixed;
+    top: 84px;
+    right: 24px;
+    /* Under the nav (1000), so an open mobile menu covers it */
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: min(380px, calc(100vw - 32px));
+    pointer-events: none;
+}
+
+.toast {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 14px 16px 16px;
+    overflow: hidden;
+    border: 1px solid rgba(140, 149, 184, 0.22);
+    border-radius: 14px;
+    background: rgba(9, 12, 26, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.6);
+    color: #e8ecf8;
+    font-family: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    pointer-events: auto;
+}
+
+.toast-icon {
+    display: flex;
+    margin-top: 3px;
+    font-size: 1.05rem;
+}
+
+.toast-success .toast-icon,
+.toast-success .toast-timer { color: #7ee2a8; }
+.toast-error .toast-icon,
+.toast-error .toast-timer { color: #ff8a8a; }
+.toast-info .toast-icon,
+.toast-info .toast-timer { color: #9fb4ff; }
+
+.toast-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.toast-body p {
+    margin: 0;
+    line-height: 1.4;
+}
+
+.toast-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.toast-message {
+    margin-top: 2px !important;
+    color: #a3abcb;
+    font-size: 0.875rem;
+}
+
+.toast-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: -6px -6px 0 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #8c95b8;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .toast-close:hover {
+        background: rgba(232, 236, 248, 0.08);
+        color: #e8ecf8;
+    }
+}
+
+/* Time left before the toast closes itself: a hairline that shrinks (transform only) */
+.toast-timer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: currentColor;
+    opacity: 0.7;
+    transform-origin: left center;
+    animation: toast-timer linear forwards;
+}
+
+@keyframes toast-timer {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+}
+
+:root[data-bp="phone"] .toast-stack {
+    top: 72px;
+    right: 16px;
 }

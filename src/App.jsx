@@ -96,73 +96,40 @@ function App() {
 
       {/* Floating Theme Switcher Menu (Top Right) - Hidden in Hacker Mode and Mobile */}
       {viewMode !== 'hacker' && isDesktop && (
-        <div ref={settingsRef} className="theme-switcher-container" style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 10000, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
-        <button
-          onClick={() => setShowSettings(!showSettings)}
-          title="Theme Settings"
-          style={{ 
-            cursor: 'pointer', 
-            borderRadius: '50%', 
-            width: '45px', 
-            height: '45px', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            padding: 0,
-            background: 'var(--bg-card, rgba(0,0,0,0.8))',
-            color: 'var(--text-primary)',
-            border: '1px solid var(--border-medium)',
-            backdropFilter: 'blur(12px)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-          }}
-        >
-          <FaCog size={20} />
-        </button>
+        <div ref={settingsRef} className="theme-switcher-container">
+          <button
+            type="button"
+            className="theme-switcher-button"
+            onClick={() => setShowSettings(!showSettings)}
+            aria-label="Choose a look"
+            aria-expanded={showSettings}
+            title="Choose a look"
+          >
+            <FaCog size={18} aria-hidden="true" />
+          </button>
 
-            <div
-              className={`theme-menu ${showSettings ? 'is-open' : ''}`}
-              aria-hidden={!showSettings}
-              inert={!showSettings}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                background: 'var(--bg-card, rgba(0,0,0,0.8))',
-                padding: '10px',
-                borderRadius: '12px',
-                border: '1px solid var(--border-medium)',
-                backdropFilter: 'blur(12px)',
-                boxShadow: '0 10px 25px rgba(0,0,0,0.3)'
-              }}
-            >
+          <div
+            className={`theme-menu ${showSettings ? 'is-open' : ''}`}
+            aria-hidden={!showSettings}
+            inert={!showSettings}
+          >
+            {[
+              { mode: 'modern', label: '✨ Modern' },
+              { mode: 'hacker', label: '🕶️ Hacker' },
+              { mode: 'ide', label: '💻 IDE' },
+            ].map((item) => (
               <button
-                onClick={() => { changeViewMode('modern'); setShowSettings(false); }}
-                style={{ cursor: 'pointer', opacity: viewMode === 'modern' ? 1 : 0.6, fontSize: '0.9rem', padding: '8px 12px', background: 'transparent', border: 'none', color: 'var(--text-primary)', textAlign: 'left', borderRadius: '8px' }}
-                onMouseEnter={(e) => e.target.style.background = 'rgba(255,255,255,0.1)'}
-                onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                key={item.mode}
+                type="button"
+                className="theme-menu-item"
+                aria-current={viewMode === item.mode ? 'true' : undefined}
+                onClick={() => { changeViewMode(item.mode); setShowSettings(false); }}
               >
-                ✨ Modern
+                {item.label}
               </button>
-              <button
-                onClick={() => { changeViewMode('hacker'); setShowSettings(false); }}
-                style={{ cursor: 'pointer', opacity: viewMode === 'hacker' ? 1 : 0.6, fontSize: '0.9rem', padding: '8px 12px', background: 'transparent', border: 'none', color: 'var(--text-primary)', textAlign: 'left', borderRadius: '8px' }}
-                onMouseEnter={(e) => e.target.style.background = 'rgba(255,255,255,0.1)'}
-                onMouseLeave={(e) => e.target.style.background = 'transparent'}
-              >
-                🕶️ Hacker
-              </button>
-              {isDesktop && (
-                <button
-                  onClick={() => { changeViewMode('ide'); setShowSettings(false); }}
-                  style={{ cursor: 'pointer', opacity: viewMode === 'ide' ? 1 : 0.6, fontSize: '0.9rem', padding: '8px 12px', background: 'transparent', border: 'none', color: 'var(--text-primary)', textAlign: 'left', borderRadius: '8px' }}
-                  onMouseEnter={(e) => e.target.style.background = 'rgba(255,255,255,0.1)'}
-                  onMouseLeave={(e) => e.target.style.background = 'transparent'}
-                >
-                  💻 IDE
-                </button>
-              )}
-            </div>
-      </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

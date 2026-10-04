@@ -9,11 +9,12 @@
  * - Mobile menu with haptic feedback
  */
 
-import React, { useEffect, useState, lazy, Suspense } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState, lazy, Suspense } from 'react';
 import Hero from '../Modern/Hero';
 import About from '../Modern/About';
 import SkyProvider from '../../sky/react/SkyProvider';
 import { vibrateLight } from '../../utils/vibration';
+import { getLayoutClass, subscribeLayoutClass } from '../../utils/layoutClass';
 
 // Lazy load components that are below the fold
 const Skills = lazy(() => import('../Modern/Skills'));
@@ -74,9 +75,53 @@ const useActiveSection = () => {
     return active;
 };
 
+// A hairline under the current section's link that glides from link to link. Placed straight onto
+// the element (transform only), so following the scroll never re-renders the nav.
+const useNavIndicator = (active) => {
+    const linksRef = useRef(null);
+    const barRef = useRef(null);
+
+    useLayoutEffect(() => {
+        const links = linksRef.current;
+        const bar = barRef.current;
+        if (!links || !bar) return undefined;
+
+        const place = () => {
+            const label = links.querySelector('a[aria-current="true"] .nav-label');
+            if (!label || getLayoutClass().narrow) {
+                bar.classList.remove('is-shown');
+                return;
+            }
+            const from = links.getBoundingClientRect();
+            const to = label.getBoundingClientRect();
+            const appearing = !bar.classList.contains('is-shown');
+            // Appear in place rather than sliding in from the left edge
+            if (appearing) bar.style.transition = 'none';
+            bar.style.transform = `translateX(${to.left - from.left}px) scaleX(${to.width})`;
+            if (appearing) {
+                void bar.offsetWidth;
+                bar.style.transition = '';
+                bar.classList.add('is-shown');
+            }
+        };
+
+        place();
+        const observer = new ResizeObserver(place);
+        observer.observe(links);
+        const unsubscribe = subscribeLayoutClass(place);
+        return () => {
+            observer.disconnect();
+            unsubscribe();
+        };
+    }, [active]);
+
+    return { linksRef, barRef };
+};
+
 const ModernLayout = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const active = useActiveSection();
+    const { linksRef, barRef } = useNavIndicator(active);
     const showRest = useAfterFirstPaint();
 
     const toggleMenu = () => {
@@ -112,7 +157,7 @@ const ModernLayout = () => {
                     <div className="container nav-content">
                         <a href="#home" className="logo" onClick={handleNavClick}>AP<span className="visually-hidden">, Arindam Paria, back to top</span></a>
 
-                        <div id="nav-links" className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
+                        <div id="nav-links" ref={linksRef} className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
                             {NAV_ITEMS.map((item) => (
                                 <a
                                     key={item.id}
@@ -120,9 +165,10 @@ const ModernLayout = () => {
                                     onClick={handleNavClick}
                                     aria-current={active === item.id ? 'true' : undefined}
                                 >
-                                    {item.label}
+                                    <span className="nav-label">{item.label}</span>
                                 </a>
                             ))}
+                            <span ref={barRef} className="nav-indicator" aria-hidden="true" />
                         </div>
 
                         <button

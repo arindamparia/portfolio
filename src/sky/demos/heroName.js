@@ -3,6 +3,7 @@ import { createStage } from '../engine/stage';
 import { pairByAxis } from '../algorithms/assignment';
 import { sampleTextPoints } from '../algorithms/textPoints';
 import { waitForCurtain } from '../../utils/curtain';
+import { heroStarCount } from '../heroStars';
 
 /**
  * Hero: stars form the name.
@@ -33,7 +34,7 @@ const markSeen = () => {
 
 const createHeroName = async ({ sky, element, onState, animate }) => {
     // Dense enough that thin serif strokes read as solid lines of starlight
-    const count = sky.isSmall ? 3000 : 6500;
+    const count = heroStarCount(sky.isSmall);
     const stage = createStage(element);
     const actors = createActors({ capacity: count, palette: sky.palette });
     stage.group.add(actors.object);
@@ -69,6 +70,13 @@ const createHeroName = async ({ sky, element, onState, animate }) => {
     let phase = 'idle';
     let animating = animate;
     let disposed = false;
+    // Stars placed without the fly-in (repeat visits) fade in rather than popping on, starting
+    // when the page curtain lifts so the visitor sees the whole fade
+    let appear = 1;
+    let curtainUp = false;
+    waitForCurtain().then(() => {
+        curtainUp = true;
+    });
     // Keeps the sky's loop awake for a visitor-started replay while autoplay is off
     let release = null;
     const letGo = () => {
@@ -91,6 +99,8 @@ const createHeroName = async ({ sky, element, onState, animate }) => {
         if (!fly) {
             actors.place(targets, { sizes });
             writeScatter();
+            // Only fade when the loop is running to drive it; a still sky shows them straight away
+            appear = animating ? 0 : 1;
             finish();
             return;
         }
@@ -132,18 +142,45 @@ const createHeroName = async ({ sky, element, onState, animate }) => {
     window.addEventListener('keydown', skip);
     window.addEventListener('wheel', skip, { passive: true });
 
-    // Re-sample when the heading reflows (resize, font swap)
+    // While the window resizes, the stars glide to the reflowed letters instead of snapping:
+    // re-sample at most every 160ms (plus once when resizing stops) and pair each star with the
+    // nearest new spot along the line, so they move a short way without crossing
+    let refitting = false;
     let resizeTimer = 0;
+    let lastRefit = 0;
     let lastWidth = stage.rect.width;
+    const refit = async () => {
+        lastRefit = performance.now();
+        lastWidth = element.getBoundingClientRect().width;
+        const fresh = await sampleTextPoints(element, count);
+        if (disposed || fresh.length === 0) return;
+        if (phase !== 'formed') {
+            targets = fresh;
+            return;
+        }
+        actors.settle();
+        const current = actors.getPositions();
+        const order = pairByAxis(current, fresh);
+        const next = new Float32Array(count * 2);
+        for (let i = 0; i < count; i++) {
+            next[i * 2] = fresh[order[i] * 2];
+            next[i * 2 + 1] = fresh[order[i] * 2 + 1];
+        }
+        targets = next;
+        writeScatter();
+        if (animating) {
+            actors.moveTo(targets, { duration: 0.35 });
+            refitting = true;
+        } else {
+            actors.place(targets, { sizes });
+        }
+        sky.requestRender();
+    };
     const resizeObserver = new ResizeObserver(() => {
         if (Math.abs(element.getBoundingClientRect().width - lastWidth) < 1) return;
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(async () => {
-            lastWidth = element.getBoundingClientRect().width;
-            targets = await sampleTextPoints(element, count);
-            if (targets.length) form({ fly: false });
-            sky.requestRender();
-        }, 150);
+        if (performance.now() - lastRefit > 160) refit();
+        resizeTimer = setTimeout(refit, 160);
     });
     resizeObserver.observe(element);
 
@@ -154,11 +191,18 @@ const createHeroName = async ({ sky, element, onState, animate }) => {
         update(frame) {
             stage.sync();
             if (phase === 'forming' && actors.update(frame.delta)) finish();
+            else if (refitting && actors.update(frame.delta)) {
+                actors.settle();
+                refitting = false;
+            }
 
             // Scroll away scatters the name; scrolling back re-forms it
             const p = Math.min(Math.max(frame.scrollY / (frame.height * 0.55), 0), 1);
             actors.uniforms.spread.value = animating ? p * p : 0;
-            actors.uniforms.opacity.value = 1 - p * 0.85;
+            if (appear < 1 && curtainUp) appear = Math.min(1, appear + frame.delta / 0.7);
+            // Ease-out so the name settles in gently
+            const eased = 1 - (1 - appear) ** 3;
+            actors.uniforms.opacity.value = eased * (1 - p * 0.85);
         },
         dispose() {
             actors.dispose();

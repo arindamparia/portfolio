@@ -222,6 +222,15 @@
 
 <body>
   <div id="curtain" aria-hidden="true"></div>
+  <script>
+    // Layout attributes before the CSS applies (kept in sync with src/utils/layoutClass.js)
+    (function () {
+      var w = window.innerWidth, h = window.innerHeight, r = document.documentElement;
+      r.dataset.bp = w <= 768 ? 'phone' : w <= 1023 ? 'tablet' : 'desktop';
+      if (w <= 1023) r.setAttribute('data-narrow', '');
+      if (h <= 760) r.setAttribute('data-short', '');
+    })();
+  </script>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

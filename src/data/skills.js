@@ -16,7 +16,7 @@
 
 export const skillsData = {
     "languages": ["Java", "Go", "JavaScript", "TypeScript", "Kotlin", "Dart", "C++", "Python"],
-    "backend": ["Spring Boot", "Spring Security", "Java Microservices", "Java Reactive", "GraphQL", "REST APIs", "BFF Architecture", "Node.js", "Hono"],
+    "backend": ["Spring Boot", "Spring Security", "Java Microservices", "Java Reactive", "GraphQL", "REST APIs", "BFF Architecture", "Node.js"],
     "ai": ["Spring AI", "RAG", "MCP", "A2A", "UCP", "Gemini Agents", "OpenAI API", "Qdrant", "PGVector"],
     "enterprise": ["SFCC (SFRA, SCAPI, OCAPI, SLAS)", "Adyen", "nCino", "Agentforce", "Salesforce Sales Cloud"],
     "frontend": ["React", "Astro", "Three.js (WebGPU, TSL)", "Tailwind", "HTML/CSS", "PWA"],

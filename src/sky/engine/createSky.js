@@ -123,7 +123,8 @@ export const createSky = ({ container, colors, isSmall, lowPower, reducedMotion 
         overlayCamera.right = width;
         overlayCamera.bottom = -height;
         overlayCamera.updateProjectionMatrix();
-        if (!running) renderOnce();
+        // Resizing clears the canvas; draw straight away so the sky never flashes while resizing
+        renderOnce();
     };
 
     const docObserver = new ResizeObserver(() => {

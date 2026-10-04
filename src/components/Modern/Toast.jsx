@@ -1,181 +1,62 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaCheckCircle, FaExclamationCircle, FaTimes, FaInfoCircle } from 'react-icons/fa';
 
-const Toast = ({ message, type = 'success', onClose, duration = 5000 }) => {
-    // Use ref to store the latest onClose callback to avoid resetting timer on re-renders
-    const onCloseRef = React.useRef(onClose);
+/**
+ * Toasts for the contact form: dark glass cards stacked under the nav bar, each with a hairline
+ * that runs down until it closes itself. Several toasts stack instead of covering each other.
+ */
 
+const ICONS = {
+    success: <FaCheckCircle aria-hidden="true" />,
+    error: <FaExclamationCircle aria-hidden="true" />,
+    info: <FaInfoCircle aria-hidden="true" />,
+};
+
+const TITLES = { success: 'Sent', error: 'Not sent', info: 'Note' };
+
+const Toast = ({ message, type = 'success', onClose, duration = 5000 }) => {
+    // Keep the latest onClose without restarting the timer on every render
+    const onCloseRef = useRef(onClose);
     useEffect(() => {
         onCloseRef.current = onClose;
     }, [onClose]);
 
     useEffect(() => {
-        if (duration) {
-            const timer = setTimeout(() => {
-                onCloseRef.current();
-            }, duration);
+        if (!duration) return undefined;
+        const timer = setTimeout(() => onCloseRef.current(), duration);
+        return () => clearTimeout(timer);
+    }, [duration]);
 
-            return () => clearTimeout(timer);
-        }
-    }, [duration]); // Removed onClose from dependencies
+    const tone = ICONS[type] ? type : 'success';
 
-    const icons = {
-        success: <FaCheckCircle size={20} />,
-        error: <FaExclamationCircle size={20} />,
-        info: <FaInfoCircle size={20} />
-    };
-
-    const styles = {
-        success: {
-            iconColor: '#4ade80',
-            progressColor: '#4ade80',
-            gradient: 'linear-gradient(to right, rgba(74, 222, 128, 0.1), transparent)'
-        },
-        error: {
-            iconColor: '#f87171',
-            progressColor: '#f87171',
-            gradient: 'linear-gradient(to right, rgba(248, 113, 113, 0.1), transparent)'
-        },
-        info: {
-            iconColor: '#60a5fa',
-            progressColor: '#60a5fa',
-            gradient: 'linear-gradient(to right, rgba(96, 165, 250, 0.1), transparent)'
-        }
-    };
-
-    const currentStyle = styles[type] || styles.success;
-
-    return ReactDOM.createPortal(
+    return (
         <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            layout
+            className={`toast toast-${tone}`}
+            role={tone === 'error' ? 'alert' : 'status'}
+            initial={{ opacity: 0, y: -12, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-            style={{
-                position: 'fixed',
-                top: '24px',
-                right: '24px',
-                zIndex: 99999,
-                pointerEvents: 'auto',
-            }}
+            exit={{ opacity: 0, y: -8, scale: 0.97, transition: { duration: 0.15, ease: 'easeIn' } }}
+            transition={{ duration: 0.26, ease: [0.23, 1, 0.32, 1] }}
         >
-            <div style={{
-                background: 'rgba(255, 255, 255, 0.85)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255, 255, 255, 0.5)',
-                borderRadius: '16px',
-                padding: '16px',
-                boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05)',
-                display: 'flex',
-                flexDirection: 'column',
-                minWidth: '320px',
-                maxWidth: '400px',
-                overflow: 'hidden',
-                position: 'relative'
-            }}>
-                {/* Background Gradient */}
-                <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    background: currentStyle.gradient,
-                    opacity: 0.5,
-                    zIndex: -1
-                }} />
-
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                    <div style={{
-                        color: currentStyle.iconColor,
-                        marginTop: '2px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}>
-                        {icons[type] || icons.success}
-                    </div>
-
-                    <div style={{ flex: 1 }}>
-                        <p style={{
-                            margin: 0,
-                            color: '#1f2937',
-                            fontSize: '0.95rem',
-                            fontWeight: '600',
-                            lineHeight: '1.4'
-                        }}>
-                            {type === 'success' ? 'Success' : type === 'error' ? 'Error' : 'Info'}
-                        </p>
-                        <p style={{
-                            margin: '4px 0 0 0',
-                            color: '#4b5563',
-                            fontSize: '0.875rem',
-                            lineHeight: '1.4'
-                        }}>
-                            {message}
-                        </p>
-                    </div>
-
-                    <button
-                        onClick={onClose}
-                        style={{
-                            background: 'transparent',
-                            border: 'none',
-                            color: '#9ca3af',
-                            cursor: 'pointer',
-                            padding: '4px',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            transition: 'background-color 150ms ease, color 150ms ease, border-color 150ms ease'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'rgba(0,0,0,0.05)';
-                            e.currentTarget.style.color = '#4b5563';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background = 'transparent';
-                            e.currentTarget.style.color = '#9ca3af';
-                        }}
-                    >
-                        <FaTimes size={14} />
-                    </button>
-                </div>
-
-                {/* Progress Bar */}
-                {duration > 0 && (
-                    <div style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        height: '3px',
-                        width: '100%',
-                        background: 'rgba(0,0,0,0.05)'
-                    }}>
-                        <motion.div
-                            initial={{ width: '100%' }}
-                            animate={{ width: '0%' }}
-                            transition={{ duration: duration / 1000, ease: 'linear' }}
-                            style={{
-                                height: '100%',
-                                background: currentStyle.progressColor,
-                            }}
-                        />
-                    </div>
-                )}
+            <span className="toast-icon">{ICONS[tone]}</span>
+            <div className="toast-body">
+                <p className="toast-title">{TITLES[tone]}</p>
+                <p className="toast-message">{message}</p>
             </div>
-        </motion.div>,
-        document.body
+            <button type="button" className="toast-close" onClick={onClose} aria-label="Dismiss">
+                <FaTimes aria-hidden="true" />
+            </button>
+            {duration > 0 && <span className="toast-timer" style={{ animationDuration: `${duration}ms` }} aria-hidden="true" />}
+        </motion.div>
     );
 };
 
-const ToastContainer = ({ toasts, removeToast }) => {
-    return (
-        <AnimatePresence mode="sync">
+const ToastContainer = ({ toasts, removeToast }) => ReactDOM.createPortal(
+    <div className="toast-stack">
+        <AnimatePresence initial={false}>
             {toasts.map((toast) => (
                 <Toast
                     key={toast.id}
@@ -186,7 +67,8 @@ const ToastContainer = ({ toasts, removeToast }) => {
                 />
             ))}
         </AnimatePresence>
-    );
-};
+    </div>,
+    document.body
+);
 
 export default React.memo(ToastContainer);
