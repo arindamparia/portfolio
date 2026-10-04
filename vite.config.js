@@ -45,13 +45,17 @@ export default defineConfig({
     chunkSizeWarningLimit: 500,
 
     // Manual chunking strategy
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          // Separate vendor chunks for better caching
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-framer': ['framer-motion'],
-          'vendor-icons': ['react-icons'],
+        // Separate vendor chunks for better caching
+        codeSplitting: {
+          groups: [
+            { name: 'vendor-react', test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/ },
+            { name: 'vendor-framer', test: /[\\/]node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/ },
+            { name: 'vendor-icons', test: /[\\/]node_modules[\\/]react-icons[\\/]/ },
+            // Only loaded by the lazy 3D hero background
+            { name: 'vendor-three', test: /[\\/]node_modules[\\/]three[\\/]/ },
+          ],
         },
         // Optimize chunk filenames for caching
         chunkFileNames: 'assets/[name]-[hash].js',

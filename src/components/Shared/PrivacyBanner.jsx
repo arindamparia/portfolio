@@ -113,7 +113,7 @@ const PrivacyBanner = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.5rem',
-                                transition: 'all 0.2s'
+                                transition: 'background-color 150ms ease, color 150ms ease, border-color 150ms ease'
                             }}
                             onMouseEnter={(e) => {
                                 e.target.style.background = 'rgba(255, 255, 255, 0.05)';
@@ -141,7 +141,7 @@ const PrivacyBanner = () => {
                                 alignItems: 'center',
                                 gap: '0.5rem',
                                 boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
-                                transition: 'all 0.2s'
+                                transition: 'background-color 150ms ease, color 150ms ease, border-color 150ms ease'
                             }}
                             onMouseEnter={(e) => {
                                 e.target.style.transform = 'translateY(-1px)';

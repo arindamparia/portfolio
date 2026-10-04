@@ -32,8 +32,8 @@ export default async (req, context) => {
     // 1. If no origin header: Allow (same-origin request or tools like Postman)
     // 2. If origin header exists AND ALLOWED_ORIGINS is empty: REJECT (misconfiguration)
     // 3. If origin header exists: Only allow if in allowedOrigins list
-    let isAllowedOrigin = false;
-    let corsOrigin = 'null';
+    let isAllowedOrigin;
+    let corsOrigin;
 
     if (!origin) {
         // No origin header - likely same-origin request

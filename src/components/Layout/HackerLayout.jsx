@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useEffectEvent, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { personalInfo } from '../../constants/personalInfo';
 import { educationData } from '../../data/education';
 import { projectsData } from '../../data/projects';
 import { skillsData } from '../../data/skills';
+import { experienceData } from '../../data/experience';
+import { careerMilestones } from '../../data/careerMilestones';
+import { dijkstraTrace, kruskalTrace, searchTrace, sortTrace } from '../../sky/algorithms/terminalTraces';
 import MatrixBackground from '../Shared/MatrixBackground';
 
 // Using Unicode block characters so escaping backslashes is not an issue. Extremely crisp and clear!
@@ -66,24 +69,6 @@ const HackerLayout = ({ changeTheme }) => {
         }
     });
 
-    // Handle Boot Sequence
-    useEffect(() => {
-        if (!booting) return;
-
-        if (bootLineIndex < bootSequence.length) {
-            const timer = setTimeout(() => {
-                setBootLineIndex(prev => prev + 1);
-            }, 300); // 300ms per line
-            return () => clearTimeout(timer);
-        } else {
-            // Boot finished, auto-execute profile fetch
-            setTimeout(() => {
-                setBooting(false);
-                executeCommand('./fetch_profile.sh');
-            }, 800);
-        }
-    }, [bootLineIndex, booting]);
-
     // Focus input when clicking anywhere
     const handleContainerClick = () => {
         if (inputRef.current && !isTyping) {
@@ -117,6 +102,7 @@ const HackerLayout = ({ changeTheme }) => {
                     '  education       - View academic background & JEE Rank',
                     '  skills          - List technical skills',
                     '  projects        - View recent projects',
+                    '  run <algorithm> - kruskal, dijkstra, search, sort [merge|quick|heap|insertion]',
                     '  theme [name]    - Switch UI layout (modern, ide)',
                     '  clear           - Clear terminal output',
                     '  sudo            - ???',
@@ -207,6 +193,21 @@ const HackerLayout = ({ changeTheme }) => {
                     'Type "help" to view available commands.'
                 ];
                 break;
+            case 'run': {
+                const jee = educationData.find((e) => e.degree.includes('JEE'));
+                const percentile = Number(jee?.details.match(/Percentile:\s*([\d.]+)/)?.[1]);
+                const rank = Number(jee?.details.match(/Rank:\s*([\d,]+)/)?.[1].replace(/,/g, ''));
+                const algorithms = {
+                    kruskal: () => kruskalTrace(skillsData, experienceData, projectsData),
+                    dijkstra: () => dijkstraTrace(careerMilestones()),
+                    search: () => searchTrace(rank, percentile),
+                    sort: () => sortTrace(parts[2] ?? 'merge'),
+                };
+                output = algorithms[arg]
+                    ? algorithms[arg]()
+                    : ['usage: run <algorithm>', '  kruskal    skills joined into a minimum spanning tree', '  dijkstra   shortest route through my career', '  search     binary search for my JEE rank', '  sort       sort race step trace: run sort quick'];
+                break;
+            }
             default:
                 output = [`bash: ${command}: command not found. Type 'help' for available commands.`];
         }
@@ -214,6 +215,28 @@ const HackerLayout = ({ changeTheme }) => {
         setIsTyping(true);
         setHistory(prev => [...prev, { type: 'output', lines: output, isNew: true }]);
     };
+
+    // Runs the latest executeCommand without re-triggering the boot effect
+    const runBootCommand = useEffectEvent(() => executeCommand('./fetch_profile.sh'));
+
+    // Handle Boot Sequence
+    useEffect(() => {
+        if (!booting) return undefined;
+
+        if (bootLineIndex < bootSequence.length) {
+            const timer = setTimeout(() => {
+                setBootLineIndex(prev => prev + 1);
+            }, 300); // 300ms per line
+            return () => clearTimeout(timer);
+        }
+
+        // Boot finished, auto-execute profile fetch
+        const timer = setTimeout(() => {
+            setBooting(false);
+            runBootCommand();
+        }, 800);
+        return () => clearTimeout(timer);
+    }, [bootLineIndex, booting]);
 
     const markAsOld = (index) => {
         setIsTyping(false);

@@ -131,7 +131,7 @@ const Toast = ({ message, type = 'success', onClose, duration = 5000 }) => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            transition: 'all 0.2s'
+                            transition: 'background-color 150ms ease, color 150ms ease, border-color 150ms ease'
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.background = 'rgba(0,0,0,0.05)';

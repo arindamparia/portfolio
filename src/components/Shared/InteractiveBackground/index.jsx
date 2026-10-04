@@ -8,7 +8,7 @@ import './InteractiveBackground.css';
  * Interactive Background Component
  * Creates eye-pleasing animated backgrounds that respond to mouse movement
  *
- * @param {string} variant - Background style variant (gradient, particles, waves, mesh, aurora, geometric)
+ * @param {string} variant - Background style variant (universe, gradient, particles, waves, mesh, aurora, geometric)
  * @param {string} colorScheme - Color theme (purple, blue, green, orange, pink, teal)
  * @param {number} intensity - Animation intensity (0-1)
  */

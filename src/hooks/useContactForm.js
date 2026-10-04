@@ -37,14 +37,12 @@ export const useContactForm = () => {
     const [touched, setTouched] = useState({});
     const [focusedField, setFocusedField] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    // Outcome of the latest submit attempt, for the routing animation: { status: 'success' | 'error', at }
+    const [lastResult, setLastResult] = useState(null);
     const [toasts, setToasts] = useState([]);
     const [displayedMessages, setDisplayedMessages] = useState({});
-    const [messagePlaceholder, setMessagePlaceholder] = useState('');
-
-    // Set random placeholder on mount
-    useEffect(() => {
-        setMessagePlaceholder(getRandomPlaceholder());
-    }, []);
+    // Random placeholder, picked once on mount
+    const [messagePlaceholder] = useState(getRandomPlaceholder);
 
     // Save form data to sessionStorage whenever it changes
     useEffect(() => {
@@ -335,6 +333,7 @@ export const useContactForm = () => {
             const data = await response.json();
 
             if (response.ok) {
+                setLastResult({ status: 'success', at: Date.now() });
                 vibrateSuccess();
                 showToast(getRandomMessage('form', 'submitSuccess'), 'success', 6000);
 
@@ -353,10 +352,12 @@ export const useContactForm = () => {
                 setErrorTypes({});
                 setDisplayedMessages({});
             } else {
+                setLastResult({ status: 'error', at: Date.now() });
                 vibrateError();
                 showToast(`Uh oh! ${data.error || 'Something went wrong. Even I make mistakes sometimes! 😅'}`, 'error');
             }
         } catch (error) {
+            setLastResult({ status: 'error', at: Date.now() });
             vibrateError();
             console.error('Error submitting form:', error);
             showToast(getRandomMessage('form', 'networkError'), 'error', 7000);
@@ -382,6 +383,7 @@ export const useContactForm = () => {
         touched,
         focusedField,
         isSubmitting,
+        lastResult,
         toasts,
         displayedMessages,
         messagePlaceholder,

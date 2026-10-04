@@ -21,6 +21,7 @@ import DesktopRequired from './components/Shared/DesktopRequired';
 import PrivacyBanner from './components/Shared/PrivacyBanner';
 import CustomCursor from './components/Shared/CustomCursor';
 import { useViewMode } from './hooks/useViewMode';
+import { liftCurtain } from './utils/curtain';
 
 // Lazy load layouts for better initial load performance
 // These components are code-split and only loaded when needed
@@ -47,6 +48,11 @@ function App() {
     };
   }, [showSettings]);
 
+  // The Modern view lifts the curtain once its hero is ready; other views have no intro to wait for
+  useEffect(() => {
+    if (viewMode !== 'modern') liftCurtain();
+  }, [viewMode]);
+
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -64,20 +70,23 @@ function App() {
   return (
     // Apply theme-specific CSS class based on current view mode
     <div className={getThemeClass()}>
-      <motion.div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '4px',
-          background: 'linear-gradient(90deg, var(--modern-accent-primary, #38bdf8), var(--modern-accent-secondary, #818cf8))',
-          transformOrigin: '0%',
-          scaleX,
-          zIndex: 10000
-        }}
-      />
-      <CustomCursor />
+      {/* Scroll progress bar and custom cursor belong to the IDE/hacker looks; the Modern view keeps the native cursor */}
+      {viewMode !== 'modern' && (
+        <motion.div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '4px',
+            background: 'linear-gradient(90deg, var(--modern-accent-primary, #38bdf8), var(--modern-accent-secondary, #818cf8))',
+            transformOrigin: '0%',
+            scaleX,
+            zIndex: 10000
+          }}
+        />
+      )}
+      {viewMode !== 'modern' && <CustomCursor />}
       <PrivacyBanner />
       {/* Suspense wrapper for lazy-loaded layouts with loading fallback */}
       <Suspense fallback={

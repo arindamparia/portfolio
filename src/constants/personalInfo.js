@@ -7,9 +7,12 @@ export const personalInfo = {
         initials: 'AP'
     },
     title: 'Software Engineer',
+    location: 'India',
     email: 'arindamparia321@gmail.com',
     phone: '+91 9064175719',
     greeting: "Hello, I'm",
+    pitch: 'I build bug-free backends.',
+    pitchAside: 'At least, I try to. The NFRs always pass, the algorithms are optimal, and the bugs get rarer every sprint.',
     status: 'Open to opportunities',
     about: 'Passionate software engineer with expertise in building scalable applications and solving complex problems. Experienced in Java, Spring Boot, Salesforce Commerce Cloud, and Modern Web Technologies.'
 };
@@ -38,7 +41,9 @@ export const socialLinks = {
 };
 
 export const assets = {
-    aboutImage: 'https://res.cloudinary.com/dnju7wfma/image/upload/v1781898993/20260529_141128_tiwikl.jpg',
-    profileImage: 'https://res.cloudinary.com/dnju7wfma/image/upload/c_fill,w_800,h_800,q_auto:best,f_auto/v3/1709320939738_1_gkcoyp',
-    cvPath: '/cv.pdf'
+    // Self-hosted 600×750 crop (the Cloudinary account blocks on-the-fly resizing; the original is 2.2 MB)
+    aboutImage: '/images/about-600.jpg',
+    profileImage: '/images/profile-600.jpg',
+    // Set to '/cv.pdf' once public/cv.pdf exists; the Download CV button is hidden while this is null
+    cvPath: null
 };

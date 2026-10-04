@@ -4,11 +4,9 @@ import { motion } from 'framer-motion';
 const CustomCursor = () => {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const [isHovering, setIsHovering] = useState(false);
-    const [isDesktop, setIsDesktop] = useState(true);
+    const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
 
     useEffect(() => {
-        setIsDesktop(window.innerWidth >= 1024);
-        
         const handleResize = () => {
             setIsDesktop(window.innerWidth >= 1024);
         };

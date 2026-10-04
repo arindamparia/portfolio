@@ -1,6 +1,6 @@
 :root {
     /* Global Fonts */
-    --font-main: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-main: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
     --font-code: 'Consolas', 'Courier New', monospace;
 
     /* IDE Theme Variables */

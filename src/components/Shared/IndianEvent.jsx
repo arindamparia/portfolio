@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getEventsForDate, getRandomFact } from '../../data/indianDates';
 import { FaCalendarDay, FaLightbulb, FaHistory, FaRocket, FaTrophy, FaFlag, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-const IndianEvent = () => {
+// blended: no card, glass or shadow, so it sits directly on the night sky
+const IndianEvent = ({ blended = false }) => {
     const { eventsList, isEvent, fact } = useMemo(() => {
         const today = new Date();
         const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -45,22 +46,22 @@ const IndianEvent = () => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: blended ? 0 : 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
             className="indian-event-card"
             style={{
-                background: 'rgba(255, 255, 255, 0.03)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '16px',
-                padding: '1rem 1.5rem',
-                maxWidth: '500px',
-                margin: '2rem auto 0',
+                background: blended ? 'transparent' : 'rgba(255, 255, 255, 0.03)',
+                backdropFilter: blended ? 'none' : 'blur(10px)',
+                border: blended ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: blended ? 0 : '16px',
+                padding: blended ? '0.1rem 0 0.1rem 1rem' : '1rem 1.5rem',
+                maxWidth: blended ? '46ch' : '500px',
+                margin: blended ? 0 : '2rem auto 0',
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: '1rem',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                boxShadow: blended ? 'none' : '0 4px 20px rgba(0, 0, 0, 0.1)',
                 position: 'relative',
                 overflow: 'hidden'
             }}
@@ -81,7 +82,8 @@ const IndianEvent = () => {
 
             <div style={{ flex: 1, position: 'relative' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h4 style={{
+                    <p style={{
+                        margin: 0,
                         fontSize: '0.9rem',
                         textTransform: 'uppercase',
                         letterSpacing: '1px',
@@ -93,7 +95,7 @@ const IndianEvent = () => {
                         gap: '0.5rem'
                     }}>
                         {isEvent ? 'On This Day in India 🇮🇳' : 'Did You Know? 🇮🇳'}
-                    </h4>
+                    </p>
 
                     {isEvent && eventsList.length > 1 && (
                         <div style={{ display: 'flex', gap: '0.5rem' }}>

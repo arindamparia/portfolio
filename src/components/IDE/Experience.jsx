@@ -27,7 +27,24 @@ const Experience = () => {
                                         <div style={{ paddingLeft: '1.5rem' }}>
                                             <div><span style={{ color: '#9cdcfe' }}>"name"</span>: <span style={{ color: '#ce9178' }}>"{proj.name}"</span>,</div>
                                             <div><span style={{ color: '#9cdcfe' }}>"focus"</span>: <span style={{ color: '#ce9178' }}>"{proj.focus}"</span>,</div>
-                                            <div><span style={{ color: '#9cdcfe' }}>"details"</span>: <span style={{ color: '#ce9178' }}>"{proj.details}"</span></div>
+                                            <div><span style={{ color: '#9cdcfe' }}>"details"</span>: <span style={{ color: '#ce9178' }}>"{proj.details}"</span>{proj.workstreams ? ',' : ''}</div>
+                                            {proj.workstreams && (
+                                                <>
+                                                    <div><span style={{ color: '#9cdcfe' }}>"workstreams"</span>: <span style={{ color: '#da70d6' }}>[</span></div>
+                                                    {proj.workstreams.map((stream, k) => (
+                                                        <div key={stream.name} style={{ paddingLeft: '1.5rem' }}>
+                                                            <span style={{ color: '#da70d6' }}>{'{'}</span>
+                                                            <div style={{ paddingLeft: '1.5rem' }}>
+                                                                <div><span style={{ color: '#9cdcfe' }}>"name"</span>: <span style={{ color: '#ce9178' }}>"{stream.name}"</span>,</div>
+                                                                <div><span style={{ color: '#9cdcfe' }}>"focus"</span>: <span style={{ color: '#ce9178' }}>"{stream.focus}"</span>,</div>
+                                                                <div><span style={{ color: '#9cdcfe' }}>"details"</span>: <span style={{ color: '#ce9178' }}>"{stream.details}"</span></div>
+                                                            </div>
+                                                            <span style={{ color: '#da70d6' }}>{'}'}</span>{k < proj.workstreams.length - 1 ? ',' : ''}
+                                                        </div>
+                                                    ))}
+                                                    <div><span style={{ color: '#da70d6' }}>]</span></div>
+                                                </>
+                                            )}
                                         </div>
                                         <span style={{ color: '#da70d6' }}>{'}'}</span>{j < exp.projects.length - 1 ? ',' : ''}
                                     </div>

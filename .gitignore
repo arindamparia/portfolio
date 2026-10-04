@@ -25,3 +25,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local agent skills
+.agent/
+.agents/
+.claude/
+.kiro/
+skills-lock.json
