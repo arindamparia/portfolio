@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaShieldAlt, FaCheck, FaTimes } from 'react-icons/fa';
-import { PRIVACY_CONTENT, PRIVACY_CONFIG } from '../../constants/privacy';
+import { PRIVACY_CONTENT, PRIVACY_CONFIG, isConsentPopupEnabled } from '../../constants/privacy';
 import { waitForCurtain } from '../../utils/curtain';
 
 // Leaving takes a little less time than arriving (see the .privacy-banner transitions)
@@ -31,7 +31,7 @@ const PrivacyBanner = () => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        if (!needsConsent()) return undefined;
+        if (!isConsentPopupEnabled() || !needsConsent()) return undefined;
         let cancelled = false;
         waitForCurtain().then(() => {
             if (cancelled) return;
@@ -58,7 +58,7 @@ const PrivacyBanner = () => {
     const handleAccept = () => dismiss('granted');
     const handleDecline = () => dismiss('denied');
 
-    if (!mounted) return null;
+    if (!isConsentPopupEnabled() || !mounted) return null;
 
     return (
                 <div

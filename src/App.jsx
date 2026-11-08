@@ -19,6 +19,7 @@ import { FaCog } from 'react-icons/fa';
 import DesktopRequired from './components/Shared/DesktopRequired';
 import ModernLayout from './components/Layout/ModernLayout';
 import PrivacyBanner from './components/Shared/PrivacyBanner';
+import { isConsentPopupEnabled } from './constants/privacy';
 import { useViewMode } from './hooks/useViewMode';
 import { liftCurtain } from './utils/curtain';
 
@@ -71,7 +72,7 @@ function App() {
         {viewMode !== 'modern' && <ScrollProgress />}
         {viewMode !== 'modern' && <CustomCursor />}
       </Suspense>
-      <PrivacyBanner />
+      {isConsentPopupEnabled() && <PrivacyBanner />}
       {/* Suspense wrapper for lazy-loaded layouts with loading fallback */}
       <Suspense fallback={
         <div style={{
