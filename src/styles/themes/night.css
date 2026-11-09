@@ -471,6 +471,14 @@ html:has(.theme-modern) body {
     text-decoration-color: var(--accent, var(--accent-fallback));
     text-underline-offset: 0.2em;
     text-decoration-thickness: 1px;
+    transition: color 150ms var(--ease-out), text-decoration-color 150ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .theme-modern .text-link:hover,
+    .theme-modern .text-link:hover strong {
+        color: var(--accent, var(--accent-fallback));
+    }
 }
 
 /* ---------- Hero ---------- */

@@ -2,6 +2,7 @@ import React from 'react';
 import ChartTitle from './ChartTitle';
 import { experienceData } from '../../data/experience';
 import { educationData } from '../../data/education';
+import { projectsData } from '../../data/projects';
 import { personalInfo, assets } from '../../constants/personalInfo';
 import { useSky } from '../../sky/react/SkyContext';
 
@@ -24,6 +25,10 @@ const About = () => {
     const current = experienceData[0];
     const jee = educationData.find((e) => e.degree.includes('JEE'));
     const percentile = jee?.details.match(/Percentile:\s*([\d.]+)/)?.[1];
+    const algoTracker = projectsData.find((p) => p.name === 'AlgoTracker');
+    const salaryCalculator = projectsData.find((p) => p.name.includes('Salary Calculator'));
+    const algoTrackerUrl = algoTracker?.live || 'https://algotracker.xyz';
+    const salaryCalculatorUrl = salaryCalculator?.live || 'https://truesalarycalculator.com';
 
     return (
         <section id="about">
@@ -60,8 +65,25 @@ const About = () => {
                         <li>
                             <h3>After hours</h3>
                             <p>
-                                <strong>AlgoTracker</strong> keeps my DSA sharp, <strong>DailyAlign</strong> keeps the rest of me in
-                                shape, and a <strong>salary calculator</strong> exists because every offer letter deserves a second opinion.
+                                <a
+                                    href={algoTrackerUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-link"
+                                >
+                                    <strong>AlgoTracker</strong>
+                                </a>{' '}
+                                keeps my DSA sharp, <strong>DailyAlign</strong> keeps the rest of me in
+                                shape, and a{' '}
+                                <a
+                                    href={salaryCalculatorUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-link"
+                                >
+                                    <strong>salary calculator</strong>
+                                </a>{' '}
+                                exists because every offer letter deserves a second opinion.
                             </p>
                         </li>
                     </ul>
