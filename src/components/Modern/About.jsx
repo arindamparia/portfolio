@@ -90,16 +90,6 @@ const About = () => {
                 <div className="about-figures">
                     <figure className="about-figure">
                         <img
-                            src={assets.profileImage}
-                            alt={`${personalInfo.name.full} in a grey blazer`}
-                            loading="lazy"
-                            width="600"
-                            height="750"
-                        />
-                        <figcaption>Off duty, blazer on.</figcaption>
-                    </figure>
-                    <figure className="about-figure">
-                        <img
                             src={assets.aboutImage}
                             alt={`${personalInfo.name.full} at his desk in a sweater with a chess king on it`}
                             loading="lazy"
